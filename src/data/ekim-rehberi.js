@@ -1,0 +1,72 @@
+/**
+ * Ürün Bazlı Ekim, Dikim, Bakım ve Hasat Rehberi
+ */
+
+export const CROPS_GUIDE = [
+  {
+    id: "bugday",
+    name: "Buğday & Arpa",
+    category: "Tahıl",
+    icon: "🌾",
+    sowingPeriod: "Ekim - Kasım (Güzlük) / Mart (Yazlık)",
+    preferredMoon: "Hilal / Büyüyen Ay (Toprak üstü yeşillenme için)",
+    careTips: "Kardeşlenme döneminde azotlu gübreleme yapılır. Sarı pas hastalığına karşı baharda kontrol edilmeli.",
+    harvestPeriod: "Haziran - Temmuz",
+    waterNeed: "Orta",
+  },
+  {
+    id: "domates",
+    name: "Domates & Biber",
+    category: "Sebze",
+    icon: "🍅",
+    sowingPeriod: "Mart (Tohum/Fide) - Mayıs (Tarlaya Dikim)",
+    preferredMoon: "Büyüyen Şişkinay (Meyve tutumu için)",
+    careTips: "Fideler dikildikten sonra can suyu verilir. Çapa ve boğaz doldurma aksatılmamalı. Koltuk alma budaması yapılır.",
+    harvestPeriod: "Temmuz - Ekim",
+    waterNeed: "Yüksek",
+  },
+  {
+    id: "patates",
+    name: "Patates & Havuç",
+    category: "Kök Sebze",
+    icon: "🥔",
+    sowingPeriod: "Nisan - Mayıs",
+    preferredMoon: "Küçülen Şişkinay (Kök gelişimi için)",
+    careTips: "Toprak yumuşak ve süzek olmalıdır. Patates boğaz doldurması yeşermeyi önler.",
+    harvestPeriod: "Ağustos - Ekim",
+    waterNeed: "Orta",
+  },
+  {
+    id: "findik",
+    name: "Fındık & Ceviz",
+    category: "Meyve & Sert Kabuklu",
+    icon: "🌰",
+    sowingPeriod: "Kasım - Şubat (Fidan dikimi ve kış budaması)",
+    preferredMoon: "Küçülen Ay (Budama için) / Büyüyen Ay (Gübreleme için)",
+    careTips: "Dip sürgünü (ışkın) temizliği Mayıs ve Ağustos aylarında iki kez yapılır. Kireçleme kışın yapılır.",
+    harvestPeriod: "Ağustos - Eylül",
+    waterNeed: "Doğal Yağış / Yazın Sulama",
+  },
+  {
+    id: "zeytin",
+    name: "Zeytin",
+    category: "Meyve",
+    icon: "🫒",
+    sowingPeriod: "Şubat - Mart (Budama & Gübreleme)",
+    preferredMoon: "Son Dördün (Budama için)",
+    careTips: "Zeytin sineğine karşı tuzaklar yaz ortasında kurulur. İki yılda bir var yılı / yok yılı bakımı aksatılmamalıdır.",
+    harvestPeriod: "Ekim - Ocak",
+    waterNeed: "Düşük / Damlama",
+  },
+  {
+    id: "misir",
+    name: "Mısır & Ayçiçeği",
+    category: "Endüstri Bitkisi",
+    icon: "🌽",
+    sowingPeriod: "Nisan - Mayıs",
+    preferredMoon: "Büyüyen Ay",
+    careTips: "Boy 20-30 cm olduğunda ilk çapa ve azot gübresi verilir. Koçan çıkarma döneminde bol sulama gerekir.",
+    harvestPeriod: "Eylül - Ekim",
+    waterNeed: "Yüksek",
+  }
+];

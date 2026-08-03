@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #f8f7f2;
+  --text-primary: #1c2723;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(15, 56, 44, 0.12);
+  --emerald-accent: #0f382c;
+  --harvest-gold: #e5a93c;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(229, 169, 60, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(15, 56, 44, 0.05) 0%, transparent 40%);
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(15, 56, 44, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(15, 56, 44, 0.06);
+}
+
+.glass-card-dark {
+  background: rgba(15, 56, 44, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(229, 169, 60, 0.2);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.25);
+  color: #f8f7f2;
+}
+
+/* Moon Phase Glow Effect */
+.moon-glow {
+  box-shadow: 0 0 25px rgba(229, 169, 60, 0.4);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 56, 44, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 56, 44, 0.25);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 56, 44, 0.45);
+}
+
+/* Badge Gradients */
+.badge-gold {
+  background: linear-gradient(135deg, #e5a93c 0%, #c78a22 100%);
+  color: #ffffff;
+}
+
+.badge-forest {
+  background: linear-gradient(135deg, #0f382c 0%, #1b6347 100%);
+  color: #ffffff;
+}
+
+.badge-terracotta {
+  background: linear-gradient(135deg, #c86d4b 0%, #a85031 100%);
+  color: #ffffff;
+}
