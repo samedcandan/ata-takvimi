@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Moon, Sparkles, Info } from 'lucide-react';
 import { getMoonPhase } from '../../lib/moonCalc';
 import { HALK_TAKVIMI_EVENTS } from '../../data/halk-takvimi';
+import MoonIcon from '../../components/MoonIcon';
 
 const MONTH_NAMES = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -119,9 +120,12 @@ export default function CalendarPage() {
                   <span className={`font-bold text-sm ${isSelected ? 'text-harvest-400' : 'text-forest-900'}`}>
                     {dayNum}
                   </span>
-                  <span className="text-base" title={moon.phaseName}>
-                    {moon.symbol}
-                  </span>
+                  <MoonIcon 
+                    illumination={moon.illumination} 
+                    isGrowing={moon.isGrowing} 
+                    phaseName={moon.phaseName} 
+                    size={22} 
+                  />
                 </div>
 
                 {/* Event Marker */}
@@ -145,9 +149,17 @@ export default function CalendarPage() {
             <Sparkles className="w-5 h-5 text-harvest-400" />
             {selectedDay.getDate()} {MONTH_NAMES[selectedDay.getMonth()]} {selectedDay.getFullYear()} Detayları
           </h3>
-          <span className="text-xs bg-harvest-400 text-forest-900 font-bold px-3 py-1 rounded-full">
-            {selectedMoon.phaseName} ({selectedMoon.illumination}% Aydınlık)
-          </span>
+          <div className="flex items-center gap-3">
+            <MoonIcon 
+              illumination={selectedMoon.illumination} 
+              isGrowing={selectedMoon.isGrowing} 
+              phaseName={selectedMoon.phaseName} 
+              size={34} 
+            />
+            <span className="text-xs bg-harvest-400 text-forest-900 font-bold px-3 py-1.5 rounded-full">
+              {selectedMoon.phaseName} (%{selectedMoon.illumination} Aydınlık)
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
