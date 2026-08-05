@@ -50,10 +50,30 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const saveUserSession = (userData) => {
+  const sendServerNotification = async (event, userData) => {
+    try {
+      await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: event,
+          userName: userData.name,
+          userEmail: userData.email,
+          planName: userData.subscription ? userData.subscription.planName : 'Ata Takvimi Aboneliği',
+          provider: userData.provider || 'email',
+          date: new Date().toISOString()
+        })
+      });
+    } catch (err) {
+      console.error('Failed to dispatch notification:', err);
+    }
+  };
+
+  const saveUserSession = (userData, eventType = 'NEW_TRIAL') => {
     setUser(userData);
     localStorage.setItem('ata_takvimi_user', JSON.stringify(userData));
     window.dispatchEvent(new Event('storage'));
+    sendServerNotification(eventType, userData);
   };
 
   // Helper to compute subscription / trial status
