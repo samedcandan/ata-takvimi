@@ -197,9 +197,13 @@ export function AuthProvider({ children }) {
   const loginWithEmail = (email, password) => {
     if (!email || !password) throw new Error('E-posta ve şifre gereklidir.');
     const namePart = email.split('@')[0];
+    const displayName = email.toLowerCase().includes('admin') || email.toLowerCase().includes('karneyn')
+      ? 'Karneyn Admin'
+      : namePart.charAt(0).toUpperCase() + namePart.slice(1);
+
     const emailUser = {
       id: `user-${Date.now()}`,
-      name: namePart.charAt(0).toUpperCase() + namePart.slice(1),
+      name: displayName,
       email: email,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
       provider: 'email',
