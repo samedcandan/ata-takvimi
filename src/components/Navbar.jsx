@@ -17,7 +17,7 @@ export default function Navbar() {
 
   const navItems = [
     { href: '/', label: 'Takvim Akışı', icon: Calendar },
-    { href: '/takvim', label: 'Aylık Takvim', icon: Moon },
+    { href: '/takvim', label: 'Ay Takvimi', icon: Moon },
     { href: '/ekim-rehberi', label: 'Ekim Rehberi', icon: Sprout },
     { href: '/tarlam', label: 'Tarlam & Notlar', icon: BookOpen },
   ];
