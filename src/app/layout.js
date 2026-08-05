@@ -1,5 +1,6 @@
 import '../styles/globals.css';
 import Navbar from '../components/Navbar';
+import AppContentGate from '../components/AppContentGate';
 import { AuthProvider } from '../context/AuthContext';
 
 export const metadata = {
@@ -22,10 +23,12 @@ export default function RootLayout({ children }) {
       </head>
       <body className="antialiased selection:bg-harvest-400 selection:text-forest-900 pb-16">
         <AuthProvider>
-          <Navbar />
-          <main className="max-w-7xl mx-auto px-4 py-6">
-            {children}
-          </main>
+          <AppContentGate>
+            <Navbar />
+            <main className="max-w-7xl mx-auto px-4 py-6">
+              {children}
+            </main>
+          </AppContentGate>
         </AuthProvider>
       </body>
     </html>

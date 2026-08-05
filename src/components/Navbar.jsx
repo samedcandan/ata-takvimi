@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Calendar, Sprout, BookOpen, MapPin, Moon, LogIn, LogOut, User, ShieldCheck, Sparkles, Star } from 'lucide-react';
+import { Calendar, Sprout, BookOpen, MapPin, Moon, LogIn, LogOut, User, ShieldCheck, Sparkles, Star, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
 import SubscriptionModal from './SubscriptionModal';
@@ -23,7 +23,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [selectedCity, setSelectedCity] = useState("Konya");
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const { user, logout, setShowAuthModal, setShowSubModal, hasActiveSubscription } = useAuth();
+  const { user, logout, setShowAuthModal, setShowSubModal, hasActiveSubscription, isTrialActive, daysLeft } = useAuth();
 
   useEffect(() => {
     const savedCity = localStorage.getItem('ata_takvimi_city');
@@ -87,13 +87,23 @@ export default function Navbar() {
             onClick={() => setShowSubModal(true)}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-transform hover:scale-105 shrink-0 ${
               hasActiveSubscription
-                ? 'bg-emerald-500 text-white'
+                ? 'bg-emerald-600 text-white'
+                : isTrialActive
+                ? 'bg-amber-500 text-white border border-amber-400'
                 : 'badge-gold text-forest-900 border border-harvest-400'
             }`}
           >
-            <Star className="w-3.5 h-3.5 fill-current text-amber-300" />
+            {hasActiveSubscription ? (
+              <Star className="w-3.5 h-3.5 fill-current text-amber-300" />
+            ) : (
+              <Clock className="w-3.5 h-3.5" />
+            )}
             <span className="hidden sm:inline-block">
-              {hasActiveSubscription ? 'Aktif Abone' : 'Abone Ol'}
+              {hasActiveSubscription
+                ? '👑 Ata Çiftçisi Abonesi'
+                : isTrialActive
+                ? `⏳ ${daysLeft} Gün Deneme`
+                : 'Abone Ol (₺300)'}
             </span>
           </button>
 
@@ -130,20 +140,15 @@ export default function Navbar() {
 
               {/* User Dropdown Menu */}
               {showUserDropdown && (
-                <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl border border-forest-800/15 shadow-xl p-3 z-50 text-xs space-y-2">
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl border border-forest-800/15 shadow-xl p-3 z-50 text-xs space-y-2">
                   <div className="border-b border-forest-800/10 pb-2 flex items-center gap-2.5">
                     <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-xl bg-forest-50" />
                     <div className="overflow-hidden">
                       <p className="font-bold text-forest-900 truncate">{user.name}</p>
                       <p className="text-[10px] text-forest-800/60 truncate">{user.email}</p>
                       <div className="flex items-center gap-1 mt-1">
-                        {user.provider === 'google' && (
-                          <span className="text-[9px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">
-                            Google
-                          </span>
-                        )}
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${hasActiveSubscription ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
-                          {hasActiveSubscription ? '⭐ PRO Çiftçi' : 'Ücretsiz Deneme'}
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${hasActiveSubscription ? 'bg-emerald-100 text-emerald-800' : isTrialActive ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'}`}>
+                          {hasActiveSubscription ? '👑 VIP Yıllık Abone' : isTrialActive ? `⏳ ${daysLeft} Gün Deneme` : '⚠️ Süresi Doldu'}
                         </span>
                       </div>
                     </div>
@@ -157,7 +162,7 @@ export default function Navbar() {
                     className="w-full flex items-center gap-2 p-2 rounded-xl text-forest-900 font-bold hover:bg-forest-50 transition-colors text-left"
                   >
                     <Sparkles className="w-4 h-4 text-harvest-500" />
-                    Aboneliğimi Yönet / Yenile
+                    Aboneliğimi Yönet (₺300/Yıl)
                   </button>
 
                   <Link
