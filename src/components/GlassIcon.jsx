@@ -12,6 +12,117 @@ export default function GlassIcon({ icon = "🌱", category = "tarim", size = 38
   const getGlassTheme = (ch, cat) => {
     // Specific icon color overrides
     switch (ch) {
+      // Corn / Sunflower / Yellow Crops
+      case "🌽":
+      case "🌻":
+      case "🍋":
+      case "🍌":
+        return {
+          bg: ["#fef08a", "#eab308", "#854d0e"],
+          glow: "rgba(234, 179, 8, 0.45)",
+          rim: "#fef9c3"
+        };
+
+      // Tomato / Apple / Strawberry / Poppy / Red Crops
+      case "🍅":
+      case "🍎":
+      case "🍓":
+      case "🍒":
+      case "🌺":
+        return {
+          bg: ["#fca5a5", "#ef4444", "#991b1b"],
+          glow: "rgba(239, 68, 68, 0.45)",
+          rim: "#fee2e2"
+        };
+
+      // Carrot / Orange / Pumpkin / Peach / Apricot
+      case "🥕":
+      case "🍊":
+      case "🎃":
+      case "🍑":
+        return {
+          bg: ["#fdba74", "#f97316", "#9a3412"],
+          glow: "rgba(249, 115, 22, 0.45)",
+          rim: "#ffedd5"
+        };
+
+      // Eggplant / Grapes / Lavender / Purple Crops
+      case "🍆":
+      case "🍇":
+      case "🪻":
+        return {
+          bg: ["#d8b4fe", "#a855f7", "#581c87"],
+          glow: "rgba(168, 85, 247, 0.45)",
+          rim: "#f3e8ff"
+        };
+
+      // Potato / Chestnut / Walnut / Brown / Root Crops
+      case "🥔":
+      case "🌰":
+      case "🧠":
+      case "🟤":
+      case "🍠":
+      case "🫚":
+      case "🍂":
+        return {
+          bg: ["#fde047", "#d97706", "#78350f"],
+          glow: "rgba(217, 119, 6, 0.45)",
+          rim: "#fef3c7"
+        };
+
+      // Greens / Leafy / Tea / Cucumber / Pepper / Herbs
+      case "🥒":
+      case "🫑":
+      case "🥦":
+      case "🥬":
+      case "🍃":
+      case "🌿":
+      case "🍵":
+      case "🌱":
+      case "🫛":
+        return {
+          bg: ["#86efac", "#22c55e", "#14532d"],
+          glow: "rgba(34, 197, 94, 0.45)",
+          rim: "#dcfce7"
+        };
+
+      // Olives / Sage Green
+      case "🫒":
+        return {
+          bg: ["#bef264", "#65a30d", "#365314"],
+          glow: "rgba(101, 163, 13, 0.45)",
+          rim: "#ecfccb"
+        };
+
+      // Watermelon
+      case "🍉":
+        return {
+          bg: ["#fda4af", "#f43f5e", "#15803d"],
+          glow: "rgba(244, 63, 94, 0.45)",
+          rim: "#ffe4e6"
+        };
+
+      // Garlic / Cotton / Rice / White Crops
+      case "🧄":
+      case "☁️":
+      case "🍚":
+        return {
+          bg: ["#ffffff", "#e2e8f0", "#64748b"],
+          glow: "rgba(203, 213, 225, 0.6)",
+          rim: "#ffffff"
+        };
+
+      // Onion / Chickpea / Lentil / Golden Legumes
+      case "🧅":
+      case "🧆":
+      case "🍲":
+      case "🫘":
+        return {
+          bg: ["#fed7aa", "#f97316", "#9a3412"],
+          glow: "rgba(249, 115, 22, 0.45)",
+          rim: "#ffedd5"
+        };
+
       // Fire / Heat
       case "🔥":
       case "☀️":
@@ -43,75 +154,23 @@ export default function GlassIcon({ icon = "🌱", category = "tarim", size = 38
           rim: "#bae6fd"
         };
 
-      // Sprout / Trees / Nature
-      case "🌱":
-      case "🌷":
-      case "🌳":
-      case "🍃":
-        return {
-          bg: ["#34d399", "#10b981", "#047857"],
-          glow: "rgba(16, 185, 129, 0.45)",
-          rim: "#a7f3d0"
-        };
-
-      // Olives / Agriculture Green
-      case "🫒":
-        return {
-          bg: ["#a3e635", "#65a30d", "#365314"],
-          glow: "rgba(101, 163, 13, 0.45)",
-          rim: "#d9f99d"
-        };
-
-      // Grapes / Vineyard / Harvest
-      case "🍇":
-        return {
-          bg: ["#c084fc", "#9333ea", "#581c87"],
-          glow: "rgba(147, 51, 234, 0.45)",
-          rim: "#f3e8ff"
-        };
-
-      // Tomato / Red Crops
-      case "🍅":
-        return {
-          bg: ["#f87171", "#ef4444", "#991b1b"],
-          glow: "rgba(239, 68, 68, 0.45)",
-          rim: "#fecdd3"
-        };
-
-      // Wheat / Harvest / Chestnut / Gold
+      // Wheat / Harvest / Agriculture
       case "🌾":
       case "🚜":
-      case "🌰":
       case "🛠️":
       case "✂️":
         return {
-          bg: ["#fbbf24", "#d97706", "#78350f"],
-          glow: "rgba(217, 119, 6, 0.45)",
-          rim: "#fef08a"
+          bg: ["#fef08a", "#eab308", "#78350f"],
+          glow: "rgba(234, 179, 8, 0.45)",
+          rim: "#fef9c3"
         };
 
-      // Birds / Fauna / Feather
-      case "🪶":
-      case "🐑":
-      case "🐄":
-        return {
-          bg: ["#818cf8", "#4f46e5", "#312e81"],
-          glow: "rgba(79, 70, 229, 0.45)",
-          rim: "#e0e7ff"
-        };
-
-      // Autumn / Wind / Sun Sky
-      case "🌬️":
-      case "💨":
-      case "🌤️":
-      case "🏔️":
-      case "🍂":
-      case "🍁":
+      // Default Fallback - Emerald Bio Green
       default:
         return {
-          bg: ["#f472b6", "#fb7185", "#be123c"],
-          glow: "rgba(251, 113, 133, 0.45)",
-          rim: "#ffe4e6"
+          bg: ["#86efac", "#16a34a", "#14532d"],
+          glow: "rgba(22, 163, 74, 0.45)",
+          rim: "#dcfce7"
         };
     }
   };

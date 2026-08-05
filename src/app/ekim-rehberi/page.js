@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Sprout, Search, Calendar, Droplets, Moon, ShieldCheck } from 'lucide-react';
 import { CROPS_GUIDE } from '../../data/ekim-rehberi';
+import GlassIcon from '../../components/GlassIcon';
 
 export default function CropsGuidePage() {
   const [search, setSearch] = useState('');
@@ -74,13 +75,16 @@ export default function CropsGuidePage() {
         {filteredCrops.map(crop => (
           <div
             key={crop.id}
-            className="glass-card rounded-3xl p-6 border border-forest-800/10 flex flex-col justify-between hover:border-harvest-500 transition-all hover:shadow-xl group"
+            className="glass-card rounded-3xl p-6 border border-forest-800/10 flex flex-col justify-between hover:border-harvest-500/50 transition-all duration-300 hover:shadow-2xl group relative overflow-hidden"
           >
             <div>
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-forest-800/10 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                  {crop.icon}
-                </div>
+                <GlassIcon 
+                  icon={crop.icon} 
+                  category={crop.category} 
+                  size={52} 
+                  className="group-hover:scale-110 transition-transform duration-300"
+                />
                 <span className="text-xs bg-harvest-400/20 text-harvest-600 font-bold px-3 py-1 rounded-full border border-harvest-500/30">
                   {crop.category}
                 </span>
