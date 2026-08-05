@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { HALK_TAKVIMI_EVENTS } from '../data/halk-takvimi';
 import { getLunarMilestoneEvents } from '../lib/moonCalc';
 import MoonIcon from '../components/MoonIcon';
+import GlassIcon from '../components/GlassIcon';
 import { Calendar, ChevronDown, Sparkles } from 'lucide-react';
 
 const MONTHS = [
@@ -126,7 +127,7 @@ export default function HomePage() {
                     size={40} 
                   />
                 ) : (
-                  <span className="text-4xl">{firstEvent.icon}</span>
+                  <GlassIcon icon={firstEvent.icon} category={firstEvent.category} size={44} />
                 )}
               </div>
               <div className="space-y-1">
@@ -195,7 +196,7 @@ export default function HomePage() {
                             size={32} 
                           />
                         ) : (
-                          <span className="text-2xl">{event.icon}</span>
+                          <GlassIcon icon={event.icon} category={event.category} size={36} />
                         )}
                       </div>
                       <span className={`text-[11px] font-bold mt-1.5 ${event.isToday ? 'text-forest-500' : 'text-forest-800/60'}`}>
