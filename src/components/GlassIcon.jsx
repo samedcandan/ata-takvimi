@@ -1,11 +1,11 @@
-"use client";
+import CropIcon from './CropIcon';
 
 /**
  * 3D Liquid Glassmorphic Icon Component
  * Wraps every specific event symbol (grapes, olives, sheep, tractor, wheat, fire, ice, etc.)
  * inside a high-definition 3D glass sphere with caustics, specular glare, and ambient aura.
  */
-export default function GlassIcon({ icon = "🌱", category = "tarim", size = 38, className = "" }) {
+export default function GlassIcon({ icon = "🌱", cropId = null, category = "tarim", size = 38, className = "" }) {
   const idSuffix = Math.random().toString(36).substr(2, 5);
 
   // Exact theme selection based on icon or category for perfect color matching
@@ -235,27 +235,35 @@ export default function GlassIcon({ icon = "🌱", category = "tarim", size = 38
         />
 
         {/* 3. Embedded 3D Symbol with Drop-Shadow Depth */}
-        <g transform="translate(24, 25)">
-          {/* 3D Soft Shadow */}
-          <text 
-            textAnchor="middle" 
-            dominantBaseline="central" 
-            fontSize="22" 
-            opacity="0.3"
-            transform="translate(1, 2)"
-          >
-            {icon}
-          </text>
-          
-          {/* Main Crisp Icon */}
-          <text 
-            textAnchor="middle" 
-            dominantBaseline="central" 
-            fontSize="22"
-          >
-            {icon}
-          </text>
-        </g>
+        {cropId ? (
+          <foreignObject x="9" y="9" width="30" height="30" className="overflow-visible">
+            <div className="w-full h-full flex items-center justify-center filter drop-shadow-md">
+              <CropIcon id={cropId} size={26} />
+            </div>
+          </foreignObject>
+        ) : (
+          <g transform="translate(24, 25)">
+            {/* 3D Soft Shadow */}
+            <text 
+              textAnchor="middle" 
+              dominantBaseline="central" 
+              fontSize="22" 
+              opacity="0.3"
+              transform="translate(1, 2)"
+            >
+              {icon}
+            </text>
+            
+            {/* Main Crisp Icon */}
+            <text 
+              textAnchor="middle" 
+              dominantBaseline="central" 
+              fontSize="22"
+            >
+              {icon}
+            </text>
+          </g>
+        )}
 
         {/* 4. Curved Specular Glass Sheen Overlay */}
         <path 

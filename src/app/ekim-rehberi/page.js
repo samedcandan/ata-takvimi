@@ -80,6 +80,7 @@ export default function CropsGuidePage() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <GlassIcon 
+                  cropId={crop.id}
                   icon={crop.icon} 
                   category={crop.category} 
                   size={52} 
