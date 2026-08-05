@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Moon, Sparkles, Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Moon, Sparkles, Info, BookOpen, MapPin, ShieldCheck } from 'lucide-react';
 import { getMoonPhase } from '../../lib/moonCalc';
 import { HALK_TAKVIMI_EVENTS } from '../../data/halk-takvimi';
+import { CROPS_GUIDE } from '../../data/ekim-rehberi';
 import MoonIcon from '../../components/MoonIcon';
+import GlassIcon from '../../components/GlassIcon';
 
 const MONTH_NAMES = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -14,9 +16,27 @@ const MONTH_NAMES = [
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(new Date());
+  const [userNotes, setUserNotes] = useState([]);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
+
+  const loadUserNotes = () => {
+    const saved = localStorage.getItem('ata_takvimi_notes');
+    if (saved) {
+      try {
+        setUserNotes(JSON.parse(saved));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadUserNotes();
+    window.addEventListener('storage', loadUserNotes);
+    return () => window.removeEventListener('storage', loadUserNotes);
+  }, []);
 
   // Calendar matrix calculation
   const firstDayOfMonth = new Date(year, month, 1);
@@ -40,6 +60,17 @@ export default function CalendarPage() {
     e => e.month === selectedDay.getMonth() + 1 && e.day === selectedDay.getDate()
   );
 
+  const selectedDateStr = `${selectedDay.getFullYear()}-${String(selectedDay.getMonth() + 1).padStart(2, '0')}-${String(selectedDay.getDate()).padStart(2, '0')}`;
+  const selectedDayNotes = userNotes.filter(n => n.sowingDate === selectedDateStr);
+
+  const getCropMeta = (note) => {
+    if (note.cropId) {
+      return CROPS_GUIDE.find(c => c.id === note.cropId) || { id: note.cropId, name: note.cropName, category: note.cropCategory || 'Tarım' };
+    }
+    const found = CROPS_GUIDE.find(c => c.name.toLowerCase().includes((note.cropName || '').toLowerCase()));
+    return found || { id: 'bugday', name: note.cropName || 'Bitki', category: 'Tarım' };
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -50,7 +81,7 @@ export default function CalendarPage() {
             Aylık Halk & Ay Takvimi
           </h1>
           <p className="text-sm text-forest-800/70">
-            Ay evreleri ve Anadolu geleneksel tarım günlerini gün gün inceleyin.
+            Ay evrelerini, Anadolu geleneksel tarım günlerini ve eklediğiniz kişisel bitki notlarını gün gün inceleyin.
           </p>
         </div>
 
@@ -105,6 +136,9 @@ export default function CalendarPage() {
               selectedDay.getMonth() === month &&
               selectedDay.getFullYear() === year;
 
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+            const dayNotes = userNotes.filter(n => n.sowingDate === dateStr);
+
             return (
               <button
                 key={dayNum}
@@ -129,8 +163,15 @@ export default function CalendarPage() {
                   />
                 </div>
 
-                {/* Event & Lunar Markers */}
+                {/* Event & User Notes Markers */}
                 <div className="space-y-1 w-full overflow-hidden">
+                  {/* User Note Badge Indicator */}
+                  {dayNotes.length > 0 && (
+                    <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-emerald-500 text-white truncate flex items-center gap-0.5 shadow-sm">
+                      📌 {dayNotes.length} Not
+                    </div>
+                  )}
+
                   {/* Lunar Milestone Badge */}
                   {moon.phaseName.includes("Dolunay") && (
                     <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-amber-400 text-amber-950 truncate">
@@ -138,7 +179,7 @@ export default function CalendarPage() {
                     </div>
                   )}
                   {moon.phaseName.includes("Yeni Ay") && (
-                    <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-emerald-500 text-white truncate">
+                    <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-emerald-600 text-white truncate">
                       🌒 Yeni Ay
                     </div>
                   )}
@@ -164,8 +205,8 @@ export default function CalendarPage() {
       </div>
 
       {/* Selected Day Detail Box */}
-      <div className="glass-card-dark rounded-3xl p-6 border border-harvest-500/20">
-        <div className="flex items-center justify-between mb-4">
+      <div className="glass-card-dark rounded-3xl p-6 border border-harvest-500/20 space-y-4">
+        <div className="flex items-center justify-between border-b border-white/10 pb-3">
           <h3 className="text-xl font-serif font-bold text-white flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-harvest-400" />
             {selectedDay.getDate()} {MONTH_NAMES[selectedDay.getMonth()]} {selectedDay.getFullYear()} Detayları
@@ -199,11 +240,48 @@ export default function CalendarPage() {
 
           {/* Agriculture Advice Detail */}
           <div className="bg-white/10 p-4 rounded-2xl border border-white/10">
-            <h4 className="text-xs text-harvest-400 font-bold uppercase mb-1">Ay Safhası Tarım Rehberi</h4>
+            <h4 className="text-xs text-harvest-400 font-bold uppercase mb-1">Ay Evresi Tarım Tavsiyesi</h4>
             <p className="text-xs text-white/90 leading-relaxed">
-              {selectedMoon.agricultureAdvice}
+              {selectedMoon.advice || 'Toprak nemine dikkat edin, uygun Ay safhasında sulama ve çapa yapın.'}
             </p>
           </div>
+        </div>
+
+        {/* User Personal Notes for Selected Day */}
+        <div className="bg-white/10 p-4 rounded-2xl border border-emerald-400/30">
+          <h4 className="text-xs text-emerald-400 font-bold uppercase mb-2 flex items-center gap-1.5">
+            <BookOpen className="w-4 h-4" />
+            📌 Bu Tarihteki Kişisel Bitki & Tarım Notlarınız ({selectedDayNotes.length})
+          </h4>
+
+          {selectedDayNotes.length === 0 ? (
+            <p className="text-xs text-white/60">
+              Bu tarihe eklenmiş kişisel bir bitki ekimi veya bahçe notunuz bulunmuyor. "Bitkilerim & Notlar" sekmesinden yeni not ekleyebilirsiniz.
+            </p>
+          ) : (
+            <div className="space-y-3 mt-2">
+              {selectedDayNotes.map(n => {
+                const cropMeta = getCropMeta(n);
+                return (
+                  <div key={n.id} className="bg-forest-950/80 p-3.5 rounded-xl border border-emerald-500/40 flex items-start gap-3">
+                    <GlassIcon cropId={cropMeta.id} icon={cropMeta.icon} category={cropMeta.category} size={42} />
+                    <div className="text-xs text-white space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h5 className="font-bold text-harvest-300 text-sm">{n.noteTitle || n.cropName || cropMeta.name}</h5>
+                        <span className="text-[10px] bg-emerald-600 px-2 py-0.5 rounded font-bold">Kişisel Not</span>
+                      </div>
+                      <p className="text-white/90 leading-relaxed">{n.note || 'Not detay belirmemiş.'}</p>
+                      {n.fieldName && (
+                        <p className="text-[11px] text-harvest-400 flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-terracotta-400" /> Konum: {n.fieldName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

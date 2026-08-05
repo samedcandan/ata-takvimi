@@ -6,7 +6,7 @@ import { getLunarMilestoneEvents } from '../lib/moonCalc';
 import MoonIcon from '../components/MoonIcon';
 import GlassIcon from '../components/GlassIcon';
 import WeatherCard from '../components/WeatherCard';
-import { Calendar, ChevronDown, Sparkles } from 'lucide-react';
+import { Calendar, ChevronDown, Sparkles, MapPin, Tag } from 'lucide-react';
 
 const MONTHS = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -21,11 +21,14 @@ const CATEGORY_COLORS = {
   tarim: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-200', label: 'Tarım' },
   doga: { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200', label: 'Doğa' },
   hayvancilik: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-200', label: 'Hayvancılık' },
+  kisisel: { bg: 'bg-emerald-100', text: 'text-emerald-900', border: 'border-emerald-300', label: '📌 Kişisel Notum' },
   genel: { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-200', label: 'Genel' },
 };
 
 function getEventsFromToday() {
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const currentMonth = today.getMonth() + 1;
   const currentDay = today.getDate();
   const currentYear = today.getFullYear();
@@ -39,7 +42,7 @@ function getEventsFromToday() {
     e => e.month < currentMonth || (e.month === currentMonth && e.day < currentDay)
   ).map(e => ({ ...e, year: currentYear + 1 }));
 
-  // 2. Astronomik Ay Evresi Dönüm Noktaları (Yeni Ay, Dolunay, Karanlık Ay)
+  // 2. Astronomik Ay Evresi Dönüm Noktaları
   const lunarEvents = getLunarMilestoneEvents(today, 365);
 
   // 3. İki listeyi birleştir ve tam tarih bazında kronolojik sırala
@@ -57,9 +60,6 @@ function getEventsFromToday() {
       dateLabel: `${event.day} ${MONTHS[event.month - 1]} ${event.year}`,
     };
   });
-
-  // Tarihe göre artan sırada sırala
-  enriched.sort((a, b) => a.eventDate.getTime() - b.eventDate.getTime());
 
   return enriched;
 }
@@ -79,18 +79,67 @@ function groupByMonth(events) {
 }
 
 export default function HomePage() {
-  const [events] = useState(() => getEventsFromToday());
+  const [allEvents, setAllEvents] = useState([]);
   const todayRef = useRef(null);
-  const { groups, order } = groupByMonth(events);
+
+  const loadEvents = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const systemEvents = getEventsFromToday();
+    const savedNotes = localStorage.getItem('ata_takvimi_notes');
+    let userNotesEvents = [];
+
+    if (savedNotes) {
+      try {
+        const parsed = JSON.parse(savedNotes);
+        userNotesEvents = parsed.map(note => {
+          const dateParts = (note.sowingDate || '').split('-');
+          if (dateParts.length !== 3) return null;
+          const y = parseInt(dateParts[0], 10);
+          const m = parseInt(dateParts[1], 10);
+          const d = parseInt(dateParts[2], 10);
+
+          const eventDate = new Date(y, m - 1, d);
+          const diffTime = eventDate.getTime() - today.getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          return {
+            id: `user-note-${note.id}`,
+            isUserNote: true,
+            cropId: note.cropId || 'bugday',
+            title: note.noteTitle || `${note.cropName || 'Bitki'} Kaydı`,
+            desc: note.note ? `${note.note} (${note.fieldName || 'Bahçem'})` : `Tarih: ${note.sowingDate} - Konum: ${note.fieldName || 'Bahçem'}`,
+            category: 'kisisel',
+            day: d,
+            month: m,
+            year: y,
+            eventDate,
+            diffDays,
+            isToday: diffDays === 0,
+            dateLabel: `${d} ${MONTHS[m - 1]} ${y}`,
+            fieldName: note.fieldName,
+            cropName: note.cropName
+          };
+        }).filter(Boolean);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const combined = [...systemEvents, ...userNotesEvents];
+    combined.sort((a, b) => a.eventDate.getTime() - b.eventDate.getTime());
+    setAllEvents(combined);
+  };
 
   useEffect(() => {
-    // Scroll to the first (today/nearest) event
-    if (todayRef.current) {
-      todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    loadEvents();
+    window.addEventListener('storage', loadEvents);
+    return () => window.removeEventListener('storage', loadEvents);
   }, []);
 
-  const firstEvent = events[0];
+  const { groups, order } = groupByMonth(allEvents);
+  const firstEvent = allEvents[0];
 
   return (
     <div className="space-y-6">
@@ -111,7 +160,7 @@ export default function HomePage() {
           </div>
           <div className="px-4 py-1.5 rounded-full badge-gold text-xs font-semibold flex items-center gap-1.5 shadow-lg">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>{events.length} Dönem Noktası</span>
+            <span>{allEvents.length} Dönem & Kayıt Noktası</span>
           </div>
         </div>
 
@@ -128,14 +177,14 @@ export default function HomePage() {
                     size={40} 
                   />
                 ) : (
-                  <GlassIcon icon={firstEvent.icon} category={firstEvent.category} size={44} />
+                  <GlassIcon cropId={firstEvent.cropId} icon={firstEvent.icon || "📌"} category={firstEvent.category} size={44} />
                 )}
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-xl font-bold text-harvest-400">{firstEvent.title}</h3>
                   <span className="text-[10px] bg-forest-500 text-white px-2 py-0.5 rounded-md font-medium">
-                    {firstEvent.isToday ? '📍 Bugün' : `${firstEvent.diffDays} gün kaldı`}
+                    {firstEvent.isToday ? '📍 Bugün' : firstEvent.diffDays < 0 ? `${Math.abs(firstEvent.diffDays)} gün önce` : `${firstEvent.diffDays} gün kaldı`}
                   </span>
                 </div>
                 <p className="text-sm text-white/90 leading-relaxed">{firstEvent.desc}</p>
@@ -175,7 +224,9 @@ export default function HomePage() {
                   key={`${event.month}-${event.day}-${event.title}`}
                   ref={idx === 0 && event === firstEvent ? todayRef : null}
                   className={`glass-card rounded-2xl p-5 border transition-all hover:shadow-lg hover:scale-[1.01] ${
-                    event.isToday
+                    event.isUserNote
+                      ? 'border-emerald-500/50 bg-emerald-50/20 shadow-sm'
+                      : event.isToday
                       ? 'border-forest-500 ring-2 ring-forest-400/30 shadow-lg'
                       : event.isLunar
                       ? 'border-indigo-800/20 bg-indigo-50/30'
@@ -200,7 +251,7 @@ export default function HomePage() {
                             size={32} 
                           />
                         ) : (
-                          <GlassIcon icon={event.icon} category={event.category} size={36} />
+                          <GlassIcon cropId={event.cropId} icon={event.icon || "📌"} category={event.category} size={36} />
                         )}
                       </div>
                       <span className={`text-[11px] font-bold mt-1.5 ${event.isToday ? 'text-forest-500' : 'text-forest-800/60'}`}>
@@ -213,7 +264,7 @@ export default function HomePage() {
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <h3 className="font-bold text-forest-900 text-base leading-tight">{event.title}</h3>
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${cat.bg} ${cat.text} ${cat.border} border`}>
-                          {cat.label}
+                          {event.isUserNote ? '📌 Kişisel Notum' : cat.label}
                         </span>
                         {event.isToday && (
                           <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-forest-500 text-white">
@@ -222,8 +273,16 @@ export default function HomePage() {
                         )}
                       </div>
                       <p className="text-sm text-forest-800/80 leading-relaxed">{event.desc}</p>
+                      {event.fieldName && (
+                        <p className="text-xs text-harvest-600 font-medium mt-1 flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5" /> {event.fieldName}
+                        </p>
+                      )}
                       {!event.isToday && event.diffDays > 0 && (
-                        <p className="text-xs text-forest-500 font-medium mt-1.5">{event.diffDays} gün sonra</p>
+                        <p className="text-xs text-forest-500 font-medium mt-1">{event.diffDays} gün sonra</p>
+                      )}
+                      {!event.isToday && event.diffDays < 0 && (
+                        <p className="text-xs text-forest-800/50 font-medium mt-1">{Math.abs(event.diffDays)} gün önce</p>
                       )}
                     </div>
                   </div>
