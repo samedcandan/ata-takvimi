@@ -1,5 +1,6 @@
 import '../styles/globals.css';
 import Navbar from '../components/Navbar';
+import { AuthProvider } from '../context/AuthContext';
 
 export const metadata = {
   title: 'Ata Takvimi — Anadolu Halk Takvimi & Ay Evreleri Tarım Rehberi',
@@ -20,10 +21,12 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
       </head>
       <body className="antialiased selection:bg-harvest-400 selection:text-forest-900 pb-16">
-        <Navbar />
-        <main className="max-w-7xl mx-auto px-4 py-6">
-          {children}
-        </main>
+        <AuthProvider>
+          <Navbar />
+          <main className="max-w-7xl mx-auto px-4 py-6">
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   );
