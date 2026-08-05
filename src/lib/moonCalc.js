@@ -22,28 +22,29 @@ export function getMoonPhase(date = new Date()) {
   }
   const lunarAge = daysSinceNewMoon;
 
-  // Illumination percentage (0 to 100%)
-  const illumination = Math.round((1 - Math.cos((lunarAge / synodicMonth) * 2 * Math.PI)) * 50);
+  // Linear Phase Ratio (0.0 = New Moon, 0.5 = Full Moon, 1.0 = New Moon)
+  const phaseRatio = lunarAge / synodicMonth;
 
-  // Growing phase (0 to 14.765 days is growing)
+  // Linear Illumination Percentage for crisp visual daily progression (0% to 100%)
+  const linearIllumination = phaseRatio <= 0.5 
+    ? Math.round(phaseRatio * 200) 
+    : Math.round((1 - phaseRatio) * 200);
+
+  // Astronomical Sine Illumination for text percentage
+  const astronomicalIllumination = Math.round((1 - Math.cos(phaseRatio * 2 * Math.PI)) * 50);
+
+  // Growing phase (0 to 14.765 days is growing in Northern Hemisphere)
   const isGrowing = lunarAge < (synodicMonth / 2);
-
-  // Traditional Anadolu Lunar Definitions:
-  // - Karanlık Ay: Aydınlık başlamadan önceki 3 gün (lunarAge >= 26.53)
-  // - Yeni Ay: Aydınlık sürecini başlatan evre (lunarAge 0..5.5)
-  // - Dolunay: Tam aydınlık evresi (lunarAge 13.5..16.0)
 
   let phaseName = "";
   let symbol = "";
   let agricultureAdvice = "";
 
   if (lunarAge >= 26.53 || lunarAge < 0.8) {
-    // Karanlık Ay (Aydınlık başlamadan önceki 3 gün)
     phaseName = "Karanlık Ay (Nadas / Eskiay)";
     symbol = "🌑";
     agricultureAdvice = "Yeni Ay aydınlığı başlamadan önceki 3 günlük karanlık evre. Toprak nadasa bırakılır; ekim yapılmaz. Ağaç budaması, kereste kesimi ve zararlılarla mücadele zamanıdır.";
   } else if (lunarAge < 5.53699) {
-    // Yeni Ay (Aydınlık sürecini başlatır)
     phaseName = "Yeni Ay (Aydınlık Başlangıcı)";
     symbol = "🌒";
     agricultureAdvice = "Aydınlık sürecini başlatan Yeni Ay evresi. Büyüyen Ay safhası başlar. Toprak üstü ürünlerin (marul, domates, biber, tahıllar) ekimi ve fide dikimi zamanıdır.";
@@ -51,12 +52,11 @@ export function getMoonPhase(date = new Date()) {
     phaseName = "İlk Dördün";
     symbol = "🌓";
     agricultureAdvice = "Yapraklı bitkilerin ekimi ve meyve ağaçlarının aşılanması için ideal safhadır.";
-  } else if (lunarAge < 13.2) {
+  } else if (lunarAge < 13.8) {
     phaseName = "Büyüyen Şişkinay";
     symbol = "🌔";
     agricultureAdvice = "Meyveli sebzelerin (domates, biber, salatalık) ekim ve sulama işlemlerine devam edilir.";
-  } else if (lunarAge < 16.2) {
-    // Dolunay (Tam Aydınlık)
+  } else if (lunarAge < 15.7) {
     phaseName = "Dolunay (Tam Aydınlık)";
     symbol = "🌕";
     agricultureAdvice = "Ayın %100 tam aydınlık evresidir. Bitki özsuyunun en tepe noktada olduğu zamandır. Tıbbi aromatik bitki, meyve ve sebze hasadı yapılır.";
@@ -76,7 +76,9 @@ export function getMoonPhase(date = new Date()) {
 
   return {
     lunarAge: Math.round(lunarAge * 10) / 10,
-    illumination,
+    illumination: astronomicalIllumination,
+    linearIllumination,
+    phaseRatio,
     phaseName,
     symbol,
     isGrowing,
@@ -86,9 +88,6 @@ export function getMoonPhase(date = new Date()) {
 
 /**
  * Calculates key astronomical lunar milestone events for Takvim Akışı
- * - Yeni Ay Başlangıcı (Aydınlık sürecini başlatır)
- * - Dolunay (Tam Aydınlık)
- * - Karanlık Ay Başlangıcı (Aydınlık başlamadan önceki 3 günlük nadas dönemi)
  */
 export function getLunarMilestoneEvents(startDate = new Date(), daysCount = 365) {
   const events = [];
@@ -110,7 +109,8 @@ export function getLunarMilestoneEvents(startDate = new Date(), daysCount = 365)
           desc: "Aydınlık sürecini başlatan Yeni Ay evresi. Büyüyen Ay safhası başlar. Toprak üstü meyve ve yapraklı bitkilerin (domates, biber, marul, tahıl) ekim, dikim ve aşı dönemi.",
           icon: "🌒",
           isLunar: true,
-          illumination: Math.max(5, curr.illumination),
+          illumination: 8,
+          linearIllumination: 8,
           isGrowing: true
         });
       }
@@ -126,6 +126,7 @@ export function getLunarMilestoneEvents(startDate = new Date(), daysCount = 365)
           icon: "🌕",
           isLunar: true,
           illumination: 100,
+          linearIllumination: 100,
           isGrowing: false
         });
       }
@@ -141,6 +142,7 @@ export function getLunarMilestoneEvents(startDate = new Date(), daysCount = 365)
           icon: "🌑",
           isLunar: true,
           illumination: 0,
+          linearIllumination: 0,
           isGrowing: false
         });
       }

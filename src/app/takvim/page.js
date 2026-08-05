@@ -121,10 +121,11 @@ export default function CalendarPage() {
                     {dayNum}
                   </span>
                   <MoonIcon 
-                    illumination={moon.illumination} 
+                    illumination={moon.illumination}
+                    linearIllumination={moon.linearIllumination} 
                     isGrowing={moon.isGrowing} 
                     phaseName={moon.phaseName} 
-                    size={22} 
+                    size={26} 
                   />
                 </div>
 
