@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { Sparkles, Check, CreditCard, ShieldCheck, KeyRound, X, Star } from 'lucide-react';
 
@@ -10,8 +11,13 @@ export default function SubscriptionModal() {
   const [promoCode, setPromoCode] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [mounted, setMounted] = useState(false);
 
-  if (!showSubModal) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!showSubModal || !mounted) return null;
 
   const handleActivate = (e) => {
     e.preventDefault();
@@ -56,8 +62,8 @@ export default function SubscriptionModal() {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] bg-black/65 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
       <div className="bg-white rounded-3xl p-5 md:p-7 max-w-2xl w-full border border-forest-800/20 shadow-2xl relative max-h-[88vh] flex flex-col overflow-hidden">
         {/* Ambient Glow */}
         <div className="absolute -top-20 -right-20 w-48 h-48 bg-harvest-400/25 rounded-full blur-3xl pointer-events-none" />
@@ -211,6 +217,7 @@ export default function SubscriptionModal() {
           <span>256-Bit SSL & İyzico Güvenli Ödeme Altyapısı ile Korumalıdır.</span>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

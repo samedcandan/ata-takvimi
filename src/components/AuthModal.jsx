@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { LogIn, UserPlus, Mail, Lock, User, ShieldCheck, X } from 'lucide-react';
 
@@ -9,6 +10,7 @@ export default function AuthModal() {
   const [activeTab, setActiveTab] = useState('login');
   const [googleEmailInput, setGoogleEmailInput] = useState('');
   const [showGooglePrompt, setShowGooglePrompt] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -17,7 +19,11 @@ export default function AuthModal() {
   });
   const [error, setError] = useState('');
 
-  if (!showAuthModal) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!showAuthModal || !mounted) return null;
 
   const handleGoogleSubmit = async (e) => {
     e.preventDefault();
@@ -52,8 +58,8 @@ export default function AuthModal() {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] bg-black/65 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
       <div className="bg-white rounded-3xl p-5 md:p-7 max-w-md w-full border border-forest-800/20 shadow-2xl relative max-h-[88vh] flex flex-col overflow-hidden">
         {/* Decorative ambient blur */}
         <div className="absolute -top-12 -right-12 w-32 h-32 bg-harvest-400/20 rounded-full blur-2xl pointer-events-none" />
@@ -227,6 +233,7 @@ export default function AuthModal() {
           <span>Verileriniz tarayıcınızda ve hesabınızda güvenle saklanır.</span>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
