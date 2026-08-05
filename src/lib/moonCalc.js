@@ -34,53 +34,43 @@ export function getMoonPhase(date = new Date()) {
   // Phase Name and Symbol Determination
   let phaseName = "";
   let symbol = "";
-  let isGrowing = false;
-  let agricultureAdvice = "";
+  const isGrowing = lunarAge < 14.765;
 
   if (lunarAge < 1.84566) {
     phaseName = "Yeniay";
     symbol = "🌑";
-    isGrowing = true;
     agricultureAdvice = "Toprak nadas ve temizliği için ideal zaman. Ekim yapılmaz, fideler dinlendirilir.";
   } else if (lunarAge < 5.53699) {
     phaseName = "Hilal (Büyüyen Ay)";
     symbol = "🌒";
-    isGrowing = true;
     agricultureAdvice = "Toprak üstü ürünlerin (marul, ıspanak, lahana, tahıllar) ekimi ve fide dikimi için çok verimli dönemdir.";
   } else if (lunarAge < 9.22831) {
     phaseName = "İlk Dördün";
     symbol = "🌓";
-    isGrowing = true;
     agricultureAdvice = "Yapraklı bitkilerin ekimi ve meyve ağaçlarının aşılanması için ideal safhadır.";
   } else if (lunarAge < 12.91963) {
     phaseName = "Büyüyen Şişkinay";
     symbol = "🌔";
-    isGrowing = true;
     agricultureAdvice = "Meyveli sebzelerin (domates, biber, salatalık) ekim ve sulama işlemlerine devam edilir.";
   } else if (lunarAge < 16.61096) {
     phaseName = "Dolunay";
     symbol = "🌕";
-    isGrowing = false;
     agricultureAdvice = "Bitki özsuyunun en tepe noktada olduğu zamandır. Tıbbi ve aromatik bitki hasadı yapılır. Şartlar elveriyorsa sulama yapılır.";
   } else if (lunarAge < 20.30228) {
     phaseName = "Küçülen Şişkinay";
     symbol = "🌖";
-    isGrowing = false;
     agricultureAdvice = "Toprak altı kök ürünlerinin (patates, havuç, soğan, sarımsak, turp) ekimi ve dökümü yapılır.";
   } else if (lunarAge < 23.99361) {
     phaseName = "Son Dördün";
     symbol = "🌗";
-    isGrowing = false;
     agricultureAdvice = "Budama, çapa, yabani ot temizliği ve organik gübreleme için mükemmel bir dönemdir.";
   } else if (lunarAge < 27.68493) {
     phaseName = "Küçülen Hilal";
     symbol = "🌘";
-    isGrowing = false;
     agricultureAdvice = "Ağaç budamaları, kereste kesimi ve zararlılarla mücadele için tavsiye edilir.";
   } else {
     phaseName = "Yeniay Yaklaşımı";
     symbol = "🌑";
-    isGrowing = true;
     agricultureAdvice = "Toprak sürümü ve gübreleme hazırlanır.";
   }
 
