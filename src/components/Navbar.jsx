@@ -2,18 +2,35 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import { Calendar, Sprout, BookOpen, MapPin, Moon, Sun } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Calendar, Sprout, BookOpen, MapPin, Moon } from 'lucide-react';
 
 const CITIES = [
-  "Adana", "Ankara", "Antalya", "Bursa", "Diyarbakır", "Erzurum", 
-  "Gaziantep", "İstanbul", "İzmir", "Kayseri", "Konya", "Manisa", 
-  "Mersin", "Samsun", "Şanlıurfa", "Trabzon"
+  "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin",
+  "Aydın", "Balıkesir", "Bartın", "Batman", "Bayburt", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur",
+  "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Düzce", "Edirne", "Elazığ", "Erzincan",
+  "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Iğdır", "Isparta", "İstanbul",
+  "İzmir", "Kahramanmaraş", "Karabük", "Karaman", "Kars", "Kastamonu", "Kayseri", "Kırıkkale", "Kırklareli", "Kırşehir",
+  "Kilis", "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Mardin", "Mersin", "Muğla", "Muş",
+  "Nevşehir", "Niğde", "Ordu", "Osmaniye", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas",
+  "Şanlıurfa", "Şırnak", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Uşak", "Van", "Yalova", "Yozgat", "Zonguldak"
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const [selectedCity, setSelectedCity] = useState("Konya");
+
+  useEffect(() => {
+    const savedCity = localStorage.getItem('ata_takvimi_city');
+    if (savedCity && CITIES.includes(savedCity)) {
+      setSelectedCity(savedCity);
+    }
+  }, []);
+
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    localStorage.setItem('ata_takvimi_city', city);
+  };
 
   const navItems = [
     { href: '/', label: 'Takvim Akışı', icon: Calendar },
@@ -59,11 +76,11 @@ export default function Navbar() {
         </nav>
 
         {/* City Selector */}
-        <div className="flex items-center gap-2 bg-white/80 px-3 py-1.5 rounded-xl border border-forest-800/15 text-xs text-forest-900">
+        <div className="flex items-center gap-2 bg-white/80 px-3 py-1.5 rounded-xl border border-forest-800/15 text-xs text-forest-900 shadow-sm">
           <MapPin className="w-4 h-4 text-terracotta-500 shrink-0" />
           <select
             value={selectedCity}
-            onChange={(e) => setSelectedCity(e.target.value)}
+            onChange={(e) => handleCityChange(e.target.value)}
             className="bg-transparent outline-none font-medium cursor-pointer"
           >
             {CITIES.map(city => (
