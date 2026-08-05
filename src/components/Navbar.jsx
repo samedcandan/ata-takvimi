@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Calendar, Sprout, BookOpen, MapPin, Moon, LogIn, LogOut, User, ShieldCheck } from 'lucide-react';
+import { Calendar, Sprout, BookOpen, MapPin, Moon, LogIn, LogOut, User, ShieldCheck, Sparkles, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
+import SubscriptionModal from './SubscriptionModal';
 
 const CITIES = [
   "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin",
@@ -22,7 +23,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [selectedCity, setSelectedCity] = useState("Konya");
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const { user, logout, setShowAuthModal } = useAuth();
+  const { user, logout, setShowAuthModal, setShowSubModal, hasActiveSubscription } = useAuth();
 
   useEffect(() => {
     const savedCity = localStorage.getItem('ata_takvimi_city');
@@ -79,15 +80,30 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Right Controls: City Selector & User Auth */}
+        {/* Right Controls: Subscription Badge, City Selector & User Auth */}
         <div className="flex items-center gap-2">
+          {/* Subscription Button Badge */}
+          <button
+            onClick={() => setShowSubModal(true)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-transform hover:scale-105 shrink-0 ${
+              hasActiveSubscription
+                ? 'bg-emerald-500 text-white'
+                : 'badge-gold text-forest-900 border border-harvest-400'
+            }`}
+          >
+            <Star className="w-3.5 h-3.5 fill-current text-amber-300" />
+            <span className="hidden sm:inline-block">
+              {hasActiveSubscription ? 'Aktif Abone' : 'Abone Ol'}
+            </span>
+          </button>
+
           {/* City Selector */}
           <div className="flex items-center gap-1.5 bg-white/80 px-2.5 py-1.5 rounded-xl border border-forest-800/15 text-xs text-forest-900 shadow-sm">
             <MapPin className="w-3.5 h-3.5 text-terracotta-500 shrink-0" />
             <select
               value={selectedCity}
               onChange={(e) => handleCityChange(e.target.value)}
-              className="bg-transparent outline-none font-medium cursor-pointer max-w-[90px] sm:max-w-none"
+              className="bg-transparent outline-none font-medium cursor-pointer max-w-[85px] sm:max-w-none"
             >
               {CITIES.map(city => (
                 <option key={city} value={city}>{city}</option>
@@ -107,26 +123,42 @@ export default function Navbar() {
                   alt={user.name}
                   className="w-8 h-8 rounded-xl object-cover bg-forest-100 border border-forest-500/20"
                 />
-                <span className="text-xs font-bold text-forest-900 max-w-[100px] truncate hidden sm:inline-block">
+                <span className="text-xs font-bold text-forest-900 max-w-[90px] truncate hidden sm:inline-block">
                   {user.name}
                 </span>
               </button>
 
               {/* User Dropdown Menu */}
               {showUserDropdown && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl border border-forest-800/15 shadow-xl p-3 z-50 text-xs space-y-2">
+                <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl border border-forest-800/15 shadow-xl p-3 z-50 text-xs space-y-2">
                   <div className="border-b border-forest-800/10 pb-2 flex items-center gap-2.5">
                     <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-xl bg-forest-50" />
                     <div className="overflow-hidden">
                       <p className="font-bold text-forest-900 truncate">{user.name}</p>
                       <p className="text-[10px] text-forest-800/60 truncate">{user.email}</p>
-                      {user.provider === 'google' && (
-                        <span className="text-[9px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold inline-block mt-0.5">
-                          Google Hesabı
+                      <div className="flex items-center gap-1 mt-1">
+                        {user.provider === 'google' && (
+                          <span className="text-[9px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">
+                            Google
+                          </span>
+                        )}
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${hasActiveSubscription ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                          {hasActiveSubscription ? '⭐ PRO Çiftçi' : 'Ücretsiz Deneme'}
                         </span>
-                      )}
+                      </div>
                     </div>
                   </div>
+
+                  <button
+                    onClick={() => {
+                      setShowSubModal(true);
+                      setShowUserDropdown(false);
+                    }}
+                    className="w-full flex items-center gap-2 p-2 rounded-xl text-forest-900 font-bold hover:bg-forest-50 transition-colors text-left"
+                  >
+                    <Sparkles className="w-4 h-4 text-harvest-500" />
+                    Aboneliğimi Yönet / Yenile
+                  </button>
 
                   <Link
                     href="/tarlam"
@@ -142,7 +174,7 @@ export default function Navbar() {
                       logout();
                       setShowUserDropdown(false);
                     }}
-                    className="w-full flex items-center gap-2 p-2 rounded-xl text-red-600 font-bold hover:bg-red-50 transition-colors text-left"
+                    className="w-full flex items-center gap-2 p-2 rounded-xl text-red-600 font-bold hover:bg-red-50 transition-colors text-left border-t border-forest-800/10 pt-2"
                   >
                     <LogOut className="w-4 h-4" />
                     Çıkış Yap
@@ -182,8 +214,9 @@ export default function Navbar() {
         })}
       </div>
 
-      {/* Auth Modal Component */}
+      {/* Auth Modal & Subscription Modal Components */}
       <AuthModal />
+      <SubscriptionModal />
     </header>
   );
 }

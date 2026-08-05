@@ -4,17 +4,24 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext({
   user: null,
+  loading: true,
   loginWithGoogle: () => {},
   loginWithEmail: () => {},
   registerWithEmail: () => {},
   logout: () => {},
+  activateSubscription: () => {},
+  cancelSubscription: () => {},
+  hasActiveSubscription: false,
   showAuthModal: false,
-  setShowAuthModal: () => {}
+  setShowAuthModal: () => {},
+  showSubModal: false,
+  setShowSubModal: () => {}
 });
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showSubModal, setShowSubModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Load user session from localStorage on mount
@@ -36,6 +43,54 @@ export function AuthProvider({ children }) {
     window.dispatchEvent(new Event('storage'));
   };
 
+  // Check if current user has an active subscription
+  const hasActiveSubscription = Boolean(user && user.subscription && user.subscription.active);
+
+  // Activate Subscription
+  const activateSubscription = (planName = 'Yıllık Ata Çiftçisi Paketi', licenseCode = 'ATA2026') => {
+    if (!user) {
+      setShowAuthModal(true);
+      return false;
+    }
+
+    const expiryDate = new Date();
+    if (planName.includes('Yıllık')) {
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+    } else {
+      expiryDate.setMonth(expiryDate.getMonth() + 1);
+    }
+
+    const updatedUser = {
+      ...user,
+      subscription: {
+        active: true,
+        planName: planName,
+        licenseCode: licenseCode,
+        activatedAt: new Date().toISOString(),
+        expiresAt: expiryDate.toISOString()
+      }
+    };
+
+    saveUserSession(updatedUser);
+    setShowSubModal(false);
+    return true;
+  };
+
+  // Cancel Subscription
+  const cancelSubscription = () => {
+    if (!user) return;
+    const updatedUser = {
+      ...user,
+      subscription: {
+        active: false,
+        planName: null,
+        licenseCode: null,
+        expiresAt: null
+      }
+    };
+    saveUserSession(updatedUser);
+  };
+
   // 1. Google OAuth / One-Tap & Direct Google Sign-In
   const loginWithGoogle = async (googleData = null) => {
     let googleUser;
@@ -47,10 +102,10 @@ export function AuthProvider({ children }) {
         email: googleData.email,
         avatar: googleData.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(googleData.email)}`,
         provider: 'google',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        subscription: { active: true, planName: 'Ön Tanımlı Deneme Aboneliği', licenseCode: 'GOOGLE-SUB' }
       };
     } else {
-      // Direct Google Auth Helper
       const randomId = Math.floor(Math.random() * 10000);
       googleUser = {
         id: `google-${Date.now()}`,
@@ -58,7 +113,8 @@ export function AuthProvider({ children }) {
         email: `kullanici${randomId}@gmail.com`,
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=GoogleUser${randomId}`,
         provider: 'google',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        subscription: { active: true, planName: 'Ata Çiftçisi Paketi', licenseCode: 'GOOGLE-SUB' }
       };
     }
 
@@ -77,7 +133,8 @@ export function AuthProvider({ children }) {
       email: email,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
       provider: 'email',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      subscription: { active: true, planName: 'Ata Çiftçisi Paketi', licenseCode: 'EMAIL-SUB' }
     };
 
     saveUserSession(emailUser);
@@ -94,7 +151,8 @@ export function AuthProvider({ children }) {
       email: email,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`,
       provider: 'email',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      subscription: { active: true, planName: 'Yıllık Ata Çiftçisi Paketi', licenseCode: 'REG-2026' }
     };
 
     saveUserSession(newUser);
@@ -118,8 +176,13 @@ export function AuthProvider({ children }) {
         loginWithEmail,
         registerWithEmail,
         logout,
+        activateSubscription,
+        cancelSubscription,
+        hasActiveSubscription,
         showAuthModal,
-        setShowAuthModal
+        setShowAuthModal,
+        showSubModal,
+        setShowSubModal
       }}
     >
       {children}
