@@ -1,0 +1,15 @@
+{
+  "appId": "com.karneyn.atatakvimi",
+  "appName": "Ata Takvimi",
+  "webDir": "public",
+  "server": {
+    "url": "https://atatakvimi.karneyn.com",
+    "cleartext": true
+  },
+  "plugins": {
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#071A10"
+    }
+  }
+}
