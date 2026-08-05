@@ -57,8 +57,8 @@ export default function SubscriptionModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl p-6 md:p-8 max-w-2xl w-full border border-forest-800/20 shadow-2xl space-y-6 relative overflow-hidden max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-3 md:p-4 overflow-y-auto">
+      <div className="bg-white rounded-3xl p-5 md:p-6 max-w-2xl w-full border border-forest-800/20 shadow-2xl space-y-4 relative overflow-y-auto max-h-[calc(100vh-2rem)] my-auto">
         {/* Ambient Glow */}
         <div className="absolute -top-20 -right-20 w-48 h-48 bg-harvest-400/25 rounded-full blur-3xl pointer-events-none" />
 

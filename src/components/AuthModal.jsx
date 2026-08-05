@@ -53,8 +53,8 @@ export default function AuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full border border-forest-800/20 shadow-2xl space-y-5 relative overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-3 md:p-4 overflow-y-auto">
+      <div className="bg-white rounded-3xl p-5 md:p-6 max-w-md w-full border border-forest-800/20 shadow-2xl space-y-4 relative overflow-y-auto max-h-[calc(100vh-2rem)] my-auto">
         {/* Decorative ambient blur */}
         <div className="absolute -top-12 -right-12 w-32 h-32 bg-harvest-400/20 rounded-full blur-2xl pointer-events-none" />
 

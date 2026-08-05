@@ -256,8 +256,8 @@ export default function MyFieldNotesPage() {
 
       {/* Add Modal Form */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full border border-forest-800/20 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 md:p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full border border-forest-800/20 shadow-2xl space-y-4 max-h-[calc(100vh-2rem)] overflow-y-auto my-auto">
             <div className="flex items-center justify-between border-b border-forest-800/10 pb-3">
               <h3 className="text-xl font-serif font-bold text-forest-900 flex items-center gap-2">
                 <Plus className="w-5 h-5 text-harvest-500" />
