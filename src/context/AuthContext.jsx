@@ -21,6 +21,15 @@ const AuthContext = createContext({
   setShowSubModal: () => {}
 });
 
+// Known Admin Emails for Auto Unlimited VIP Access
+const ADMIN_EMAILS = [
+  'info@karneyn.com',
+  'samed.cndn@hotmail.com',
+  'samedcandan@gmail.com',
+  'admin@karneyn.com',
+  'karneyn@karneyn.com'
+];
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -83,7 +92,11 @@ export function AuthProvider({ children }) {
     }
 
     const expiryDate = new Date();
-    expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 1 Year
+    if (licenseCode && licenseCode.toUpperCase().includes('KARNEYN')) {
+      expiryDate.setFullYear(2099); // Unlimited for Karneyn Admin
+    } else {
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 1 Year
+    }
 
     const updatedUser = {
       ...user,
@@ -118,10 +131,25 @@ export function AuthProvider({ children }) {
     saveUserSession(updatedUser);
   };
 
-  // Create default 2-day trial structure
-  const create2DayTrialSubscription = () => {
+  // Helper to create subscription based on email
+  const createSubscriptionForUser = (email) => {
+    const isMasterAdmin = ADMIN_EMAILS.includes(email.toLowerCase()) || email.toLowerCase().includes('karneyn');
+    
+    if (isMasterAdmin) {
+      const adminExpiry = new Date('2099-12-31T23:59:59.000Z');
+      return {
+        active: true,
+        isTrial: false,
+        planName: 'Karneyn Yazılım VIP Sınırsız Admin Aboneliği',
+        licenseCode: 'KARNEYN-MASTER-ADMIN',
+        activatedAt: new Date().toISOString(),
+        expiresAt: adminExpiry.toISOString()
+      };
+    }
+
+    // Default 2-Day Trial for regular users
     const trialExpiry = new Date();
-    trialExpiry.setDate(trialExpiry.getDate() + 2); // 2 Days Trial
+    trialExpiry.setDate(trialExpiry.getDate() + 2);
     return {
       active: true,
       isTrial: true,
@@ -135,6 +163,7 @@ export function AuthProvider({ children }) {
   // 1. Google OAuth Sign-In
   const loginWithGoogle = async (googleData = null) => {
     let googleUser;
+    const email = googleData && googleData.email ? googleData.email : 'kullanici@gmail.com';
 
     if (googleData && googleData.email) {
       googleUser = {
@@ -144,7 +173,7 @@ export function AuthProvider({ children }) {
         avatar: googleData.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(googleData.email)}`,
         provider: 'google',
         createdAt: new Date().toISOString(),
-        subscription: create2DayTrialSubscription()
+        subscription: createSubscriptionForUser(googleData.email)
       };
     } else {
       const randomId = Math.floor(Math.random() * 10000);
@@ -155,7 +184,7 @@ export function AuthProvider({ children }) {
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=GoogleUser${randomId}`,
         provider: 'google',
         createdAt: new Date().toISOString(),
-        subscription: create2DayTrialSubscription()
+        subscription: createSubscriptionForUser(`kullanici${randomId}@gmail.com`)
       };
     }
 
@@ -175,7 +204,7 @@ export function AuthProvider({ children }) {
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
       provider: 'email',
       createdAt: new Date().toISOString(),
-      subscription: create2DayTrialSubscription()
+      subscription: createSubscriptionForUser(email)
     };
 
     saveUserSession(emailUser);
@@ -183,7 +212,7 @@ export function AuthProvider({ children }) {
     return emailUser;
   };
 
-  // 3. Email Registration (With 2-Day Trial)
+  // 3. Email Registration
   const registerWithEmail = (name, email, password) => {
     if (!name || !email) throw new Error('Tüm alanları doldurunuz.');
     const newUser = {
@@ -193,7 +222,7 @@ export function AuthProvider({ children }) {
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`,
       provider: 'email',
       createdAt: new Date().toISOString(),
-      subscription: create2DayTrialSubscription()
+      subscription: createSubscriptionForUser(email)
     };
 
     saveUserSession(newUser);

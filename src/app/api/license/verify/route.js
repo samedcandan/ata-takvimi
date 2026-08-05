@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 
 const VALID_CODES = {
+  'KARNEYN-ADMIN': { planName: 'Karneyn Yazılım Kurucu Sınırsız VIP Lisansı', years: 100 },
+  'KARNEYN2026': { planName: 'Karneyn VIP Sınırsız Admin Lisansı', years: 100 },
+  'KARNEYN': { planName: 'Karneyn Kurumsal Sınırsız VIP Lisansı', years: 100 },
   'ATA2026': { planName: 'Ata Çiftçisi Yıllık Lisans (Promosyon)', months: 12 },
-  'KARNEYN': { planName: 'Karneyn VIP Lisansı', months: 12 },
   'CIFTCI300': { planName: 'Ata Çiftçisi Yıllık Paketi', months: 12 },
   'HASAT2026': { planName: 'Hasat Dönemi Özel Lisansı', months: 12 },
   'DENEME2': { planName: '2 Gün Ek Deneme Lisansı', days: 2 }
@@ -21,7 +23,9 @@ export async function POST(request) {
     if (found) {
       const now = new Date();
       const expiresAt = new Date(now);
-      if (found.months) {
+      if (found.years) {
+        expiresAt.setFullYear(expiresAt.getFullYear() + found.years);
+      } else if (found.months) {
         expiresAt.setMonth(expiresAt.getMonth() + found.months);
       } else if (found.days) {
         expiresAt.setDate(expiresAt.getDate() + found.days);
