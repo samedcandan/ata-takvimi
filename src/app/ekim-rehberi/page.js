@@ -8,12 +8,14 @@ export default function CropsGuidePage() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Hepsi');
 
-  const categories = ['Hepsi', 'Tahıl', 'Sebze', 'Kök Sebze', 'Meyve & Sert Kabuklu', 'Endüstri Bitkisi'];
+  const categories = ['Hepsi', 'Tahıl & Baklagil', 'Sebze', 'Kök Sebze', 'Yeşillik & Tıbbi Otlar', 'Meyve & Sert Kabuklu', 'Endüstri Bitkisi'];
 
   const filteredCrops = CROPS_GUIDE.filter(crop => {
     const matchesSearch = crop.name.toLowerCase().includes(search.toLowerCase()) ||
                           crop.careTips.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = selectedCategory === 'Hepsi' || crop.category.includes(selectedCategory);
+    const matchesCategory = selectedCategory === 'Hepsi' || 
+                            crop.category.includes(selectedCategory) ||
+                            selectedCategory.includes(crop.category);
     return matchesSearch && matchesCategory;
   });
 
