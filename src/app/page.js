@@ -23,42 +23,51 @@ function getEventsFromToday() {
   const today = new Date();
   const currentMonth = today.getMonth() + 1;
   const currentDay = today.getDate();
+  const currentYear = today.getFullYear();
 
-  // Only future events: from today onwards (same year only)
-  const futureEvents = HALK_TAKVIMI_EVENTS.filter(
+  // This year: from today onwards
+  const futureThisYear = HALK_TAKVIMI_EVENTS.filter(
     e => e.month > currentMonth || (e.month === currentMonth && e.day >= currentDay)
-  );
+  ).map(e => ({ ...e, year: currentYear }));
 
-  // Add computed days remaining
-  const enriched = futureEvents.map(event => {
-    const eventDate = new Date(today.getFullYear(), event.month - 1, event.day);
+  // Next year: from January until today's date (wraps the cycle)
+  const nextYear = HALK_TAKVIMI_EVENTS.filter(
+    e => e.month < currentMonth || (e.month === currentMonth && e.day < currentDay)
+  ).map(e => ({ ...e, year: currentYear + 1 }));
+
+  const all = [...futureThisYear, ...nextYear];
+
+  return all.map(event => {
+    const eventDate = new Date(event.year, event.month - 1, event.day);
     const diffTime = eventDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return {
       ...event,
       diffDays,
       isToday: diffDays === 0,
-      dateLabel: `${event.day} ${MONTHS[event.month - 1]}`,
+      dateLabel: `${event.day} ${MONTHS[event.month - 1]} ${event.year}`,
     };
   });
-
-  return enriched;
 }
 
 function groupByMonth(events) {
   const groups = {};
+  const order = [];
   events.forEach(e => {
-    const key = `${MONTHS[e.month - 1]}`;
-    if (!groups[key]) groups[key] = [];
+    const key = `${MONTHS[e.month - 1]} ${e.year}`;
+    if (!groups[key]) {
+      groups[key] = [];
+      order.push(key);
+    }
     groups[key].push(e);
   });
-  return groups;
+  return { groups, order };
 }
 
 export default function HomePage() {
   const [events] = useState(() => getEventsFromToday());
   const todayRef = useRef(null);
-  const grouped = groupByMonth(events);
+  const { groups, order } = groupByMonth(events);
 
   useEffect(() => {
     // Scroll to the first (today/nearest) event
@@ -120,15 +129,17 @@ export default function HomePage() {
       </div>
 
       {/* Timeline */}
-      {Object.entries(grouped).map(([monthName, monthEvents]) => (
-        <div key={monthName} className="space-y-3">
-          {/* Month Header */}
-          <div className="sticky top-16 z-10 flex items-center gap-3 py-2">
-            <div className="bg-forest-800 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-md">
-              {monthName}
+      {order.map((monthName) => {
+        const monthEvents = groups[monthName];
+        return (
+          <div key={monthName} className="space-y-3">
+            {/* Month Header */}
+            <div className="sticky top-16 z-10 flex items-center gap-3 py-2">
+              <div className="bg-forest-800 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-md">
+                {monthName}
+              </div>
+              <div className="flex-1 h-px bg-forest-800/20" />
             </div>
-            <div className="flex-1 h-px bg-forest-800/20" />
-          </div>
 
           {/* Events */}
           {monthEvents.map((event, idx) => {
@@ -178,8 +189,9 @@ export default function HomePage() {
               </div>
             );
           })}
-        </div>
-      ))}
+          </div>
+        );
+      })}
     </div>
   );
 }
