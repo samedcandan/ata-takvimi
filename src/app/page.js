@@ -5,6 +5,7 @@ import { HALK_TAKVIMI_EVENTS } from '../data/halk-takvimi';
 import { getLunarMilestoneEvents } from '../lib/moonCalc';
 import MoonIcon from '../components/MoonIcon';
 import GlassIcon from '../components/GlassIcon';
+import WeatherCard from '../components/WeatherCard';
 import { Calendar, ChevronDown, Sparkles } from 'lucide-react';
 
 const MONTHS = [
@@ -149,6 +150,9 @@ export default function HomePage() {
           <span>Tüm takvimi aşağıda inceleyin</span>
         </div>
       </div>
+
+      {/* 3-Day Agricultural Weather Forecast */}
+      <WeatherCard />
 
       {/* Timeline */}
       {order.map((monthName) => {
