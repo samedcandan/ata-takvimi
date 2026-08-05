@@ -2,34 +2,31 @@
 
 /**
  * 100% Astronomically Accurate 3D Glassmorphic Moon Renderer
- * Uses SVG Masking for smooth, pixel-perfect, unbreakable moon phase shading.
+ * Uses SVG Masking for smooth, daily-changing, unbreakable moon phase shading.
+ * Renders distinct visual illumination for every single day from 0% to 100%.
  */
 export default function MoonIcon({ illumination = 50, isGrowing = true, phaseName = "", size = 28, className = "" }) {
   const idSuffix = Math.random().toString(36).substr(2, 5);
 
+  // illumination is 0..100
   const pct = Math.max(0, Math.min(100, illumination)) / 100;
-  const isFull = pct > 0.97;
-  const isNew = pct < 0.03;
 
   const r = 20;
   const cx = 24;
   const cy = 24;
 
-  // Mask Construction:
-  // rx = r * |1 - 2 * pct|
-  // If pct >= 0.5: Ellipse is WHITE (adds light to the opposite side)
-  // If pct < 0.5: Ellipse is BLACK (subtracts light from the same side)
-  
-  const absOffset = Math.abs(1 - 2 * pct);
-  const rx = Math.max(0.1, r * absOffset);
+  // Precise phase curvature ellipse semi-axis rx (0 at 50% quarter, r at 0% new or 100% full):
+  const rx = r * Math.abs(1 - 2 * pct);
 
-  // Semicircle base for white mask:
-  // isGrowing = true -> Right Semicircle
-  // isGrowing = false -> Left Semicircle
+  // Northern Hemisphere (Turkey):
+  // Growing (isGrowing = true): Light is on RIGHT side -> Right Semicircle
+  // Waning (isGrowing = false): Light is on LEFT side -> Left Semicircle
   const semiCircleD = isGrowing
     ? `M ${cx} ${cy - r} A ${r} ${r} 0 0 1 ${cx} ${cy + r} Z` // Right Semicircle
     : `M ${cx} ${cy - r} A ${r} ${r} 0 0 0 ${cx} ${cy + r} Z`; // Left Semicircle
 
+  // If pct < 0.5 (Crescent): Ellipse SUBTRACTS light from semicircle (fill = "black")
+  // If pct >= 0.5 (Gibbous): Ellipse ADDS light to opposite side (fill = "white")
   const ellipseFill = pct >= 0.5 ? "white" : "black";
 
   return (
@@ -67,22 +64,17 @@ export default function MoonIcon({ illumination = 50, isGrowing = true, phaseNam
             <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
           </linearGradient>
 
-          {/* SVG Phase Mask for 100% smooth moon illumination */}
+          {/* SVG Phase Mask for continuous, daily-changing moon illumination */}
           <mask id={`moonPhaseMask-${idSuffix}`}>
             {/* Background: Black */}
             <rect x="0" y="0" width="48" height="48" fill="black" />
             
-            {isFull ? (
-              <circle cx={cx} cy={cy} r={r} fill="white" />
-            ) : isNew ? (
-              null
-            ) : (
-              <>
-                {/* Semicircle (Right if growing, Left if waning) */}
-                <path d={semiCircleD} fill="white" />
-                {/* Ellipse to add/subtract phase curvature */}
-                <ellipse cx={cx} cy={cy} rx={rx} ry={r} fill={ellipseFill} />
-              </>
+            {/* Semicircle (Right if growing, Left if waning) */}
+            <path d={semiCircleD} fill="white" />
+            
+            {/* Curvature Ellipse (subtracts when crescent, adds when gibbous) */}
+            {rx > 0.05 && (
+              <ellipse cx={cx} cy={cy} rx={rx} ry={r} fill={ellipseFill} />
             )}
           </mask>
         </defs>
@@ -107,7 +99,7 @@ export default function MoonIcon({ illumination = 50, isGrowing = true, phaseNam
         <circle cx="30" cy="17" r="2.5" fill="#0f172a" opacity="0.5" />
 
         {/* 2. Illuminated Moon Phase Surface (Masked) */}
-        {!isNew && (
+        {pct > 0.01 && (
           <circle 
             cx={cx} 
             cy={cy} 
@@ -118,7 +110,7 @@ export default function MoonIcon({ illumination = 50, isGrowing = true, phaseNam
         )}
 
         {/* Lit Side Craters Overlay */}
-        {!isNew && (
+        {pct > 0.01 && (
           <g opacity="0.18" mask={`url(#moonPhaseMask-${idSuffix})`}>
             <circle cx="17" cy="19" r="3" fill="#78350f" />
             <circle cx="27" cy="29" r="4" fill="#78350f" />
