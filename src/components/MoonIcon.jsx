@@ -11,8 +11,9 @@ export default function MoonIcon({ illumination = 50, linearIllumination, isGrow
   const effectiveIllumination = typeof linearIllumination === 'number' ? linearIllumination : illumination;
   const pct = Math.max(0, Math.min(100, effectiveIllumination)) / 100;
 
-  const isFull = pct > 0.98;
-  const isNew = pct < 0.02;
+  // Exact 100% Full Moon (Dolunay) and 0% Dark Moon (Karanlık Ay) checks
+  const isFull = pct >= 0.99;
+  const isNew = pct <= 0.01;
 
   const r = 20;
   const cx = 24;
@@ -68,9 +69,7 @@ export default function MoonIcon({ illumination = 50, linearIllumination, isGrow
             ) : (
               <>
                 <path d={semiCircleD} fill="white" />
-                {rx > 0.05 && (
-                  <ellipse cx={cx} cy={cy} rx={rx} ry={r} fill={ellipseFill} />
-                )}
+                <ellipse cx={cx} cy={cy} rx={rx} ry={r} fill={ellipseFill} />
               </>
             )}
           </mask>
@@ -85,25 +84,29 @@ export default function MoonIcon({ illumination = 50, linearIllumination, isGrow
           strokeWidth="1" 
         />
 
+        {/* 1. Base Dark Moon Sphere (Night side) */}
         <circle cx={cx} cy={cy} r={r} fill={`url(#darkMoon-${idSuffix})`} />
 
+        {/* Dark Side Craters */}
         <circle cx="17" cy="19" r="3" fill="#0f172a" opacity="0.6" />
         <circle cx="27" cy="29" r="4" fill="#0f172a" opacity="0.5" />
         <circle cx="21" cy="31" r="2" fill="#0f172a" opacity="0.6" />
         <circle cx="30" cy="17" r="2.5" fill="#0f172a" opacity="0.5" />
 
+        {/* 2. Illuminated Moon Phase Surface */}
         {!isNew && (
           <circle 
             cx={cx} 
             cy={cy} 
             r={r} 
             fill={`url(#lightMoon-${idSuffix})`}
-            mask={`url(#moonPhaseMask-${idSuffix})`}
+            mask={isFull ? undefined : `url(#moonPhaseMask-${idSuffix})`}
           />
         )}
 
+        {/* Lit Side Craters Overlay */}
         {!isNew && (
-          <g opacity="0.18" mask={`url(#moonPhaseMask-${idSuffix})`}>
+          <g opacity="0.18" mask={isFull ? undefined : `url(#moonPhaseMask-${idSuffix})`}>
             <circle cx="17" cy="19" r="3" fill="#78350f" />
             <circle cx="27" cy="29" r="4" fill="#78350f" />
             <circle cx="21" cy="31" r="2" fill="#78350f" />
@@ -111,6 +114,7 @@ export default function MoonIcon({ illumination = 50, linearIllumination, isGrow
           </g>
         )}
 
+        {/* 3. Glassmorphic Surface Reflection Gloss */}
         <ellipse 
           cx={cx} 
           cy={cy - 7} 
@@ -120,6 +124,7 @@ export default function MoonIcon({ illumination = 50, linearIllumination, isGrow
           transform={`rotate(-20 ${cx} ${cy - 7})`}
         />
 
+        {/* 4. Glass Rim Highlight */}
         <circle 
           cx={cx} 
           cy={cy} 

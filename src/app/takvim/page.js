@@ -132,17 +132,17 @@ export default function CalendarPage() {
                 {/* Event & Lunar Markers */}
                 <div className="space-y-1 w-full overflow-hidden">
                   {/* Lunar Milestone Badge */}
-                  {moon.phaseName.includes("Dolunay") && moon.illumination >= 98 && (
+                  {moon.phaseName.includes("Dolunay") && (
                     <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-amber-400 text-amber-950 truncate">
                       🌕 Dolunay
                     </div>
                   )}
-                  {moon.lunarAge >= 0 && moon.lunarAge < 1.2 && (
+                  {moon.phaseName.includes("Yeni Ay") && (
                     <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-emerald-500 text-white truncate">
                       🌒 Yeni Ay
                     </div>
                   )}
-                  {moon.lunarAge >= 26.53 && (
+                  {moon.phaseName.includes("Karanlık Ay") && (
                     <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-slate-800 text-slate-200 truncate">
                       🌑 Karanlık Ay
                     </div>
