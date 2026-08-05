@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Sparkles, CheckCircle2, ShieldCheck, ArrowRight, Sun, Calendar, BookOpen, Sprout, LogIn, Award, Star, Lock } from 'lucide-react';
 import GlassIcon from './GlassIcon';
+import AuthModal from './AuthModal';
+import SubscriptionModal from './SubscriptionModal';
 
 export default function LandingGate() {
   const { setShowAuthModal, setShowSubModal, registerWithEmail, user } = useAuth();
@@ -192,14 +194,21 @@ export default function LandingGate() {
               {/* Direct Purchase Button */}
               <div className="pt-1 text-center space-y-2">
                 <button
-                  onClick={() => setShowAuthModal(true)}
+                  onClick={() => setShowSubModal(true)}
                   className="w-full py-3 rounded-xl bg-emerald-700/50 hover:bg-emerald-600/60 border border-emerald-400/40 text-white font-bold text-xs backdrop-blur-md transition-all flex items-center justify-center gap-2"
                 >
                   <Award className="w-4 h-4 text-harvest-400" />
-                  <span>Zaten Aboneyim / Giriş Yap</span>
+                  <span>Doğrudan ₺300 / Yıl İle Abone Ol</span>
+                </button>
+
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="text-[11px] text-emerald-300 hover:text-harvest-400 font-bold underline transition-colors"
+                >
+                  Zaten Hesabım Var — Giriş Yap
                 </button>
                 
-                <p className="text-[10px] text-emerald-300/80 flex items-center justify-center gap-1">
+                <p className="text-[10px] text-emerald-300/80 flex items-center justify-center gap-1 pt-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                   <span>256-Bit SSL & İyzico Güvenli Ödeme Altyapısı</span>
                 </p>
@@ -215,6 +224,10 @@ export default function LandingGate() {
       <footer className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 text-center text-xs text-emerald-400/80 border-t border-emerald-500/15 z-10 shrink-0 bg-[#071a10]">
         <p>© 2026 Ata Takvimi — Bir Karneyn Yazılım Hizmetleri Ltd. Şti. Ürünüdür.</p>
       </footer>
+
+      {/* Auth & Subscription Modals rendered directly inside LandingGate */}
+      <AuthModal />
+      <SubscriptionModal />
     </div>
   );
 }
