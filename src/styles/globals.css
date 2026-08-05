@@ -4,10 +4,10 @@
 
 :root {
   --bg-primary: #f8f7f2;
-  --text-primary: #1c2723;
+  --text-primary: #14532d;
   --card-bg: rgba(255, 255, 255, 0.85);
-  --card-border: rgba(15, 56, 44, 0.12);
-  --emerald-accent: #0f382c;
+  --card-border: rgba(34, 181, 88, 0.15);
+  --emerald-accent: #22b558;
   --harvest-gold: #e5a93c;
 }
 
@@ -17,31 +17,32 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(229, 169, 60, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(15, 56, 44, 0.05) 0%, transparent 40%);
+    radial-gradient(circle at 10% 20%, rgba(229, 169, 60, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(34, 181, 88, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(110, 223, 154, 0.03) 0%, transparent 60%);
 }
 
 /* Glassmorphism Cards */
 .glass-card {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(15, 56, 44, 0.12);
-  box-shadow: 0 8px 32px 0 rgba(15, 56, 44, 0.06);
+  border: 1px solid rgba(34, 181, 88, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(34, 181, 88, 0.06);
 }
 
 .glass-card-dark {
-  background: rgba(15, 56, 44, 0.95);
+  background: linear-gradient(135deg, #15803d 0%, #166534 50%, #14532d 100%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(229, 169, 60, 0.2);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(110, 223, 154, 0.25);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(110, 223, 154, 0.1);
   color: #f8f7f2;
 }
 
 /* Moon Phase Glow Effect */
 .moon-glow {
-  box-shadow: 0 0 25px rgba(229, 169, 60, 0.4);
+  box-shadow: 0 0 25px rgba(229, 169, 60, 0.4), 0 0 50px rgba(229, 169, 60, 0.15);
 }
 
 /* Custom Scrollbar */
@@ -51,30 +52,37 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 56, 44, 0.05);
+  background: rgba(34, 181, 88, 0.05);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(15, 56, 44, 0.25);
+  background: rgba(34, 181, 88, 0.3);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(15, 56, 44, 0.45);
+  background: rgba(34, 181, 88, 0.5);
 }
 
 /* Badge Gradients */
 .badge-gold {
-  background: linear-gradient(135deg, #e5a93c 0%, #c78a22 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, #f3be53 0%, #e5a93c 100%);
+  color: #14532d;
+  font-weight: 600;
 }
 
 .badge-forest {
-  background: linear-gradient(135deg, #0f382c 0%, #1b6347 100%);
+  background: linear-gradient(135deg, #22b558 0%, #15803d 100%);
   color: #ffffff;
+  box-shadow: 0 4px 12px rgba(34, 181, 88, 0.3);
 }
 
 .badge-terracotta {
   background: linear-gradient(135deg, #c86d4b 0%, #a85031 100%);
   color: #ffffff;
+}
+
+/* Spring Green Glow for interactive elements */
+.spring-glow:hover {
+  box-shadow: 0 4px 20px rgba(34, 181, 88, 0.25);
 }
