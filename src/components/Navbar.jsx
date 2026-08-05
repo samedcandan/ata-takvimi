@@ -27,8 +27,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-forest-500 to-forest-800 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
-            <Sprout className="w-6 h-6" />
+          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-md group-hover:scale-105 transition-transform">
+            <img src="/icon-192.png" alt="Ata Takvimi" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="font-serif font-bold text-lg leading-tight text-forest-900 flex items-center gap-1">
