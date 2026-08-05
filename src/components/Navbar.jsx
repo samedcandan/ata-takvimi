@@ -19,7 +19,7 @@ export default function Navbar() {
     { href: '/', label: 'Takvim Akışı', icon: Calendar },
     { href: '/takvim', label: 'Ay Takvimi', icon: Moon },
     { href: '/ekim-rehberi', label: 'Ekim Rehberi', icon: Sprout },
-    { href: '/tarlam', label: 'Tarlam & Notlar', icon: BookOpen },
+    { href: '/tarlam', label: 'Bitkilerim & Notlar', icon: BookOpen },
   ];
 
   return (

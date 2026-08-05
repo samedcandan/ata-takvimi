@@ -108,7 +108,7 @@ export default function MyFieldNotesPage() {
             <span>Ata Ajandası</span>
           </div>
           <h1 className="text-3xl font-serif font-bold text-forest-900 leading-tight">
-            Bitkilerim & Bahçe Ajandam
+            Bitkilerim & Notlar
           </h1>
           <p className="text-sm text-forest-800/80 mt-1">
             Bahçenizde ve tarlanızda yetiştirdiğiniz bitkileri seçin, ekim tarihlerini ve gübre notlarınızı kaydedin.
