@@ -121,7 +121,7 @@ export default function HomePage() {
             fieldName: note.fieldName,
             cropName: note.cropName
           };
-        }).filter(Boolean);
+        }).filter(note => note && note.diffDays >= 0);
       } catch (e) {
         console.error(e);
       }
