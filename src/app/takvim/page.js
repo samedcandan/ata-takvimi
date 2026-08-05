@@ -128,14 +128,34 @@ export default function CalendarPage() {
                   />
                 </div>
 
-                {/* Event Marker */}
-                {event && (
-                  <div className={`text-[10px] p-1 rounded-md font-semibold truncate w-full ${
-                    isSelected ? 'bg-white/20 text-white' : 'bg-harvest-400/20 text-harvest-600'
-                  }`}>
-                    {event.icon} {event.title}
-                  </div>
-                )}
+                {/* Event & Lunar Markers */}
+                <div className="space-y-1 w-full overflow-hidden">
+                  {/* Lunar Milestone Badge */}
+                  {moon.phaseName.includes("Dolunay") && (
+                    <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-amber-400 text-amber-950 truncate">
+                      🌕 Dolunay
+                    </div>
+                  )}
+                  {moon.phaseName.includes("Yeni Ay") && moon.lunarAge < 2.5 && (
+                    <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-emerald-500 text-white truncate">
+                      🌒 Yeni Ay
+                    </div>
+                  )}
+                  {moon.phaseName.includes("Karanlık Ay") && (
+                    <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-slate-800 text-slate-200 truncate">
+                      🌑 Karanlık Ay
+                    </div>
+                  )}
+
+                  {/* Folk Event Marker */}
+                  {event && (
+                    <div className={`text-[9px] p-0.5 px-1 rounded font-semibold truncate w-full ${
+                      isSelected ? 'bg-white/20 text-white' : 'bg-harvest-400/20 text-harvest-600'
+                    }`}>
+                      {event.icon} {event.title}
+                    </div>
+                  )}
+                </div>
               </button>
             );
           })}
