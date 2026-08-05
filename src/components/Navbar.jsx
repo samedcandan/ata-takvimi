@@ -32,7 +32,7 @@ export default function Navbar() {
           </div>
           <div>
             <h1 className="font-serif font-bold text-lg leading-tight text-forest-900 flex items-center gap-1">
-              Çiftçi Takvimi <span className="text-xs px-2 py-0.5 rounded-full badge-gold font-sans font-medium">Anadolu</span>
+              Ata Takvimi <span className="text-xs px-2 py-0.5 rounded-full badge-gold font-sans font-medium">Anadolu</span>
             </h1>
             <p className="text-xs text-forest-800/70 font-sans">Halk & Ay Takvimi Rehberi</p>
           </div>

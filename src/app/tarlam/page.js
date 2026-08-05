@@ -14,7 +14,7 @@ export default function MyFieldNotesPage() {
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem('ciftci_takvimi_notes');
+    const saved = localStorage.getItem('ata_takvimi_notes');
     if (saved) {
       try {
         setNotes(JSON.parse(saved));
@@ -37,7 +37,7 @@ export default function MyFieldNotesPage() {
 
   const saveNotes = (updated) => {
     setNotes(updated);
-    localStorage.setItem('ciftci_takvimi_notes', JSON.stringify(updated));
+    localStorage.setItem('ata_takvimi_notes', JSON.stringify(updated));
   };
 
   const handleAddNote = (e) => {
@@ -68,7 +68,7 @@ export default function MyFieldNotesPage() {
         <div>
           <div className="flex items-center gap-2 text-harvest-500 font-bold text-sm mb-1">
             <BookOpen className="w-5 h-5" />
-            <span>Çiftçi Ajandası</span>
+            <span>Ata Ajandası</span>
           </div>
           <h1 className="text-3xl font-serif font-bold text-forest-900 leading-tight">
             Tarlam & Kişisel Notlarım

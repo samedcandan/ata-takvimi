@@ -2,8 +2,8 @@ import '../styles/globals.css';
 import Navbar from '../components/Navbar';
 
 export const metadata = {
-  title: 'Çiftçi Takvimi — Anadolu Halk Takvimi & Ay Evreleri Tarım Rehberi',
-  description: 'Anadolu çiftçisinin geleneksel halk takvimi, ay evreleri ekim-dikim tavsiyeleri ve don uyarısı hatırlatıcısı.',
+  title: 'Ata Takvimi — Anadolu Halk Takvimi & Ay Evreleri Tarım Rehberi',
+  description: 'Atalarımızdan miras kalan geleneksel Anadolu halk takvimi, ay evreleri ekim-dikim tavsiyeleri ve don uyarısı hatırlatıcısı.',
   manifest: '/manifest.json',
   themeColor: '#0f382c',
 };
