@@ -2,52 +2,35 @@
 
 /**
  * 100% Astronomically Accurate 3D Glassmorphic Moon Renderer
- * Renders exact lunar illumination and phase shading for Northern Hemisphere (Turkey / Anadolu)
+ * Uses SVG Masking for smooth, pixel-perfect, unbreakable moon phase shading.
  */
 export default function MoonIcon({ illumination = 50, isGrowing = true, phaseName = "", size = 28, className = "" }) {
   const idSuffix = Math.random().toString(36).substr(2, 5);
 
   const pct = Math.max(0, Math.min(100, illumination)) / 100;
-  const isFull = pct > 0.96;
-  const isNew = pct < 0.04;
+  const isFull = pct > 0.97;
+  const isNew = pct < 0.03;
 
   const r = 20;
   const cx = 24;
   const cy = 24;
 
-  // Northern Hemisphere Moon orientation:
-  // When Growing (isGrowing = true): Right side of moon is illuminated (D shape).
-  // When Waning (isGrowing = false): Left side of moon is illuminated (C shape).
+  // Mask Construction:
+  // rx = r * |1 - 2 * pct|
+  // If pct >= 0.5: Ellipse is WHITE (adds light to the opposite side)
+  // If pct < 0.5: Ellipse is BLACK (subtracts light from the same side)
+  
+  const absOffset = Math.abs(1 - 2 * pct);
+  const rx = Math.max(0.1, r * absOffset);
 
-  const absOffset = Math.abs(0.5 - pct) * 2; // 0 at quarter, 1 at new/full
-  const rx = r * absOffset;
+  // Semicircle base for white mask:
+  // isGrowing = true -> Right Semicircle
+  // isGrowing = false -> Left Semicircle
+  const semiCircleD = isGrowing
+    ? `M ${cx} ${cy - r} A ${r} ${r} 0 0 1 ${cx} ${cy + r} Z` // Right Semicircle
+    : `M ${cx} ${cy - r} A ${r} ${r} 0 0 0 ${cx} ${cy + r} Z`; // Left Semicircle
 
-  // Path for lit area:
-  let lightD = "";
-
-  if (isFull) {
-    lightD = `M ${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx} ${cy + r} A ${r} ${r} 0 1 1 ${cx} ${cy - r}`;
-  } else if (isNew) {
-    lightD = "";
-  } else if (isGrowing) {
-    // GROWING (Büyüyen Ay) - Light is on the RIGHT side
-    if (pct < 0.5) {
-      // Crescent (0% < pct < 50%): Outer arc on right, inner arc curving right (subtracting)
-      lightD = `M ${cx} ${cy - r} A ${r} ${r} 0 0 1 ${cx} ${cy + r} A ${rx} ${r} 0 0 0 ${cx} ${cy - r}`;
-    } else {
-      // Gibbous (50% <= pct < 100%): Outer arc on right, inner arc curving left (adding)
-      lightD = `M ${cx} ${cy - r} A ${r} ${r} 0 0 1 ${cx} ${cy + r} A ${rx} ${r} 0 0 1 ${cx} ${cy - r}`;
-    }
-  } else {
-    // WANING (Küçülen Ay) - Light is on the LEFT side
-    if (pct < 0.5) {
-      // Crescent (0% < pct < 50%): Outer arc on left, inner arc curving left (subtracting)
-      lightD = `M ${cx} ${cy - r} A ${r} ${r} 0 0 0 ${cx} ${cy + r} A ${rx} ${r} 0 0 1 ${cx} ${cy - r}`;
-    } else {
-      // Gibbous (50% <= pct < 100%): Outer arc on left, inner arc curving right (adding)
-      lightD = `M ${cx} ${cy - r} A ${r} ${r} 0 0 0 ${cx} ${cy + r} A ${rx} ${r} 0 0 0 ${cx} ${cy - r}`;
-    }
-  }
+  const ellipseFill = pct >= 0.5 ? "white" : "black";
 
   return (
     <div 
@@ -83,6 +66,25 @@ export default function MoonIcon({ illumination = 50, isGrowing = true, phaseNam
             <stop offset="35%" stopColor="#ffffff" stopOpacity="0.15" />
             <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
           </linearGradient>
+
+          {/* SVG Phase Mask for 100% smooth moon illumination */}
+          <mask id={`moonPhaseMask-${idSuffix}`}>
+            {/* Background: Black */}
+            <rect x="0" y="0" width="48" height="48" fill="black" />
+            
+            {isFull ? (
+              <circle cx={cx} cy={cy} r={r} fill="white" />
+            ) : isNew ? (
+              null
+            ) : (
+              <>
+                {/* Semicircle (Right if growing, Left if waning) */}
+                <path d={semiCircleD} fill="white" />
+                {/* Ellipse to add/subtract phase curvature */}
+                <ellipse cx={cx} cy={cy} rx={rx} ry={r} fill={ellipseFill} />
+              </>
+            )}
+          </mask>
         </defs>
 
         {/* Atmosphere Halo Ring */}
@@ -104,17 +106,20 @@ export default function MoonIcon({ illumination = 50, isGrowing = true, phaseNam
         <circle cx="21" cy="31" r="2" fill="#0f172a" opacity="0.6" />
         <circle cx="30" cy="17" r="2.5" fill="#0f172a" opacity="0.5" />
 
-        {/* 2. Illuminated Moon Phase Surface */}
-        {lightD && (
-          <path 
-            d={lightD} 
+        {/* 2. Illuminated Moon Phase Surface (Masked) */}
+        {!isNew && (
+          <circle 
+            cx={cx} 
+            cy={cy} 
+            r={r} 
             fill={`url(#lightMoon-${idSuffix})`}
+            mask={`url(#moonPhaseMask-${idSuffix})`}
           />
         )}
 
         {/* Lit Side Craters Overlay */}
-        {lightD && (
-          <g opacity="0.18">
+        {!isNew && (
+          <g opacity="0.18" mask={`url(#moonPhaseMask-${idSuffix})`}>
             <circle cx="17" cy="19" r="3" fill="#78350f" />
             <circle cx="27" cy="29" r="4" fill="#78350f" />
             <circle cx="21" cy="31" r="2" fill="#78350f" />

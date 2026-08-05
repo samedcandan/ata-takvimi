@@ -1,42 +1,39 @@
 /**
- * Accurate Lunar Phase Calculator and Agricultural Guidance Motor
+ * Accurate Astronomical Lunar Phase Calculator and Agricultural Guidance Motor
+ * Based on Jean Meeus Astronomical Algorithms
  */
 
 export function getMoonPhase(date = new Date()) {
   const year = date.getFullYear();
-  const month = date.getMonth() + 1;
+  const month = date.getMonth(); // 0-based
   const day = date.getDate();
 
-  // Julian date calculation
-  let y = year;
-  let m = month;
-  if (m <= 2) {
-    y -= 1;
-    m += 12;
+  // Julian Date calculation at 12:00 UTC
+  const utcDate = Date.UTC(year, month, day, 12, 0, 0);
+  const julianDate = (utcDate / 86400000) + 2440587.5;
+
+  // Known New Moon reference: Jan 11, 2024 at 11:57 UTC (JD: 2460320.9979)
+  const knownNewMoon = 2460320.9979;
+  const synodicMonth = 29.53058867; // Synodic month in days
+
+  let daysSinceNewMoon = (julianDate - knownNewMoon) % synodicMonth;
+  if (daysSinceNewMoon < 0) {
+    daysSinceNewMoon += synodicMonth;
   }
-  const a = Math.floor(y / 100);
-  const b = Math.floor(a / 4);
-  const c = 2 - a + b;
-  const e = Math.floor(365.25 * (y + 4716));
-  const f = Math.floor(30.6001 * (m + 1));
-  const julianDate = c + day + e + f - 1524.5;
+  const lunarAge = daysSinceNewMoon;
 
-  // Known new moon reference: Jan 11, 2024 (Julian Date: 2460320.9)
-  const knownNewMoon = 2460320.9;
-  const synodicMonth = 29.53058867; // Synodic month length in days
-
-  const daysSinceNewMoon = (julianDate - knownNewMoon) % synodicMonth;
-  const lunarAge = daysSinceNewMoon < 0 ? daysSinceNewMoon + synodicMonth : daysSinceNewMoon;
-
-  // Illumination percentage (0 to 100)
+  // Illumination percentage (0 to 100%)
   const illumination = Math.round((1 - Math.cos((lunarAge / synodicMonth) * 2 * Math.PI)) * 50);
+
+  // Growing phase (Northern Hemisphere: 0 to 14.765 days is growing)
+  const isGrowing = lunarAge < (synodicMonth / 2);
 
   // Phase Name and Symbol Determination
   let phaseName = "";
   let symbol = "";
-  const isGrowing = lunarAge < 14.765;
+  let agricultureAdvice = "";
 
-  if (lunarAge < 1.84566) {
+  if (lunarAge < 1.84566 || lunarAge >= 27.68493) {
     phaseName = "Yeniay";
     symbol = "🌑";
     agricultureAdvice = "Toprak nadas ve temizliği için ideal zaman. Ekim yapılmaz, fideler dinlendirilir.";
@@ -64,14 +61,10 @@ export function getMoonPhase(date = new Date()) {
     phaseName = "Son Dördün";
     symbol = "🌗";
     agricultureAdvice = "Budama, çapa, yabani ot temizliği ve organik gübreleme için mükemmel bir dönemdir.";
-  } else if (lunarAge < 27.68493) {
-    phaseName = "Küçülen Hilal";
+  } else {
+    phaseName = "Küçülen Hilal (Eskiay)";
     symbol = "🌘";
     agricultureAdvice = "Ağaç budamaları, kereste kesimi ve zararlılarla mücadele için tavsiye edilir.";
-  } else {
-    phaseName = "Yeniay Yaklaşımı";
-    symbol = "🌑";
-    agricultureAdvice = "Toprak sürümü ve gübreleme hazırlanır.";
   }
 
   return {
