@@ -16,7 +16,7 @@ export default function Navbar() {
   const [selectedCity, setSelectedCity] = useState("Konya");
 
   const navItems = [
-    { href: '/', label: 'Bugün', icon: Calendar },
+    { href: '/', label: 'Takvim Akışı', icon: Calendar },
     { href: '/takvim', label: 'Aylık Takvim', icon: Moon },
     { href: '/ekim-rehberi', label: 'Ekim Rehberi', icon: Sprout },
     { href: '/tarlam', label: 'Tarlam & Notlar', icon: BookOpen },
