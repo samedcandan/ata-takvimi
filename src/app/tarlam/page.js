@@ -256,22 +256,23 @@ export default function MyFieldNotesPage() {
 
       {/* Add Modal Form */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 md:p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full border border-forest-800/20 shadow-2xl space-y-4 max-h-[calc(100vh-2rem)] overflow-y-auto my-auto">
-            <div className="flex items-center justify-between border-b border-forest-800/10 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
+          <div className="bg-white rounded-3xl p-5 md:p-7 max-w-lg w-full border border-forest-800/20 shadow-2xl relative max-h-[88vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between border-b border-forest-800/10 pb-3 shrink-0">
               <h3 className="text-xl font-serif font-bold text-forest-900 flex items-center gap-2">
                 <Plus className="w-5 h-5 text-harvest-500" />
                 İleri veya Geri Tarihli Kayıt Ekle
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-forest-800/40 hover:text-forest-900 font-bold text-lg"
+                className="p-2 text-forest-800/50 hover:text-forest-900 font-bold rounded-2xl hover:bg-forest-800/10 transition-colors"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleAddPlantNote} className="space-y-4 text-xs">
+            <div className="overflow-y-auto py-4 flex-1 pr-1">
+              <form onSubmit={handleAddPlantNote} className="space-y-4 text-xs">
               {/* Kayıt Türü */}
               <div className="flex gap-2">
                 <button
@@ -403,7 +404,8 @@ export default function MyFieldNotesPage() {
             </form>
           </div>
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 }
