@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Calendar, Sprout, BookOpen, MapPin, Moon, LogIn, LogOut, User, ShieldCheck, Sparkles, Star, Clock } from 'lucide-react';
+import { Calendar, Sprout, BookOpen, MapPin, Moon, LogIn, LogOut, User, ShieldCheck, Sparkles, Star, Clock, Bell } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
 import SubscriptionModal from './SubscriptionModal';
+import NotificationModal from './NotificationModal';
 
 const CITIES = [
   "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin",
@@ -23,7 +24,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [selectedCity, setSelectedCity] = useState("Konya");
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const { user, logout, setShowAuthModal, setShowSubModal, hasActiveSubscription, isTrialActive, daysLeft } = useAuth();
+  const { user, logout, setShowAuthModal, setShowSubModal, setShowNotificationModal, hasActiveSubscription, isTrialActive, daysLeft } = useAuth();
 
   useEffect(() => {
     const savedCity = localStorage.getItem('ata_takvimi_city');
@@ -80,8 +81,19 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Right Controls: Subscription Badge, City Selector & User Auth */}
+        {/* Right Controls: Notification Bell, Subscription Badge, City Selector & User Auth */}
         <div className="flex items-center gap-2">
+          
+          {/* Notification Preferences Button */}
+          <button
+            onClick={() => setShowNotificationModal(true)}
+            title="Bildirim Tercihleri"
+            className="p-2 rounded-xl bg-white border border-forest-800/15 text-forest-900 hover:bg-forest-50 transition-colors shadow-sm relative group shrink-0"
+          >
+            <Bell className="w-4 h-4 text-harvest-600 group-hover:scale-110 transition-transform" />
+            <span className="w-2 h-2 rounded-full bg-harvest-400 absolute top-1.5 right-1.5 animate-pulse" />
+          </button>
+
           {/* Subscription Button Badge */}
           <button
             onClick={() => setShowSubModal(true)}
@@ -156,6 +168,17 @@ export default function Navbar() {
 
                   <button
                     onClick={() => {
+                      setShowNotificationModal(true);
+                      setShowUserDropdown(false);
+                    }}
+                    className="w-full flex items-center gap-2 p-2 rounded-xl text-forest-900 font-bold hover:bg-forest-50 transition-colors text-left"
+                  >
+                    <Bell className="w-4 h-4 text-harvest-600" />
+                    Bildirim Tercihleri
+                  </button>
+
+                  <button
+                    onClick={() => {
                       setShowSubModal(true);
                       setShowUserDropdown(false);
                     }}
@@ -219,9 +242,10 @@ export default function Navbar() {
         })}
       </div>
 
-      {/* Auth Modal & Subscription Modal Components */}
+      {/* Modals */}
       <AuthModal />
       <SubscriptionModal />
+      <NotificationModal />
     </header>
   );
 }

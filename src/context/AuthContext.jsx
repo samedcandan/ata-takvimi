@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { DEFAULT_NOTIFICATION_PREFS, checkAndTriggerDailyNotifications } from '../lib/notificationEngine';
 
 const AuthContext = createContext({
   user: null,
@@ -18,7 +19,11 @@ const AuthContext = createContext({
   showAuthModal: false,
   setShowAuthModal: () => {},
   showSubModal: false,
-  setShowSubModal: () => {}
+  setShowSubModal: () => {},
+  showNotificationModal: false,
+  setShowNotificationModal: () => {},
+  notificationPrefs: DEFAULT_NOTIFICATION_PREFS,
+  updateNotificationPrefs: () => {}
 });
 
 // Known Admin Emails for Auto Unlimited VIP Access
@@ -34,9 +39,11 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSubModal, setShowSubModal] = useState(false);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [notificationPrefs, setNotificationPrefs] = useState(DEFAULT_NOTIFICATION_PREFS);
   const [loading, setLoading] = useState(true);
 
-  // Load user session from localStorage on mount
+  // Load user session & notification preferences on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('ata_takvimi_user');
     if (savedUser) {
@@ -47,8 +54,34 @@ export function AuthProvider({ children }) {
         console.error('Failed to parse saved user:', e);
       }
     }
+
+    const savedPrefs = localStorage.getItem('ata_takvimi_notif_prefs');
+    if (savedPrefs) {
+      try {
+        setNotificationPrefs(JSON.parse(savedPrefs));
+      } catch (e) {}
+    }
+
     setLoading(false);
   }, []);
+
+  // Trigger daily notification check on user load
+  useEffect(() => {
+    if (user && !loading) {
+      const selectedCity = localStorage.getItem('ata_takvimi_city') || 'Konya';
+      let userNotes = [];
+      try {
+        userNotes = JSON.parse(localStorage.getItem('ata_takvimi_tarlam_notes') || '[]');
+      } catch (e) {}
+
+      checkAndTriggerDailyNotifications(notificationPrefs, selectedCity, userNotes);
+    }
+  }, [user, loading, notificationPrefs]);
+
+  const updateNotificationPrefs = (newPrefs) => {
+    setNotificationPrefs(newPrefs);
+    localStorage.setItem('ata_takvimi_notif_prefs', JSON.stringify(newPrefs));
+  };
 
   const sendServerNotification = async (event, userData) => {
     try {
@@ -130,7 +163,7 @@ export function AuthProvider({ children }) {
       }
     };
 
-    saveUserSession(updatedUser);
+    saveUserSession(updatedUser, 'NEW_SUBSCRIBER_PAID');
     setShowSubModal(false);
     return true;
   };
@@ -208,7 +241,7 @@ export function AuthProvider({ children }) {
       };
     }
 
-    saveUserSession(googleUser);
+    saveUserSession(googleUser, 'NEW_TRIAL');
     setShowAuthModal(false);
     return googleUser;
   };
@@ -231,7 +264,7 @@ export function AuthProvider({ children }) {
       subscription: createSubscriptionForUser(email)
     };
 
-    saveUserSession(emailUser);
+    saveUserSession(emailUser, 'LOGIN');
     setShowAuthModal(false);
     return emailUser;
   };
@@ -249,7 +282,7 @@ export function AuthProvider({ children }) {
       subscription: createSubscriptionForUser(email)
     };
 
-    saveUserSession(newUser);
+    saveUserSession(newUser, 'NEW_TRIAL');
     setShowAuthModal(false);
     return newUser;
   };
@@ -279,7 +312,11 @@ export function AuthProvider({ children }) {
         showAuthModal,
         setShowAuthModal,
         showSubModal,
-        setShowSubModal
+        setShowSubModal,
+        showNotificationModal,
+        setShowNotificationModal,
+        notificationPrefs,
+        updateNotificationPrefs
       }}
     >
       {children}
