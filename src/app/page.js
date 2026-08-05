@@ -23,38 +23,26 @@ function getEventsFromToday() {
   const today = new Date();
   const currentMonth = today.getMonth() + 1;
   const currentDay = today.getDate();
-  const currentYear = today.getFullYear();
 
-  // Split events: from today onwards this year, then wrap to next year
-  const futureThisYear = HALK_TAKVIMI_EVENTS.filter(
+  // Only future events: from today onwards (same year only)
+  const futureEvents = HALK_TAKVIMI_EVENTS.filter(
     e => e.month > currentMonth || (e.month === currentMonth && e.day >= currentDay)
   );
-  const pastThisYear = HALK_TAKVIMI_EVENTS.filter(
-    e => e.month < currentMonth || (e.month === currentMonth && e.day < currentDay)
-  );
 
-  // Add computed date and days remaining
-  const addMeta = (event, yearOffset) => {
-    const eventYear = currentYear + yearOffset;
-    const eventDate = new Date(eventYear, event.month - 1, event.day);
+  // Add computed days remaining
+  const enriched = futureEvents.map(event => {
+    const eventDate = new Date(today.getFullYear(), event.month - 1, event.day);
     const diffTime = eventDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return {
       ...event,
-      eventDate,
       diffDays,
       isToday: diffDays === 0,
-      isPast: diffDays < 0,
       dateLabel: `${event.day} ${MONTHS[event.month - 1]}`,
     };
-  };
+  });
 
-  const sorted = [
-    ...futureThisYear.map(e => addMeta(e, 0)),
-    ...pastThisYear.map(e => addMeta(e, 1)),
-  ];
-
-  return sorted;
+  return enriched;
 }
 
 function groupByMonth(events) {
