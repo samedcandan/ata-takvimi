@@ -5,6 +5,9 @@ export const metadata = {
   title: 'Ata Takvimi — Anadolu Halk Takvimi & Ay Evreleri Tarım Rehberi',
   description: 'Atalarımızdan miras kalan geleneksel Anadolu halk takvimi, ay evreleri ekim-dikim tavsiyeleri ve don uyarısı hatırlatıcısı.',
   manifest: '/manifest.json',
+};
+
+export const viewport = {
   themeColor: '#22b558',
 };
 
