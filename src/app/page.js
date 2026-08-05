@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { HALK_TAKVIMI_EVENTS } from '../data/halk-takvimi';
+import { getLunarMilestoneEvents } from '../lib/moonCalc';
+import MoonIcon from '../components/MoonIcon';
 import { Calendar, ChevronDown, Sparkles } from 'lucide-react';
 
 const MONTHS = [
@@ -10,6 +12,7 @@ const MONTHS = [
 ];
 
 const CATEGORY_COLORS = {
+  ay: { bg: 'bg-indigo-100', text: 'text-indigo-800', border: 'border-indigo-200', label: 'Ay Evresi' },
   cemre: { bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-200', label: 'Cemre' },
   mevsim: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200', label: 'Mevsim' },
   hava: { bg: 'bg-sky-100', text: 'text-sky-700', border: 'border-sky-200', label: 'Hava' },
@@ -25,29 +28,38 @@ function getEventsFromToday() {
   const currentDay = today.getDate();
   const currentYear = today.getFullYear();
 
-  // This year: from today onwards
+  // 1. Geleneksel Anadolu Halk Takvimi Olayları (365 günlük döngü)
   const futureThisYear = HALK_TAKVIMI_EVENTS.filter(
     e => e.month > currentMonth || (e.month === currentMonth && e.day >= currentDay)
   ).map(e => ({ ...e, year: currentYear }));
 
-  // Next year: from January until today's date (wraps the cycle)
   const nextYear = HALK_TAKVIMI_EVENTS.filter(
     e => e.month < currentMonth || (e.month === currentMonth && e.day < currentDay)
   ).map(e => ({ ...e, year: currentYear + 1 }));
 
-  const all = [...futureThisYear, ...nextYear];
+  // 2. Astronomik Ay Evresi Dönüm Noktaları (Yeni Ay, Dolunay, Karanlık Ay)
+  const lunarEvents = getLunarMilestoneEvents(today, 365);
 
-  return all.map(event => {
+  // 3. İki listeyi birleştir ve tam tarih bazında kronolojik sırala
+  const rawCombined = [...futureThisYear, ...nextYear, ...lunarEvents];
+
+  const enriched = rawCombined.map(event => {
     const eventDate = new Date(event.year, event.month - 1, event.day);
     const diffTime = eventDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return {
       ...event,
+      eventDate,
       diffDays,
       isToday: diffDays === 0,
       dateLabel: `${event.day} ${MONTHS[event.month - 1]} ${event.year}`,
     };
   });
+
+  // Tarihe göre artan sırada sırala
+  enriched.sort((a, b) => a.eventDate.getTime() - b.eventDate.getTime());
+
+  return enriched;
 }
 
 function groupByMonth(events) {
@@ -89,9 +101,9 @@ export default function HomePage() {
               <Calendar className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xs uppercase tracking-wider text-harvest-400 font-semibold">Kocakarı Takvimi</span>
+              <span className="text-xs uppercase tracking-wider text-harvest-400 font-semibold">Takvim Akışı</span>
               <h2 className="text-2xl md:text-3xl font-serif font-bold text-white leading-tight">
-                Anadolu Halk Takvimi
+                Anadolu Halk & Ay Takvimi Akışı
               </h2>
             </div>
           </div>
@@ -105,8 +117,17 @@ export default function HomePage() {
         {firstEvent && (
           <div className="bg-white/10 rounded-2xl p-5 border border-white/15 backdrop-blur-md">
             <div className="flex items-start gap-4">
-              <div className="text-4xl shrink-0 p-2 bg-white/10 rounded-2xl border border-white/20">
-                {firstEvent.icon}
+              <div className="shrink-0 p-2 bg-white/10 rounded-2xl border border-white/20 flex items-center justify-center min-w-[56px] min-h-[56px]">
+                {firstEvent.isLunar ? (
+                  <MoonIcon 
+                    illumination={firstEvent.illumination} 
+                    isGrowing={firstEvent.isGrowing} 
+                    phaseName={firstEvent.title} 
+                    size={40} 
+                  />
+                ) : (
+                  <span className="text-4xl">{firstEvent.icon}</span>
+                )}
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -141,54 +162,69 @@ export default function HomePage() {
               <div className="flex-1 h-px bg-forest-800/20" />
             </div>
 
-          {/* Events */}
-          {monthEvents.map((event, idx) => {
-            const cat = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.genel;
-            return (
-              <div
-                key={`${event.month}-${event.day}`}
-                ref={idx === 0 && event === firstEvent ? todayRef : null}
-                className={`glass-card rounded-2xl p-5 border transition-all hover:shadow-lg hover:scale-[1.01] ${
-                  event.isToday
-                    ? 'border-forest-500 ring-2 ring-forest-400/30 shadow-lg'
-                    : 'border-forest-800/10'
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  {/* Date Badge */}
-                  <div className="shrink-0 flex flex-col items-center">
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl ${
-                      event.isToday ? 'bg-forest-500 shadow-md' : 'bg-forest-50 border border-forest-800/10'
-                    }`}>
-                      {event.icon}
-                    </div>
-                    <span className={`text-[11px] font-bold mt-1.5 ${event.isToday ? 'text-forest-500' : 'text-forest-800/60'}`}>
-                      {event.day} {MONTHS[event.month - 1].slice(0, 3)}
-                    </span>
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <h3 className="font-bold text-forest-900 text-base leading-tight">{event.title}</h3>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${cat.bg} ${cat.text} ${cat.border} border`}>
-                        {cat.label}
+            {/* Events */}
+            {monthEvents.map((event, idx) => {
+              const cat = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.genel;
+              return (
+                <div
+                  key={`${event.month}-${event.day}-${event.title}`}
+                  ref={idx === 0 && event === firstEvent ? todayRef : null}
+                  className={`glass-card rounded-2xl p-5 border transition-all hover:shadow-lg hover:scale-[1.01] ${
+                    event.isToday
+                      ? 'border-forest-500 ring-2 ring-forest-400/30 shadow-lg'
+                      : event.isLunar
+                      ? 'border-indigo-800/20 bg-indigo-50/30'
+                      : 'border-forest-800/10'
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    {/* Date / Icon Badge */}
+                    <div className="shrink-0 flex flex-col items-center">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
+                        event.isToday 
+                          ? 'bg-forest-500 shadow-md' 
+                          : event.isLunar
+                          ? 'bg-indigo-950/80 border border-indigo-500/30 shadow-sm'
+                          : 'bg-forest-50 border border-forest-800/10'
+                      }`}>
+                        {event.isLunar ? (
+                          <MoonIcon 
+                            illumination={event.illumination} 
+                            isGrowing={event.isGrowing} 
+                            phaseName={event.title} 
+                            size={32} 
+                          />
+                        ) : (
+                          <span className="text-2xl">{event.icon}</span>
+                        )}
+                      </div>
+                      <span className={`text-[11px] font-bold mt-1.5 ${event.isToday ? 'text-forest-500' : 'text-forest-800/60'}`}>
+                        {event.day} {MONTHS[event.month - 1].slice(0, 3)}
                       </span>
-                      {event.isToday && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-forest-500 text-white">
-                          📍 Bugün
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <h3 className="font-bold text-forest-900 text-base leading-tight">{event.title}</h3>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${cat.bg} ${cat.text} ${cat.border} border`}>
+                          {cat.label}
                         </span>
+                        {event.isToday && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-forest-500 text-white">
+                            📍 Bugün
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-forest-800/80 leading-relaxed">{event.desc}</p>
+                      {!event.isToday && event.diffDays > 0 && (
+                        <p className="text-xs text-forest-500 font-medium mt-1.5">{event.diffDays} gün sonra</p>
                       )}
                     </div>
-                    <p className="text-sm text-forest-800/80 leading-relaxed">{event.desc}</p>
-                    {!event.isToday && event.diffDays > 0 && (
-                      <p className="text-xs text-forest-500 font-medium mt-1.5">{event.diffDays} gün sonra</p>
-                    )}
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
           </div>
         );
       })}

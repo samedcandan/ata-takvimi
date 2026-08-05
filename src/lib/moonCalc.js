@@ -93,3 +93,69 @@ export function getMoonPhase(date = new Date()) {
     agricultureAdvice,
   };
 }
+
+/**
+ * Calculates key astronomical lunar milestone events for a given period
+ * (Yeni Ay Başlangıcı, Dolunay, Karanlık Ay Başlangıcı)
+ */
+export function getLunarMilestoneEvents(startDate = new Date(), daysCount = 365) {
+  const events = [];
+  let prevPhase = null;
+
+  for (let i = 0; i < daysCount; i++) {
+    const d = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
+    const curr = getMoonPhase(d);
+
+    if (prevPhase) {
+      // 1. Yeni Ay Başlangıcı (New Moon start: lunarAge wrapped)
+      if (prevPhase.lunarAge > 26 && curr.lunarAge < 3) {
+        events.push({
+          month: d.getMonth() + 1,
+          day: d.getDate(),
+          year: d.getFullYear(),
+          title: "Yeni Ay Başlangıcı (Hilal Doğumu)",
+          category: "ay",
+          desc: "Büyüyen Ay safhası başlar. Toprak üstü meyve ve yapraklı bitkilerin (domates, biber, marul, tahıl) ekim, dikim ve aşı zamanı.",
+          icon: "🌒",
+          isLunar: true,
+          illumination: 10,
+          isGrowing: true
+        });
+      }
+      // 2. Dolunay (Full Moon: lunarAge crosses ~14.76)
+      else if (prevPhase.lunarAge < 14.76 && curr.lunarAge >= 14.76) {
+        events.push({
+          month: d.getMonth() + 1,
+          day: d.getDate(),
+          year: d.getFullYear(),
+          title: "Dolunay (Ayın Zirve Safhası)",
+          category: "ay",
+          desc: "Bitki özsuyunun tepe noktada olduğu şifalı gün. Tıbbi aromatik bitki, meyve ve sebze hasadı için en verimli zamandır.",
+          icon: "🌕",
+          isLunar: true,
+          illumination: 100,
+          isGrowing: false
+        });
+      }
+      // 3. Karanlık Ay Başlangıcı (Dark Moon start: lunarAge crosses ~26.5)
+      else if (prevPhase.lunarAge < 26.5 && curr.lunarAge >= 26.5) {
+        events.push({
+          month: d.getMonth() + 1,
+          day: d.getDate(),
+          year: d.getFullYear(),
+          title: "Karanlık Ay Başlangıcı (Eskiay / Nadas)",
+          category: "ay",
+          desc: "Ayın gökyüzünde görünmez olduğu karanlık dönem. Toprak nadasa bırakılır; tohum ekilmez. Ağaç budaması, kereste kesimi ve zararlılarla mücadele edilir.",
+          icon: "🌘",
+          isLunar: true,
+          illumination: 2,
+          isGrowing: false
+        });
+      }
+    }
+
+    prevPhase = curr;
+  }
+
+  return events;
+}
