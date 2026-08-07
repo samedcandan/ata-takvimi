@@ -106,21 +106,21 @@ export default function CalendarPage() {
       </div>
 
       {/* Calendar Grid */}
-      <div className="glass-card rounded-3xl p-6 border border-forest-800/10">
+      <div className="glass-card rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 border border-forest-800/10">
         {/* Week Days Header */}
-        <div className="grid grid-cols-7 gap-2 mb-4 text-center">
+        <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-3 text-center">
           {["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"].map((day, i) => (
-            <div key={i} className="text-xs font-bold text-forest-800/60 uppercase">
+            <div key={i} className="text-[11px] sm:text-xs font-bold text-forest-800/60 uppercase">
               {day}
             </div>
           ))}
         </div>
 
         {/* Days Grid */}
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-1 sm:gap-2">
           {/* Blank Padding Days */}
           {Array.from({ length: startDayIndex }).map((_, i) => (
-            <div key={`blank-${i}`} className="h-20 md:h-24 rounded-2xl bg-forest-800/5 opacity-30" />
+            <div key={`blank-${i}`} className="h-16 sm:h-20 md:h-24 rounded-xl sm:rounded-2xl bg-forest-800/5 opacity-30" />
           ))}
 
           {/* Days of Month */}
@@ -143,58 +143,60 @@ export default function CalendarPage() {
               <button
                 key={dayNum}
                 onClick={() => setSelectedDay(thisDate)}
-                className={`h-20 md:h-24 rounded-2xl p-2 flex flex-col justify-between text-left transition-all relative overflow-hidden ${
+                className={`h-16 sm:h-20 md:h-24 rounded-xl sm:rounded-2xl p-1 sm:p-2 flex flex-col justify-between text-left transition-all relative ${
                   isSelected
-                    ? 'badge-forest shadow-xl ring-2 ring-harvest-400 scale-[1.02]'
+                    ? 'badge-forest shadow-xl ring-2 ring-harvest-400 scale-[1.02] z-10'
                     : 'bg-white/80 border border-forest-800/10 hover:border-harvest-500 hover:shadow-md'
                 }`}
               >
                 {/* Day Header */}
-                <div className="flex items-center justify-between w-full">
-                  <span className={`font-bold text-sm ${isSelected ? 'text-harvest-400' : 'text-forest-900'}`}>
+                <div className="flex flex-col sm:flex-row items-center sm:justify-between justify-center w-full gap-0.5">
+                  <span className={`font-bold text-xs sm:text-sm leading-none ${isSelected ? 'text-harvest-400' : 'text-forest-900'}`}>
                     {dayNum}
                   </span>
-                  <MoonIcon 
-                    illumination={moon.illumination}
-                    linearIllumination={moon.linearIllumination} 
-                    isGrowing={moon.isGrowing} 
-                    phaseName={moon.phaseName} 
-                    size={26} 
-                  />
+                  <div className="shrink-0 flex items-center justify-center">
+                    <MoonIcon 
+                      illumination={moon.illumination}
+                      linearIllumination={moon.linearIllumination} 
+                      isGrowing={moon.isGrowing} 
+                      phaseName={moon.phaseName} 
+                      size={22} 
+                    />
+                  </div>
                 </div>
 
                 {/* Event & User Notes Markers */}
-                <div className="space-y-1 w-full overflow-hidden">
+                <div className="space-y-0.5 sm:space-y-1 w-full overflow-hidden">
                   {/* User Note Badge Indicator */}
                   {dayNotes.length > 0 && (
-                    <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-emerald-500 text-white truncate flex items-center gap-0.5 shadow-sm">
-                      📌 {dayNotes.length} Not
+                    <div className="text-[8px] sm:text-[9px] px-1 py-0.5 rounded font-bold bg-emerald-500 text-white truncate flex items-center justify-center sm:justify-start gap-0.5 shadow-sm">
+                      📌 <span className="hidden sm:inline">{dayNotes.length} Not</span>
                     </div>
                   )}
 
                   {/* Lunar Milestone Badge */}
                   {moon.phaseName.includes("Dolunay") && (
-                    <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-amber-400 text-amber-950 truncate">
-                      🌕 Dolunay
+                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-amber-400 text-amber-950 truncate text-center sm:text-left">
+                      🌕 <span className="hidden sm:inline">Dolunay</span>
                     </div>
                   )}
                   {moon.phaseName.includes("Yeni Ay") && (
-                    <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-emerald-600 text-white truncate">
-                      🌒 Yeni Ay
+                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-emerald-600 text-white truncate text-center sm:text-left">
+                      🌒 <span className="hidden sm:inline">Yeni Ay</span>
                     </div>
                   )}
                   {moon.phaseName.includes("Karanlık Ay") && (
-                    <div className="text-[9px] px-1 py-0.5 rounded font-bold bg-slate-800 text-slate-200 truncate">
-                      🌑 Karanlık Ay
+                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-slate-800 text-slate-200 truncate text-center sm:text-left">
+                      🌑 <span className="hidden sm:inline">Karanlık Ay</span>
                     </div>
                   )}
 
                   {/* Folk Event Marker */}
                   {event && (
-                    <div className={`text-[9px] p-0.5 px-1 rounded font-semibold truncate w-full ${
+                    <div className={`text-[8px] sm:text-[9px] p-0.5 sm:px-1 rounded font-semibold truncate w-full text-center sm:text-left ${
                       isSelected ? 'bg-white/20 text-white' : 'bg-harvest-400/20 text-harvest-600'
                     }`}>
-                      {event.icon} {event.title}
+                      {event.icon} <span className="hidden sm:inline">{event.title}</span>
                     </div>
                   )}
                 </div>
