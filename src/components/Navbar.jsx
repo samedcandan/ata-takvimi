@@ -22,21 +22,19 @@ const CITIES = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [selectedCity, setSelectedCity] = useState("Konya");
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const { user, logout, setShowAuthModal, setShowSubModal, setShowNotificationModal, hasActiveSubscription, isTrialActive, daysLeft } = useAuth();
-
-  useEffect(() => {
-    const savedCity = localStorage.getItem('ata_takvimi_city');
-    if (savedCity && CITIES.includes(savedCity)) {
-      setSelectedCity(savedCity);
-    }
-  }, []);
-
-  const handleCityChange = (city) => {
-    setSelectedCity(city);
-    localStorage.setItem('ata_takvimi_city', city);
-  };
+  const { 
+    user, 
+    logout, 
+    setShowAuthModal, 
+    setShowSubModal, 
+    setShowNotificationModal, 
+    setShowCityModal,
+    selectedCity,
+    hasActiveSubscription, 
+    isTrialActive, 
+    daysLeft 
+  } = useAuth();
 
   const navItems = [
     { href: '/', label: 'Takvim Akışı', icon: Calendar },
@@ -119,19 +117,15 @@ export default function Navbar() {
             </span>
           </button>
 
-          {/* City Selector */}
-          <div className="flex items-center gap-1.5 bg-white/90 px-2.5 py-1.5 rounded-xl border border-forest-800/15 text-xs text-forest-900 shadow-sm shrink-0">
+          {/* City Selector Button */}
+          <button
+            onClick={() => setShowCityModal(true)}
+            title="Şehir Değiştir (81 İl)"
+            className="flex items-center gap-1.5 bg-white/90 hover:bg-forest-50 px-3 py-1.5 rounded-xl border border-forest-800/15 text-xs text-forest-900 shadow-sm transition-all shrink-0 cursor-pointer"
+          >
             <MapPin className="w-3.5 h-3.5 text-terracotta-500 shrink-0" />
-            <select
-              value={selectedCity}
-              onChange={(e) => handleCityChange(e.target.value)}
-              className="bg-transparent outline-none font-bold cursor-pointer text-xs"
-            >
-              {CITIES.map(city => (
-                <option key={city} value={city} className="bg-white text-forest-900 font-medium">{city}</option>
-              ))}
-            </select>
-          </div>
+            <span className="font-bold text-xs">{selectedCity}</span>
+          </button>
 
           {/* User Auth Profile Dropdown / Login Button */}
           {user ? (

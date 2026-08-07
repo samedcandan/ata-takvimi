@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { CloudSun, Sun, CloudRain, CloudSnow, Wind, Droplets, ShieldAlert, Sparkles, MapPin } from 'lucide-react';
+import { CloudSun, Sun, CloudRain, CloudSnow, Wind, Droplets, ShieldAlert, Sparkles, MapPin, ChevronDown } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export const CITY_COORDS = {
   "Adana": { lat: 37.00, lon: 35.32 },
@@ -118,30 +119,14 @@ function getAgriInsight(dailyData) {
 }
 
 export default function WeatherCard() {
-  const [cityName, setCityName] = useState("Konya");
+  const { selectedCity, setShowCityModal } = useAuth();
   const [forecast, setForecast] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check localStorage for city selection
-    const checkCity = () => {
-      const saved = localStorage.getItem('ata_takvimi_city') || "Konya";
-      setCityName(saved);
-    };
-
-    checkCity();
-    window.addEventListener('storage', checkCity);
-    const interval = setInterval(checkCity, 1000);
-    return () => {
-      window.removeEventListener('storage', checkCity);
-      clearInterval(interval);
-    };
-  }, []);
-
-  useEffect(() => {
     async function fetchWeather() {
       setLoading(true);
-      const coords = CITY_COORDS[cityName] || CITY_COORDS["Konya"];
+      const coords = CITY_COORDS[selectedCity] || CITY_COORDS["Konya"];
       try {
         const res = await fetch(
           `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=auto`
@@ -167,7 +152,6 @@ export default function WeatherCard() {
         }
       } catch (err) {
         console.warn('Weather fetch fallback:', err);
-        // Realistic fallback forecast
         setForecast([
           { dateLabel: 'Bugün', dateStr: 'Bugün', weatherCode: 1, maxTemp: 28, minTemp: 16, rain: 0, windSpeed: 12 },
           { dateLabel: 'Yarın', dateStr: 'Yarın', weatherCode: 0, maxTemp: 29, minTemp: 17, rain: 0, windSpeed: 10 },
@@ -179,13 +163,7 @@ export default function WeatherCard() {
     }
 
     fetchWeather();
-  }, [cityName]);
-
-  const handleCitySelect = (newCity) => {
-    setCityName(newCity);
-    localStorage.setItem('ata_takvimi_city', newCity);
-    window.dispatchEvent(new Event('storage'));
-  };
+  }, [selectedCity]);
 
   const agriInsight = getAgriInsight(forecast);
 
@@ -199,28 +177,22 @@ export default function WeatherCard() {
           </div>
           <div>
             <h3 className="font-serif font-bold text-forest-900 text-lg leading-tight flex items-center gap-1.5">
-              <span>{cityName}</span> 3 Günlük Tarımsal Hava Raporu
+              <span>{selectedCity}</span> 3 Günlük Tarımsal Hava Raporu
             </h3>
             <p className="text-[11px] text-forest-800/70">Sıcaklık, Yağış Riskleri ve Zirai İşlem Şartları</p>
           </div>
         </div>
 
-        {/* Interactive City Selector (81 İl Akordeon / Seçici) */}
-        <div className="flex items-center gap-1.5 bg-forest-800/10 hover:bg-forest-800/15 px-3.5 py-1.5 rounded-2xl border border-forest-800/20 text-xs font-bold text-forest-900 transition-all cursor-pointer shadow-sm shrink-0">
-          <MapPin className="w-4 h-4 text-terracotta-500 shrink-0 animate-pulse" />
-          <span className="text-[11px] text-forest-800/70 font-sans">İl Seç:</span>
-          <select
-            value={cityName}
-            onChange={(e) => handleCitySelect(e.target.value)}
-            className="bg-transparent font-bold text-forest-900 outline-none cursor-pointer text-xs font-serif"
-          >
-            {Object.keys(CITY_COORDS).sort().map(city => (
-              <option key={city} value={city} className="bg-white text-forest-900 font-sans font-medium">
-                {city}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Interactive City Selector Modal Trigger (81 İl Seçimi) */}
+        <button
+          onClick={() => setShowCityModal(true)}
+          className="flex items-center gap-2 bg-white hover:bg-forest-50 px-4 py-2 rounded-2xl border border-forest-800/20 text-xs font-bold text-forest-900 transition-all cursor-pointer shadow-md hover:shadow-lg hover:scale-[1.02] shrink-0 group"
+        >
+          <MapPin className="w-4 h-4 text-terracotta-500 shrink-0 group-hover:bounce" />
+          <span className="text-[11px] text-forest-800/70 font-sans">İl:</span>
+          <span className="font-serif font-bold text-forest-900 text-sm">{selectedCity}</span>
+          <ChevronDown className="w-3.5 h-3.5 text-forest-800/50 group-hover:translate-y-0.5 transition-transform" />
+        </button>
       </div>
 
       {/* 3 Days Grid */}

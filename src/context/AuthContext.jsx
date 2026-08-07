@@ -22,8 +22,10 @@ const AuthContext = createContext({
   setShowSubModal: () => {},
   showNotificationModal: false,
   setShowNotificationModal: () => {},
-  notificationPrefs: DEFAULT_NOTIFICATION_PREFS,
-  updateNotificationPrefs: () => {}
+  selectedCity: 'Konya',
+  changeCity: () => {},
+  showCityModal: false,
+  setShowCityModal: () => {}
 });
 
 // Known Admin Emails for Auto Unlimited VIP Access
@@ -40,8 +42,19 @@ export function AuthProvider({ children }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSubModal, setShowSubModal] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [showCityModal, setShowCityModal] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('Konya');
   const [notificationPrefs, setNotificationPrefs] = useState(DEFAULT_NOTIFICATION_PREFS);
   const [loading, setLoading] = useState(true);
+
+  const changeCity = (city) => {
+    if (!city) return;
+    setSelectedCity(city);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('ata_takvimi_city', city);
+      window.dispatchEvent(new Event('storage'));
+    }
+  };
 
   // Load user session & notification preferences on mount
   useEffect(() => {
@@ -62,7 +75,22 @@ export function AuthProvider({ children }) {
       } catch (e) {}
     }
 
+    const savedCity = localStorage.getItem('ata_takvimi_city');
+    if (savedCity) {
+      setSelectedCity(savedCity);
+    }
+
+    const handleStorageChange = () => {
+      const currentCity = localStorage.getItem('ata_takvimi_city');
+      if (currentCity) setSelectedCity(currentCity);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
     setLoading(false);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   // Trigger daily notification check on user load
@@ -316,7 +344,11 @@ export function AuthProvider({ children }) {
         showNotificationModal,
         setShowNotificationModal,
         notificationPrefs,
-        updateNotificationPrefs
+        updateNotificationPrefs,
+        selectedCity,
+        changeCity,
+        showCityModal,
+        setShowCityModal
       }}
     >
       {children}

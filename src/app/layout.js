@@ -1,6 +1,7 @@
 import '../styles/globals.css';
 import Navbar from '../components/Navbar';
 import AppContentGate from '../components/AppContentGate';
+import CitySelectorModal from '../components/CitySelectorModal';
 import { AuthProvider } from '../context/AuthContext';
 
 export const metadata = {
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <AppContentGate>
             <Navbar />
+            <CitySelectorModal />
             <main className="max-w-7xl mx-auto px-4 py-6 overflow-x-hidden w-full">
               {children}
             </main>
