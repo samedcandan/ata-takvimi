@@ -120,15 +120,15 @@ export default function Navbar() {
           </button>
 
           {/* City Selector */}
-          <div className="flex items-center gap-1.5 bg-white/80 px-2.5 py-1.5 rounded-xl border border-forest-800/15 text-xs text-forest-900 shadow-sm">
+          <div className="flex items-center gap-1.5 bg-white/90 px-2.5 py-1.5 rounded-xl border border-forest-800/15 text-xs text-forest-900 shadow-sm shrink-0">
             <MapPin className="w-3.5 h-3.5 text-terracotta-500 shrink-0" />
             <select
               value={selectedCity}
               onChange={(e) => handleCityChange(e.target.value)}
-              className="bg-transparent outline-none font-medium cursor-pointer max-w-[85px] sm:max-w-none"
+              className="bg-transparent outline-none font-bold cursor-pointer text-xs"
             >
               {CITIES.map(city => (
-                <option key={city} value={city}>{city}</option>
+                <option key={city} value={city} className="bg-white text-forest-900 font-medium">{city}</option>
               ))}
             </select>
           </div>

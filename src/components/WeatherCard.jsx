@@ -181,14 +181,20 @@ export default function WeatherCard() {
     fetchWeather();
   }, [cityName]);
 
+  const handleCitySelect = (newCity) => {
+    setCityName(newCity);
+    localStorage.setItem('ata_takvimi_city', newCity);
+    window.dispatchEvent(new Event('storage'));
+  };
+
   const agriInsight = getAgriInsight(forecast);
 
   return (
     <div className="glass-card rounded-3xl p-6 border border-forest-800/10 shadow-lg space-y-4">
       {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-forest-800/10 pb-3">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-forest-800/10 flex items-center justify-center text-forest-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-forest-800/10 pb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-10 h-10 rounded-xl bg-forest-800/10 flex items-center justify-center text-forest-800 shrink-0">
             <CloudSun className="w-5 h-5 text-harvest-500" />
           </div>
           <div>
@@ -199,10 +205,22 @@ export default function WeatherCard() {
           </div>
         </div>
 
-        <span className="text-xs bg-forest-800/10 text-forest-900 font-bold px-3 py-1 rounded-full flex items-center gap-1">
-          <MapPin className="w-3.5 h-3.5 text-terracotta-500" />
-          {cityName}
-        </span>
+        {/* Interactive City Selector (81 İl Akordeon / Seçici) */}
+        <div className="flex items-center gap-1.5 bg-forest-800/10 hover:bg-forest-800/15 px-3.5 py-1.5 rounded-2xl border border-forest-800/20 text-xs font-bold text-forest-900 transition-all cursor-pointer shadow-sm shrink-0">
+          <MapPin className="w-4 h-4 text-terracotta-500 shrink-0 animate-pulse" />
+          <span className="text-[11px] text-forest-800/70 font-sans">İl Seç:</span>
+          <select
+            value={cityName}
+            onChange={(e) => handleCitySelect(e.target.value)}
+            className="bg-transparent font-bold text-forest-900 outline-none cursor-pointer text-xs font-serif"
+          >
+            {Object.keys(CITY_COORDS).sort().map(city => (
+              <option key={city} value={city} className="bg-white text-forest-900 font-sans font-medium">
+                {city}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* 3 Days Grid */}
