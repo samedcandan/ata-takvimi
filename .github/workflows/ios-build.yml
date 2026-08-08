@@ -51,3 +51,12 @@ jobs:
         with:
           name: AtaTakvimi-iOS-Archive
           path: build/AtaTakvimi.xcarchive
+
+      - name: Upload to App Store Connect / TestFlight
+        uses: apple-actions/upload-testflight-build@v1
+        if: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY != '' }}
+        with:
+          app-path: build/AtaTakvimi.xcarchive
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
