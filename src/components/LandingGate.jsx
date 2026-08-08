@@ -238,17 +238,6 @@ export default function LandingGate() {
           </button>
         </form>
 
-        {/* Direct Purchase Button */}
-        <div className="pt-2 border-t border-emerald-500/20 text-center">
-          <button
-            onClick={() => setShowSubModal(true)}
-            className="w-full py-2.5 rounded-xl bg-emerald-800/40 hover:bg-emerald-700/50 border border-emerald-400/30 text-white font-bold text-xs transition-all flex items-center justify-center gap-2"
-          >
-            <Award className="w-4 h-4 text-harvest-400" />
-            <span>Doğrudan Yıllık ₺300 İle Abone Ol</span>
-          </button>
-        </div>
-
         {/* Ödeme Güvenlik Bandı & Logoları */}
         <div className="pt-3 border-t border-emerald-500/20 flex items-center justify-center gap-3 flex-wrap text-xs text-emerald-200/90">
           <div className="flex items-center gap-1.5 font-semibold text-[11px]">
