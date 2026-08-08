@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, UserPlus, Mail, Lock, User, ShieldCheck, Sparkles, Star, Award, KeyRound } from 'lucide-react';
+import { LogIn, UserPlus, Mail, Lock, User, ShieldCheck, Award } from 'lucide-react';
 import SubscriptionModal from './SubscriptionModal';
 
 export default function LandingGate() {
@@ -51,21 +51,23 @@ export default function LandingGate() {
   };
 
   return (
-    <div className="fixed inset-0 z-[999] bg-[#071a10] text-white flex items-center justify-center p-4 sm:p-6 overflow-y-auto font-sans">
+    <div className="fixed inset-0 z-[999] bg-[#071a10] text-white flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto font-sans">
       {/* Background Ambient Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/15 rounded-full blur-[140px] pointer-events-none" />
 
       {/* Main Login / Register Card */}
-      <div className="max-w-md w-full bg-[#0e2d1d] border-2 border-harvest-400/40 p-6 sm:p-8 rounded-3xl shadow-2xl space-y-5 relative z-10 my-auto">
+      <div className="max-w-md w-full bg-[#0e2d1d] border-2 border-harvest-400/40 p-6 sm:p-8 rounded-3xl shadow-2xl space-y-4 relative z-10 my-auto">
         
         {/* Brand Header */}
         <div className="text-center space-y-2 border-b border-emerald-500/20 pb-4">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-harvest-400 to-forest-500 p-0.5 shadow-lg shadow-emerald-500/20">
-            <div className="w-full h-full bg-[#0b2416] rounded-[14px] flex items-center justify-center font-bold text-harvest-400 text-2xl">
-              🌱
-            </div>
+          <div className="w-16 h-16 mx-auto rounded-2xl p-0.5 bg-gradient-to-br from-harvest-400 to-emerald-500 shadow-xl shadow-emerald-900/40 overflow-hidden">
+            <img 
+              src="/icon-192.png" 
+              alt="Ata Takvimi İkonu" 
+              className="w-full h-full object-cover rounded-[14px]"
+            />
           </div>
-          <h1 className="font-serif text-2xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
+          <h1 className="font-serif text-2xl font-bold tracking-tight text-white flex items-center justify-center gap-2 pt-1">
             Ata Takvimi <span className="text-[10px] bg-harvest-400 text-forest-950 font-sans font-extrabold px-2 py-0.5 rounded-full">Anadolu</span>
           </h1>
           <p className="text-xs text-emerald-300 font-sans">Abone Giriş ve Kullanıcı Portalı</p>
@@ -76,6 +78,25 @@ export default function LandingGate() {
             {error}
           </div>
         )}
+
+        {/* Google Play Store Banner */}
+        <a
+          href="https://play.google.com/store/apps/details?id=com.karneyn.atatakvimi"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold text-xs flex items-center justify-center gap-3 transition-all hover:scale-[1.01] shadow-md group"
+        >
+          <svg width="24" height="24" viewBox="0 0 512 512" fill="none" className="shrink-0">
+            <path d="M99.6 15.6C91.6 20 86.8 28.6 86.8 38.6V473.4C86.8 483.4 91.6 492 99.6 496.4L278.4 256L99.6 15.6Z" fill="#00D2FF"/>
+            <path d="M344.8 189.6L278.4 256L344.8 322.4L402.4 289.6C418 280.8 418 231.2 402.4 222.4L344.8 189.6Z" fill="#FFD000"/>
+            <path d="M278.4 256L99.6 496.4C106.8 500.4 116 500 124.8 494.8L344.8 322.4L278.4 256Z" fill="#FF3A44"/>
+            <path d="M124.8 17.2C116 12 106.8 11.6 99.6 15.6L278.4 256L344.8 189.6L124.8 17.2Z" fill="#00E676"/>
+          </svg>
+          <div className="text-left leading-tight">
+            <div className="text-[9px] text-emerald-300 uppercase tracking-wider font-semibold">MOBİL UYGULAMAYI HEMEN İNDİRİN</div>
+            <div className="text-xs font-extrabold text-white group-hover:text-harvest-300 transition-colors">Google Play Store</div>
+          </div>
+        </a>
 
         {/* Quick Google Login */}
         {!showGooglePrompt ? (
@@ -228,10 +249,38 @@ export default function LandingGate() {
           </button>
         </div>
 
-        <p className="text-[10px] text-emerald-300/80 flex items-center justify-center gap-1 text-center">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          <span>256-Bit SSL & İyzico Güvenli Ödeme Altyapısı</span>
-        </p>
+        {/* Ödeme Güvenlik Bandı & Logoları */}
+        <div className="pt-3 border-t border-emerald-500/20 flex items-center justify-center gap-3 flex-wrap text-xs text-emerald-200/90">
+          <div className="flex items-center gap-1.5 font-semibold text-[11px]">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>iyzico ile Güvenli Ödeme</span>
+          </div>
+          <div className="w-px h-4 bg-emerald-500/30" />
+          <div className="flex items-center gap-2">
+            <svg viewBox="0 0 780 500" width="30" height="20" className="opacity-90"><title>Visa</title><rect width="780" height="500" rx="40" fill="#1a1f71"/><path d="M293.2 348.7l33.4-195.2h53.4l-33.4 195.2H293.2z" fill="#fff"/><path d="M532.7 157.9c-10.6-4-27.2-8.3-47.9-8.3-52.8 0-90 26.5-90.2 64.5-.3 28.1 26.5 43.7 46.8 53.1 20.8 9.6 27.8 15.7 27.7 24.3-.1 13.1-16.6 19.1-32 19.1-21.4 0-32.7-3-50.3-10.2l-6.9-3.1-7.5 43.8c12.5 5.5 35.6 10.2 59.6 10.5 56.2 0 92.6-26.2 93-66.8.2-22.3-14-39.2-44.8-53.2-18.7-9.1-30.1-15.1-30-24.3 0-8.1 9.7-16.8 30.6-16.8 17.5-.3 30.1 3.5 40 7.5l4.8 2.2 7.3-42.3z" fill="#fff"/><path d="M616.4 153.5h-41.3c-12.8 0-22.4 3.5-28 16.2l-79.3 179h56.1s9.2-24 11.2-29.3h68.5c1.6 6.9 6.5 29.3 6.5 29.3h49.6l-43.3-195.2zm-65.8 126c4.4-11.3 21.5-54.7 21.5-54.7-.3.5 4.4-11.4 7.1-18.8l3.6 17s10.3 47.2 12.5 56.5h-44.7z" fill="#fff"/><path d="M247.5 153.5l-52.3 133-5.6-27.1c-9.7-31.2-39.9-65-73.7-81.9l47.8 170.6h56.5l84.1-195.2h-56.8v.6z" fill="#fff"/></svg>
+            <svg viewBox="0 0 780 500" width="30" height="20" className="opacity-90"><title>MasterCard</title><rect width="780" height="500" rx="40" fill="#16366f"/><circle cx="330" cy="250" r="150" fill="#d9222a"/><circle cx="450" cy="250" r="150" fill="#ee9f2d"/><path d="M390 130.7c-31.1 24.2-51.1 62-51.1 104.3s20 80.1 51.1 104.3c31.1-24.2 51.1-62 51.1-104.3s-20-80.1-51.1-104.3z" fill="#eb6f20"/></svg>
+          </div>
+        </div>
+
+        {/* Yasal Linkler */}
+        <div className="flex items-center justify-center gap-3 text-[11px] text-emerald-300/80 flex-wrap pt-1 font-medium">
+          <a href="/gizlilik#hakkimizda" className="hover:text-white transition-colors">Hakkımızda</a>
+          <span className="text-emerald-500/30">•</span>
+          <a href="/gizlilik" className="hover:text-white transition-colors">Gizlilik</a>
+          <span className="text-emerald-500/30">•</span>
+          <a href="/gizlilik#mesafeli-satis" className="hover:text-white transition-colors">Mesafeli Satış</a>
+          <span className="text-emerald-500/30">•</span>
+          <a href="/gizlilik#teslimat-iade" className="hover:text-white transition-colors">Teslimat & İade</a>
+        </div>
+
+        {/* Karneyn Yazılım İmza Footer */}
+        <div className="pt-2 border-t border-emerald-500/15 flex flex-col items-center justify-center gap-1.5 opacity-90">
+          <img src="/karneyn-icon.png" alt="Karneyn Yazılım" className="h-5 opacity-85 mix-blend-lighten" />
+          <span className="text-[10px] font-bold text-emerald-300/90 tracking-widest uppercase font-sans">
+            KARNEYN YAZILIM
+          </span>
+        </div>
+
       </div>
 
       {/* Subscription Modal */}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { ArrowLeft, ShieldCheck, Lock, Eye, FileText, Mail } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Lock, Eye, FileText, Mail, Info, CreditCard, RefreshCw } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
   return (
@@ -17,10 +17,10 @@ export default function PrivacyPolicyPage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-harvest-600 uppercase tracking-wider">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            Yasal Bilgilendirme
+            Yasal Bilgilendirme & Sözleşmeler
           </div>
           <h1 className="text-2xl sm:text-3xl font-serif font-bold text-forest-900 leading-tight">
-            Gizlilik Politikası ve Kullanım Şartları
+            Gizlilik Politikası, Kullanım Şartları & Mesafeli Satış
           </h1>
           <p className="text-xs text-forest-800/70 mt-1">
             Son Güncelleme: 8 Ağustos 2026 | Karneyn Yazılım Hizmetleri Ltd. Şti.
@@ -28,73 +28,98 @@ export default function PrivacyPolicyPage() {
         </div>
       </div>
 
+      {/* Quick Nav Anchor Badges */}
+      <div className="flex items-center gap-2 flex-wrap text-xs font-bold">
+        <a href="#hakkimizda" className="px-3 py-1.5 rounded-xl bg-white border border-forest-800/15 text-forest-900 hover:bg-forest-50 transition-colors shadow-sm">Hakkımızda</a>
+        <a href="#gizlilik" className="px-3 py-1.5 rounded-xl bg-white border border-forest-800/15 text-forest-900 hover:bg-forest-50 transition-colors shadow-sm">Gizlilik Politikası</a>
+        <a href="#mesafeli-satis" className="px-3 py-1.5 rounded-xl bg-white border border-forest-800/15 text-forest-900 hover:bg-forest-50 transition-colors shadow-sm">Mesafeli Satış Sözleşmesi</a>
+        <a href="#teslimat-iade" className="px-3 py-1.5 rounded-xl bg-white border border-forest-800/15 text-forest-900 hover:bg-forest-50 transition-colors shadow-sm">Teslimat & İade Şartları</a>
+      </div>
+
       {/* Main Content */}
-      <div className="glass-card rounded-3xl p-6 sm:p-8 border border-forest-800/10 space-y-6 text-sm text-forest-800/90 leading-relaxed">
+      <div className="glass-card rounded-3xl p-6 sm:p-8 border border-forest-800/10 space-y-8 text-sm text-forest-800/90 leading-relaxed">
         
-        {/* Section 1 */}
-        <section className="space-y-2 border-b border-forest-800/10 pb-5">
-          <h2 className="text-lg font-serif font-bold text-forest-900 flex items-center gap-2">
-            <Lock className="w-5 h-5 text-forest-800" />
-            1. Genel Bakış ve Veri Gizliliği
+        {/* Hakkımızda */}
+        <section id="hakkimizda" className="space-y-2 border-b border-forest-800/10 pb-6 scroll-mt-24">
+          <h2 className="text-xl font-serif font-bold text-forest-900 flex items-center gap-2">
+            <Info className="w-5 h-5 text-emerald-600" />
+            Hakkımızda
           </h2>
           <p>
-            Karneyn Yazılım Hizmetleri Ltd. Şti. ("Karneyn") olarak sunduğumuz <strong>Ata Takvimi</strong> (paket adı: <code>com.karneyn.atatakvimi</code>) mobil ve web uygulamasında kullanıcılarımızın kişisel veri gizliliğine azami hassasiyet göstermekteyiz.
+            <strong>Ata Takvimi</strong> (Karneyn Yazılım Hizmetleri Ltd. Şti.), Anadolu’nun binlerce yıllık kadim tarım takvimlerini, geleneksel kocakarı fırtına günlerini ve ay evrelerine dayalı zirai ekim rehberini dijital çağ ile buluşturan akıllı tarımsal karar destek sistemidir.
           </p>
           <p>
-            Uygulamamız kullanıcıların kişisel kimlik verilerini (TCKN, İsim, Rehber, Galeri vb.) sunucularımızda saklamaz, işlemez veya üçüncü taraflarla paylaşmaz.
+            Çiftçilerimize, bahçıvanlarımıza ve doğa severlere hava durumu uyarısı, ekim zamanlaması ve ürün ajandası sunarak doğru zamanda doğru zirai kararların alınmasını amaçlıyoruz.
           </p>
         </section>
 
-        {/* Section 2 */}
-        <section className="space-y-2 border-b border-forest-800/10 pb-5">
-          <h2 className="text-lg font-serif font-bold text-forest-900 flex items-center gap-2">
-            <Eye className="w-5 h-5 text-forest-800" />
-            2. Toplanan ve Saklanan Veriler
+        {/* Gizlilik Politikası */}
+        <section id="gizlilik" className="space-y-4 border-b border-forest-800/10 pb-6 scroll-mt-24">
+          <h2 className="text-xl font-serif font-bold text-forest-900 flex items-center gap-2">
+            <Lock className="w-5 h-5 text-emerald-600" />
+            Gizlilik Politikası ve Veri Güvenliği
+          </h2>
+          
+          <div className="space-y-2">
+            <h3 className="font-bold text-forest-900 flex items-center gap-2">
+              <Eye className="w-4 h-4 text-forest-700" /> 1. Veri Toplama ve İşleme
+            </h3>
+            <p>
+              Karneyn Yazılım Hizmetleri Ltd. Şti. ("Karneyn") olarak sunduğumuz <strong>Ata Takvimi</strong> (paket adı: <code>com.karneyn.atatakvimi</code>) uygulamasında kişisel kimlik verileriniz (TCKN, Rehber, Galeri vb.) saklanmaz veya 3. taraflarla satılmaz.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="font-bold text-forest-900 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-forest-700" /> 2. Reklam Kimliği (AD_ID) Politikası
+            </h3>
+            <p>
+              Uygulamamız <strong>AD_ID</strong> takip kodları veya üçüncü taraf izleyici reklam yazılımları içermez. 256-Bit SSL şifreleme ve İyzico Ödeme Altyapısı ile doğrudan güvenli abonelik hizmeti sunulmaktadır.
+            </p>
+          </div>
+        </section>
+
+        {/* Mesafeli Satış Sözleşmesi */}
+        <section id="mesafeli-satis" className="space-y-2 border-b border-forest-800/10 pb-6 scroll-mt-24">
+          <h2 className="text-xl font-serif font-bold text-forest-900 flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-emerald-600" />
+            Mesafeli Satış Sözleşmesi Özeti
           </h2>
           <p>
-            Ata Takvimi uygulamasında kullanılan tüm tercihler (örneğin seçtiğiniz il, ekim-dikim ajandasına eklediğiniz notlar ve ürün takvimleri) yalnızca cihazınızın kendi yerel hafızasında (<code>localStorage</code>) saklanır.
+            İşbu sözleşme, Karneyn Yazılım Hizmetleri Ltd. Şti. ile <strong>Ata Takvimi Yıllık Lisans Aboneliği</strong> (₺300 / Yıl) satın alan Alıcı arasındaki mesafeli dijital hizmet satış koşullarını düzenler.
           </p>
           <ul className="list-disc pl-5 space-y-1">
-            <li><strong>Konum Bilgisi:</strong> Seçtiğiniz 81 il tercihi yalnızca hava durumu tahminlerini çekmek için anlık kullanılır. Hassas GPS konumunuz takip edilmez.</li>
-            <li><strong>Notlar ve Ajanda:</strong> Tarlam ajandasına eklediğiniz ekim notları tamamen cihazınızda kalır.</li>
+            <li><strong>Satıcı:</strong> Karneyn Yazılım Hizmetleri Ltd. Şti. (info@karneyn.com)</li>
+            <li><strong>Hizmet Konusu:</strong> Ata Takvimi dijital platformuna 1 Yıl (365 Gün) süresince sınırsız erişim hakkı.</li>
+            <li><strong>Ödeme Sağlayıcı:</strong> BDDK lisanslı İyzico Ödeme Hizmetleri A.Ş. altyapısı ile kredikartı/banka kartı tahsilatı.</li>
           </ul>
         </section>
 
-        {/* Section 3 */}
-        <section className="space-y-2 border-b border-forest-800/10 pb-5">
-          <h2 className="text-lg font-serif font-bold text-forest-900 flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-forest-800" />
-            3. Reklam ve Takip Kodu (AD_ID) Politikası
+        {/* Teslimat & İade Şartları */}
+        <section id="teslimat-iade" className="space-y-2 border-b border-forest-800/10 pb-6 scroll-mt-24">
+          <h2 className="text-xl font-serif font-bold text-forest-900 flex items-center gap-2">
+            <RefreshCw className="w-5 h-5 text-emerald-600" />
+            Teslimat & İade Politikası
           </h2>
           <p>
-            Ata Takvimi uygulaması <strong>reklam kimliği (AD_ID)</strong> veya kullanıcı davranışlarını takip eden üçüncü taraf reklam/analitik SDK'ları <u>içermez</u>. Uygulama içerisinde kullanıcıya 3. taraf reklam gösterimi yapılmaz.
+            <strong>Anında Dijital Teslimat:</strong> Satın alma işleminiz veya 2 günlük ücretsiz deneme kaydınız tamamlandığı anda hesabınıza dijital erişim hakkı tanımlanır. Fiziksel kargo veya sevkiyat bulunmamaktadır.
+          </p>
+          <p>
+            <strong>İade Hakkı:</strong> 6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca, elektronik ortamda anında ifa edilen dijital içeriklerde hizmet kullanımı başlamadan önce 14 gün içinde koşulsuz iade hakkınız mevcuttur. Taleplerinizi <code>info@karneyn.com</code> adresine iletebilirsiniz.
           </p>
         </section>
 
-        {/* Section 4 */}
-        <section className="space-y-2 border-b border-forest-800/10 pb-5">
-          <h2 className="text-lg font-serif font-bold text-forest-900 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-forest-800" />
-            4. Üçüncü Taraf Servis Entegrasyonları
+        {/* İletişim ve Destek */}
+        <section id="iletisim" className="space-y-2">
+          <h2 className="text-xl font-serif font-bold text-forest-900 flex items-center gap-2">
+            <Mail className="w-5 h-5 text-emerald-600" />
+            İletişim & Kurumsal Bilgiler
           </h2>
-          <p>
-            Zirai hava durumu verilerini sunabilmek amacıyla açık kaynaklı ve güvenilir hava durumu sağlayıcısı olan Open-Meteo API hizmeti kullanılmaktadır. Bu isteklere yalnızca seçilen ilin koordinatı iletilir.
-          </p>
-        </section>
-
-        {/* Section 5 */}
-        <section className="space-y-2">
-          <h2 className="text-lg font-serif font-bold text-forest-900 flex items-center gap-2">
-            <Mail className="w-5 h-5 text-forest-800" />
-            5. İletişim ve Destek
-          </h2>
-          <p>
-            Gizlilik politikamız veya uygulamanızla ilgili her türlü soru ve talebiniz için bizimle iletişime geçebilirsiniz:
-          </p>
           <div className="bg-forest-50 p-4 rounded-2xl border border-forest-800/15 font-mono text-xs text-forest-900 space-y-1">
-            <p><strong>Şirket:</strong> Karneyn Yazılım Hizmetleri Ltd. Şti.</p>
+            <p><strong>Unvan:</strong> Karneyn Yazılım Hizmetleri Ltd. Şti.</p>
             <p><strong>E-posta:</strong> info@karneyn.com</p>
-            <p><strong>Web:</strong> https://atatakvimi.karneyn.com</p>
+            <p><strong>Canlı Portal:</strong> https://atatakvimi.karneyn.com</p>
+            <p><strong>Adres:</strong> İstanbul / Türkiye</p>
           </div>
         </section>
 
