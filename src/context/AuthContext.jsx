@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { DEFAULT_NOTIFICATION_PREFS, checkAndTriggerDailyNotifications } from '../lib/notificationEngine';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 const AuthContext = createContext({
   user: null,
@@ -46,6 +47,9 @@ export function AuthProvider({ children }) {
   const [selectedCity, setSelectedCity] = useState('Konya');
   const [notificationPrefs, setNotificationPrefs] = useState(DEFAULT_NOTIFICATION_PREFS);
   const [loading, setLoading] = useState(true);
+
+  // Initialize FCM Push Notifications on native platforms (Android/iOS)
+  usePushNotifications();
 
   const changeCity = (city) => {
     if (!city) return;
