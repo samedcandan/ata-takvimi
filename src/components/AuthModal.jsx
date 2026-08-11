@@ -129,7 +129,7 @@ export default function AuthModal() {
 
           <div className="relative flex items-center justify-center my-2">
             <div className="border-t border-forest-800/10 w-full" />
-            <span className="bg-white px-3 text-[11px] text-forest-800/50 font-bold uppercase shrink-0">veya e-posta ile</span>
+            <span className="bg-white px-3 text-[11px] text-forest-800/50 font-bold uppercase shrink-0">veya e-posta / telefon ile</span>
             <div className="border-t border-forest-800/10 w-full" />
           </div>
 
@@ -179,13 +179,13 @@ export default function AuthModal() {
             )}
 
             <div>
-              <label className="block font-bold text-forest-900 mb-1">E-posta Adresi</label>
+              <label className="block font-bold text-forest-900 mb-1">E-posta veya Telefon</label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-forest-800/40 absolute left-3 top-3" />
                 <input
-                  type="email"
+                  type="text"
                   required
-                  placeholder="ahmet@example.com"
+                  placeholder="ahmet@example.com veya 05XX..."
                   value={formData.email}
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
                   className="w-full bg-forest-50 border border-forest-800/15 rounded-xl pl-9 p-2.5 outline-none focus:border-harvest-500 font-medium"

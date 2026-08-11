@@ -278,25 +278,52 @@ export function AuthProvider({ children }) {
     return googleUser;
   };
 
-  // 2. Email & Password Login
+  // 2. Email & Password Login (+ 🔑 Karneyn Anahtar telefon desteği)
+  const KARNEYN_ANAHTAR = 'karneyn.admin';
+
   const loginWithEmail = (email, password) => {
-    if (!email || !password) throw new Error('E-posta ve şifre gereklidir.');
-    const namePart = email.split('@')[0];
-    const displayName = email.toLowerCase().includes('admin') || email.toLowerCase().includes('karneyn')
+    if (!email || !password) throw new Error('E-posta/telefon ve şifre gereklidir.');
+
+    // 🔑 Karneyn Anahtar ile giriş — sınırsız VIP erişim
+    const isKarneynAnahtar = password === KARNEYN_ANAHTAR;
+
+    const isPhone = /^0[0-9]{10}$/.test(email.trim());
+    const displayInput = email.trim();
+    const displayName = isKarneynAnahtar
       ? 'Karneyn Admin'
-      : namePart.charAt(0).toUpperCase() + namePart.slice(1);
+      : isPhone
+        ? `Kullanıcı ${displayInput.slice(-4)}`
+        : (() => {
+            const namePart = displayInput.split('@')[0];
+            return displayInput.toLowerCase().includes('admin') || displayInput.toLowerCase().includes('karneyn')
+              ? 'Karneyn Admin'
+              : namePart.charAt(0).toUpperCase() + namePart.slice(1);
+          })();
+
+    // Karneyn Anahtar kullanıldığında sınırsız VIP abonelik tanı
+    const subscription = isKarneynAnahtar
+      ? {
+          active: true,
+          isTrial: false,
+          planName: 'Karneyn Yazılım VIP Sınırsız Admin Aboneliği',
+          licenseCode: 'KARNEYN-ANAHTAR',
+          activatedAt: new Date().toISOString(),
+          expiresAt: new Date('2099-12-31T23:59:59.000Z').toISOString()
+        }
+      : createSubscriptionForUser(isPhone ? `user-${displayInput}@ata.local` : displayInput);
 
     const emailUser = {
       id: `user-${Date.now()}`,
       name: displayName,
-      email: email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
-      provider: 'email',
+      email: isPhone ? `${displayInput}@ata.local` : displayInput,
+      phone: isPhone ? displayInput : null,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(displayInput)}`,
+      provider: isKarneynAnahtar ? 'karneyn-admin' : 'email',
       createdAt: new Date().toISOString(),
-      subscription: createSubscriptionForUser(email)
+      subscription
     };
 
-    saveUserSession(emailUser, 'LOGIN');
+    saveUserSession(emailUser, isKarneynAnahtar ? 'KARNEYN_ADMIN_LOGIN' : 'LOGIN');
     setShowAuthModal(false);
     return emailUser;
   };
