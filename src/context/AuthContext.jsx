@@ -139,6 +139,21 @@ export function AuthProvider({ children }) {
     localStorage.setItem('ata_takvimi_user', JSON.stringify(userData));
     window.dispatchEvent(new Event('storage'));
     sendServerNotification(eventType, userData);
+
+    // 📊 Admin panelde abone tablosu için sunucu taraflı kullanıcı kaydı
+    try {
+      fetch('/api/user/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: userData.email,
+          phone: userData.phone || null,
+          name: userData.name,
+          provider: userData.provider || 'email',
+          plan: userData.subscription?.planName || 'FREE'
+        })
+      }).catch(() => {}); // Sessizce başarısız olabilir — kritik değil
+    } catch (e) { /* ignore */ }
   };
 
   // Helper to compute subscription / trial status
