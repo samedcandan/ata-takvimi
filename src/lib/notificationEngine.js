@@ -28,7 +28,12 @@ export async function requestNotificationPermission() {
 }
 
 export function sendBrowserNotification(title, body, url = '/', icon = '/icon-192.png') {
-  if (typeof window === 'undefined' || !('Notification' in window) || Notification.permission !== 'granted') {
+  if (
+    typeof window === 'undefined' || 
+    !('Notification' in window) || 
+    typeof Notification === 'undefined' || 
+    Notification.permission !== 'granted'
+  ) {
     return false;
   }
 
@@ -57,7 +62,14 @@ export function sendBrowserNotification(title, body, url = '/', icon = '/icon-19
 }
 
 export function checkAndTriggerDailyNotifications(prefs = DEFAULT_NOTIFICATION_PREFS, selectedCity = "Konya", userNotes = []) {
-  if (typeof window === 'undefined' || !prefs || !prefs.enabled || Notification.permission !== 'granted') {
+  if (
+    typeof window === 'undefined' || 
+    !prefs || 
+    !prefs.enabled || 
+    !('Notification' in window) || 
+    typeof Notification === 'undefined' || 
+    Notification.permission !== 'granted'
+  ) {
     return;
   }
 

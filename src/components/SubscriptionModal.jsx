@@ -131,7 +131,7 @@ export default function SubscriptionModal() {
       } else {
         setError('Geçersiz lisans veya promosyon kodu.');
       }
-    } fontally: {
+    } finally {
       setLoading(false);
     }
   };
