@@ -1,11 +1,10 @@
 "use client";
 
 import { useAuth } from '../context/AuthContext';
-import LandingGate from './LandingGate';
 import { Loader2 } from 'lucide-react';
 
 export default function AppContentGate({ children }) {
-  const { user, isAccessGranted, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
     return (
@@ -16,11 +15,7 @@ export default function AppContentGate({ children }) {
     );
   }
 
-  // If user is not logged in or doesn't have active subscription / trial, render LandingGate
-  if (!user || !isAccessGranted) {
-    return <LandingGate />;
-  }
-
-  // Otherwise render full app content
+  // Freemium model: Tüm içerik tüm kullanıcılara doğrudan açıktır.
+  // Reklam/Premium ayrımı bileşenler içinde isAdFree ile dinamik yönetilir.
   return <>{children}</>;
 }

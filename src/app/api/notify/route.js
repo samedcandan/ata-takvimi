@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { sendWelcomeEmail } from '../../../lib/email';
+import { APP_CONFIG } from '../../../lib/config';
 
 export async function POST(request) {
   try {
@@ -7,17 +8,19 @@ export async function POST(request) {
     const { event, userName, userEmail, planName, provider, date } = body;
 
     const timestamp = date || new Date().toISOString();
-    const eventTitle = event === 'NEW_SUBSCRIBER_PAID'
-      ? '💳 Yeni Ödemeli Abonelik (₺300)'
-      : event === 'NEW_TRIAL'
-      ? '🌱 Yeni 2 Günlük Deneme Kaydı'
-      : '👤 Yeni Abone Girişi';
+    const eventTitle = event === 'NEW_PREMIUM_SUBSCRIBER'
+      ? `💳 Yeni Ödemeli Reklamsız Premium (${APP_CONFIG.subscription.currencySymbol}${APP_CONFIG.subscription.priceNumber})`
+      : event === 'REGISTER'
+      ? '🌱 Yeni Ücretsiz Üye Kaydı'
+      : event === 'KARNEYN_ADMIN_LOGIN'
+      ? '🔑 Karneyn Admin VIP Girişi'
+      : '👤 Kullanıcı Girişi';
 
     const logPayload = {
       event: eventTitle,
       name: userName || 'Bilinmeyen Kullanıcı',
       email: userEmail || 'Bilinmeyen E-posta',
-      plan: planName || 'Ata Takvimi Aboneliği',
+      plan: planName || APP_CONFIG.subscription.planName,
       provider: provider || 'email',
       timestamp: timestamp
     };
@@ -26,7 +29,7 @@ export async function POST(request) {
 
     // 1. Send Automatic Welcome Email to Subscriber
     let mailResult = null;
-    if (userEmail && userEmail.includes('@')) {
+    if (userEmail && userEmail.includes('@') && !userEmail.includes('@ata.local')) {
       mailResult = await sendWelcomeEmail({
         toEmail: userEmail,
         userName: userName,
@@ -42,7 +45,7 @@ export async function POST(request) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            text: `🔔 *Ata Takvimi Yeni Abone Bildirimi*\n\n*Olay:* ${eventTitle}\n*İsim:* ${userName}\n*E-posta:* ${userEmail}\n*Paket:* ${planName}\n*Tarih:* ${timestamp}`
+            text: `🔔 *Ata Takvimi Yeni Bildirim*\n\n*Olay:* ${eventTitle}\n*İsim:* ${userName}\n*E-posta:* ${userEmail}\n*Paket:* ${planName}\n*Tarih:* ${timestamp}`
           })
         });
       } catch (err) {

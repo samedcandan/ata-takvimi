@@ -86,12 +86,12 @@ export default function PrivacyPolicyPage() {
             Mesafeli Satış Sözleşmesi Özeti
           </h2>
           <p>
-            İşbu sözleşme, Karneyn Yazılım Hizmetleri Ltd. Şti. ile <strong>Ata Takvimi Yıllık Lisans Aboneliği</strong> (₺300 / Yıl) satın alan Alıcı arasındaki mesafeli dijital hizmet satış koşullarını düzenler.
+            İşbu sözleşme, Karneyn Yazılım Hizmetleri Ltd. Şti. ile <strong>Ata Takvimi 1 Yıllık Reklamsız Premium Abonelik</strong> (₺200 / Yıl) satın alan Alıcı arasındaki mesafeli dijital hizmet satış koşullarını düzenler.
           </p>
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>Satıcı:</strong> Karneyn Yazılım Hizmetleri Ltd. Şti. (info@karneyn.com)</li>
-            <li><strong>Hizmet Konusu:</strong> Ata Takvimi dijital platformuna 1 Yıl (365 Gün) süresince sınırsız erişim hakkı.</li>
-            <li><strong>Ödeme Sağlayıcı:</strong> BDDK lisanslı İyzico Ödeme Hizmetleri A.Ş. altyapısı ile kredikartı/banka kartı tahsilatı.</li>
+            <li><strong>Hizmet Konusu:</strong> Ata Takvimi dijital platformuna 1 Yıl (365 Gün) süresince reklamsız tam erişim hakkı.</li>
+            <li><strong>Ödeme Sağlayıcı:</strong> BDDK lisanslı İyzico Ödeme Hizmetleri A.Ş. altyapısı ile kredi kartı / banka kartı tahsilatı.</li>
           </ul>
         </section>
 
@@ -102,10 +102,10 @@ export default function PrivacyPolicyPage() {
             Teslimat & İade Politikası
           </h2>
           <p>
-            <strong>Anında Dijital Teslimat:</strong> Satın alma işleminiz veya 2 günlük ücretsiz deneme kaydınız tamamlandığı anda hesabınıza dijital erişim hakkı tanımlanır. Fiziksel kargo veya sevkiyat bulunmamaktadır.
+            <strong>Anında Dijital Teslimat:</strong> Satın alma işleminiz tamamlandığı anda hesabınıza reklamsız premium erişim hakkı anında tanımlanır. Fiziksel kargo veya sevkiyat bulunmamaktadır.
           </p>
           <p>
-            <strong>İade Hakkı:</strong> 6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca, elektronik ortamda anında ifa edilen dijital içeriklerde hizmet kullanımı başlamadan önce 14 gün içinde koşulsuz iade hakkınız mevcuttur. Taleplerinizi <code>info@karneyn.com</code> adresine iletebilirsiniz.
+            <strong>İade Hakkı:</strong> 6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca, elektronik ortamda anında ifa edilen dijital içeriklerde 14 gün içinde koşulsuz iade hakkınız mevcuttur. Taleplerinizi <code>info@karneyn.com</code> adresine iletebilirsiniz.
           </p>
         </section>
 

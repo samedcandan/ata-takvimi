@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Calendar, Sprout, BookOpen, MapPin, Moon, LogIn, LogOut, User, Sparkles, Star, Clock, Bell } from 'lucide-react';
+import { Calendar, Sprout, BookOpen, MapPin, Moon, LogIn, LogOut, User, Sparkles, Star, Bell } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
 import SubscriptionModal from './SubscriptionModal';
 import NotificationModal from './NotificationModal';
+import { APP_CONFIG } from '../lib/config';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -21,8 +22,7 @@ export default function Navbar() {
     setShowCityModal,
     selectedCity,
     hasActiveSubscription, 
-    isTrialActive, 
-    daysLeft 
+    isAdFree
   } = useAuth();
 
   const navItems = [
@@ -81,29 +81,26 @@ export default function Navbar() {
             <span className="w-2 h-2 rounded-full bg-harvest-400 absolute top-1 right-1 animate-pulse" />
           </button>
 
-          {/* Subscription Button Badge */}
+          {/* Premium / Ad-Free Badge Button */}
           <button
             onClick={() => setShowSubModal(true)}
             className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-transform hover:scale-105 shrink-0 ${
-              hasActiveSubscription
+              isAdFree
                 ? 'bg-emerald-600 text-white'
-                : isTrialActive
-                ? 'bg-amber-500 text-white border border-amber-400'
                 : 'badge-gold text-forest-900 border border-harvest-400'
             }`}
           >
-            {hasActiveSubscription ? (
-              <Star className="w-3.5 h-3.5 fill-current text-amber-300" />
+            {isAdFree ? (
+              <>
+                <Star className="w-3.5 h-3.5 fill-current text-amber-300" />
+                <span className="hidden sm:inline-block">👑 Reklamsız VIP</span>
+              </>
             ) : (
-              <Clock className="w-3.5 h-3.5" />
+              <>
+                <Sparkles className="w-3.5 h-3.5 text-harvest-600" />
+                <span className="hidden sm:inline-block">Reklamı Kaldır ({APP_CONFIG.subscription.currencySymbol}{APP_CONFIG.subscription.priceNumber})</span>
+              </>
             )}
-            <span className="hidden sm:inline-block">
-              {hasActiveSubscription
-                ? '👑 VIP Abone'
-                : isTrialActive
-                ? `⏳ ${daysLeft} Gün Deneme`
-                : 'Abone Ol'}
-            </span>
           </button>
 
           {/* City Selector Button */}
@@ -142,8 +139,8 @@ export default function Navbar() {
                       <p className="font-bold text-forest-900 truncate">{user.name}</p>
                       <p className="text-[10px] text-forest-800/60 truncate">{user.email}</p>
                       <div className="flex items-center gap-1 mt-1">
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${hasActiveSubscription ? 'bg-emerald-100 text-emerald-800' : isTrialActive ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'}`}>
-                          {hasActiveSubscription ? '👑 VIP Yıllık Abone' : isTrialActive ? `⏳ ${daysLeft} Gün Deneme` : '⚠️ Süresi Doldu'}
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${isAdFree ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-50 text-emerald-700'}`}>
+                          {isAdFree ? '👑 Reklamsız Premium' : '🌾 Ücretsiz Plan (Reklamlı)'}
                         </span>
                       </div>
                     </div>
@@ -168,7 +165,7 @@ export default function Navbar() {
                     className="w-full flex items-center gap-2 p-2 rounded-xl text-forest-900 font-bold hover:bg-forest-50 transition-colors text-left"
                   >
                     <Sparkles className="w-4 h-4 text-harvest-500" />
-                    Aboneliğimi Yönet (₺300/Yıl)
+                    {isAdFree ? 'Abonelik Detayları' : `Reklamları Kaldır (${APP_CONFIG.subscription.currencySymbol}${APP_CONFIG.subscription.priceNumber}/Yıl)`}
                   </button>
 
                   <Link

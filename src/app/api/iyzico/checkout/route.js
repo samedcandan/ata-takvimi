@@ -1,21 +1,22 @@
 import { NextResponse } from 'next/server';
 import { iyzicoRequest } from '../../../../lib/iyzico';
+import { APP_CONFIG } from '../../../../lib/config';
 
 export async function POST(request) {
   try {
     const body = await request.json();
     const { userEmail, userName, userPhone, userId, callbackUrl } = body;
 
-    const price = "300.00";
+    const price = APP_CONFIG.subscription.price; // "200.00"
     const conversationId = `ATA-${Date.now()}`;
-    const defaultCallback = callbackUrl || "https://atatakvimi.karneyn.com/api/iyzico/callback";
+    const defaultCallback = callbackUrl || `${APP_CONFIG.domain}/api/iyzico/callback`;
 
     const requestData = {
       locale: "tr",
       conversationId: conversationId,
       price: price,
       paidPrice: price,
-      currency: "TRY",
+      currency: APP_CONFIG.subscription.currency,
       basketId: `BASKET-${userId || Date.now()}`,
       paymentGroup: "SUBSCRIPTION",
       callbackUrl: defaultCallback,
@@ -29,25 +30,25 @@ export async function POST(request) {
         identityNumber: "11111111110",
         registrationAddress: "Anadolu Mah. Tarım Cad. No:1",
         ip: "127.0.0.1",
-        city: "Istanbul",
+        city: "Konya",
         country: "Turkey"
       },
       shippingAddress: {
         contactName: userName || "Ata Çiftçisi",
-        city: "Istanbul",
+        city: "Konya",
         country: "Turkey",
         address: "Anadolu Mah. Tarım Cad. No:1"
       },
       billingAddress: {
         contactName: userName || "Ata Çiftçisi",
-        city: "Istanbul",
+        city: "Konya",
         country: "Turkey",
         address: "Anadolu Mah. Tarım Cad. No:1"
       },
       basketItems: [
         {
-          id: "ATA-SUB-YEARLY-300",
-          name: "Ata Takvimi Yıllık Çiftçi Aboneliği",
+          id: APP_CONFIG.subscription.basketItemId,
+          name: APP_CONFIG.subscription.basketItemName,
           category1: "Yazılım",
           category2: "Abonelik",
           itemType: "VIRTUAL",

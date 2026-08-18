@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { APP_CONFIG } from './config';
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -11,10 +12,10 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendWelcomeEmail({ toEmail, userName, planName }) {
-  const isPaid = planName && planName.includes('₺300');
+  const isPaid = planName && (planName.includes('200') || planName.includes('Premium'));
   const subject = isPaid
-    ? '🎉 Ata Takvimi Yıllık Çiftçi Aboneliğiniz Aktif Edildi!'
-    : '🌱 Ata Takvimi\'ne Hoş Geldiniz — 2 Günlük Denemeniz Başladı';
+    ? `🎉 ${APP_CONFIG.appName} 1 Yıllık Reklamsız Premium Aboneliğiniz Aktif Edildi!`
+    : `🌱 ${APP_CONFIG.appName}'ne Hoş Geldiniz!`;
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -38,34 +39,34 @@ export async function sendWelcomeEmail({ toEmail, userName, planName }) {
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">🌱 Ata Takvimi</div>
+            <div class="logo">🌱 ${APP_CONFIG.appName}</div>
             <div class="title">Aramıza Hoş Geldiniz!</div>
-            <div class="badge">${isPaid ? '👑 Yıllık Ata Çiftçisi Abonesi' : '⏳ 2 Gün Ücretsiz Tam Erişim'}</div>
+            <div class="badge">${isPaid ? '👑 1 Yıllık Reklamsız Premium' : '🌾 Ücretsiz Kullanıcı'}</div>
           </div>
 
           <div class="content">
-            <p>Sayın <strong>${userName || 'Değerli Çiftçimiz'}</strong>,</p>
+            <p>Sayın <strong>${userName || 'Değerli Kullanıcımız'}</strong>,</p>
             <p>
-              Anadolu'nun bin yıllık toprak tecrübesini astronomik ay evreleri ve 81 il hava tahminleriyle buluşturan <strong>Ata Takvimi</strong> ailesine katıldığınız için teşekkür ederiz.
+              Anadolu'nun bin yıllık toprak tecrübesini astronomik ay evreleri ve 81 il hava tahminleriyle buluşturan <strong>${APP_CONFIG.appName}</strong> ailesine katıldığınız için teşekkür ederiz.
             </p>
 
             <div class="feature-box">
-              <div style="font-weight:bold; color:#f3be53; margin-bottom:8px; font-size:14px;">🌟 Hesabınızla Erişebileceğiniz Ayrıcalıklar:</div>
-              <div class="feature-item">✓ <strong>365 Gün Anadolu Halk & Kocakarı Takvimi:</strong> Cemre, fırtına ve nadas dönemleri.</div>
-              <div class="feature-item">✓ <strong>Astronomik Ay Evreleri Motoru:</strong> Jean MeeusUTC hassas ekim & dikim takvimi.</div>
-              <div class="feature-item">✓ <strong>81 İl Zirai Hava Raporu:</strong> Canlı don, yüksek yağış ve rüzgar uyarıları.</div>
-              <div class="feature-item">✓ <strong>45 Ürün Vektör Rehberi & Ajanda:</strong> İleri/geri tarihli kişisel tarla notları.</div>
+              <div style="font-weight:bold; color:#f3be53; margin-bottom:8px; font-size:14px;">🌟 Ayrıcalıklarınız:</div>
+              <div class="feature-item">✓ <strong>365 Gün Anadolu Halk Takvimi:</strong> Cemre, fırtına ve mevsim döngüleri.</div>
+              <div class="feature-item">✓ <strong>Astronomik Ay Evreleri:</strong> Hassas ekim, dikim ve hasat tavsiyeleri.</div>
+              <div class="feature-item">✓ <strong>81 İl Zirai Hava Raporu:</strong> Canlı don, aşırı yağış ve rüzgar uyarıları.</div>
+              <div class="feature-item">✓ <strong>Kişisel Notlar & Hatırlatıcılar:</strong> Tarlanızı ve bahçenizi kolayca takip edin.</div>
             </div>
 
             <p style="font-size:12px; color:#a7f3d0;">
               Hesabınızla hemen giriş yapabilir, takvim ve hava durumunuzu canlı olarak takip edebilirsiniz.
             </p>
 
-            <a href="https://atatakvimi.karneyn.com" class="btn">Ata Takvimi'ne Giriş Yap 🚀</a>
+            <a href="${APP_CONFIG.domain}" class="btn">Ata Takvimi'ne Giriş Yap 🚀</a>
           </div>
 
           <div class="footer">
-            <p>© 2026 Ata Takvimi — Bir Karneyn Yazılım Hizmetleri Ltd. Şti. Ürünüdür.</p>
+            <p>© 2026 ${APP_CONFIG.appName} — Bir ${APP_CONFIG.company} Ürünüdür.</p>
             <p>Destek ve İletişim: info@karneyn.com | www.karneyn.com</p>
           </div>
         </div>
@@ -75,7 +76,7 @@ export async function sendWelcomeEmail({ toEmail, userName, planName }) {
 
   try {
     const info = await transporter.sendMail({
-      from: '"Ata Takvimi — Karneyn Yazılım" <info@karneyn.com>',
+      from: `"${APP_CONFIG.appName} — Karneyn Yazılım" <info@karneyn.com>`,
       to: toEmail,
       subject: subject,
       html: htmlContent

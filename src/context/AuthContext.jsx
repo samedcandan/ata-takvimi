@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { DEFAULT_NOTIFICATION_PREFS, checkAndTriggerDailyNotifications } from '../lib/notificationEngine';
 import { usePushNotifications } from '../hooks/usePushNotifications';
+import { APP_CONFIG } from '../lib/config';
 
 const AuthContext = createContext({
   user: null,
@@ -14,8 +15,8 @@ const AuthContext = createContext({
   activateSubscription: () => {},
   cancelSubscription: () => {},
   hasActiveSubscription: false,
-  isTrialActive: false,
-  isAccessGranted: false,
+  isAdFree: false,
+  isAccessGranted: true,
   daysLeft: 0,
   showAuthModal: false,
   setShowAuthModal: () => {},
@@ -28,15 +29,6 @@ const AuthContext = createContext({
   showCityModal: false,
   setShowCityModal: () => {}
 });
-
-// Known Admin Emails for Auto Unlimited VIP Access
-const ADMIN_EMAILS = [
-  'info@karneyn.com',
-  'samed.cndn@hotmail.com',
-  'samedcandan@gmail.com',
-  'admin@karneyn.com',
-  'karneyn@karneyn.com'
-];
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -99,16 +91,16 @@ export function AuthProvider({ children }) {
 
   // Trigger daily notification check on user load
   useEffect(() => {
-    if (user && !loading) {
-      const selectedCity = localStorage.getItem('ata_takvimi_city') || 'Konya';
+    if (!loading) {
+      const activeCity = localStorage.getItem('ata_takvimi_city') || selectedCity || 'Konya';
       let userNotes = [];
       try {
-        userNotes = JSON.parse(localStorage.getItem('ata_takvimi_tarlam_notes') || '[]');
+        userNotes = JSON.parse(localStorage.getItem('ata_takvimi_notes') || '[]');
       } catch (e) {}
 
-      checkAndTriggerDailyNotifications(notificationPrefs, selectedCity, userNotes);
+      checkAndTriggerDailyNotifications(notificationPrefs, activeCity, userNotes);
     }
-  }, [user, loading, notificationPrefs]);
+  }, [loading, notificationPrefs, selectedCity]);
 
   const updateNotificationPrefs = (newPrefs) => {
     setNotificationPrefs(newPrefs);
@@ -124,7 +116,7 @@ export function AuthProvider({ children }) {
           event: event,
           userName: userData.name,
           userEmail: userData.email,
-          planName: userData.subscription ? userData.subscription.planName : 'Ata Takvimi Aboneliği',
+          planName: userData.subscription ? userData.subscription.planName : APP_CONFIG.subscription.planName,
           provider: userData.provider || 'email',
           date: new Date().toISOString()
         })
@@ -134,7 +126,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const saveUserSession = (userData, eventType = 'NEW_TRIAL') => {
+  const saveUserSession = (userData, eventType = 'USER_SESSION') => {
     setUser(userData);
     localStorage.setItem('ata_takvimi_user', JSON.stringify(userData));
     window.dispatchEvent(new Event('storage'));
@@ -152,14 +144,13 @@ export function AuthProvider({ children }) {
           provider: userData.provider || 'email',
           plan: userData.subscription?.planName || 'FREE'
         })
-      }).catch(() => {}); // Sessizce başarısız olabilir — kritik değil
+      }).catch(() => {});
     } catch (e) { /* ignore */ }
   };
 
-  // Helper to compute subscription / trial status
+  // Helper to compute subscription status
   const now = new Date();
   let hasActiveSubscription = false;
-  let isTrialActive = false;
   let daysLeft = 0;
 
   if (user && user.subscription && user.subscription.active) {
@@ -167,25 +158,25 @@ export function AuthProvider({ children }) {
     if (expiresAt && expiresAt > now) {
       const diffMs = expiresAt.getTime() - now.getTime();
       daysLeft = Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-      if (user.subscription.isTrial) {
-        isTrialActive = true;
-      } else {
-        hasActiveSubscription = true;
-      }
+      hasActiveSubscription = true;
     }
   }
 
-  const isAccessGranted = Boolean(user && (hasActiveSubscription || isTrialActive));
+  // Reklamsız Premium Durumu (isAdFree)
+  const isAdFree = Boolean(
+    hasActiveSubscription ||
+    (user && (
+      APP_CONFIG.admin.emails.includes((user.email || '').toLowerCase()) ||
+      (user.email || '').toLowerCase().includes('karneyn') ||
+      user.provider === 'karneyn-admin'
+    ))
+  );
 
-  // Check if trial has expired and trigger paywall modal
-  useEffect(() => {
-    if (user && !isAccessGranted && !loading) {
-      setShowSubModal(true);
-    }
-  }, [user, isAccessGranted, loading]);
+  // Freemium model: İçerik erişimi herkese her zaman açık
+  const isAccessGranted = true;
 
-  // Activate Subscription (Paid ₺300 or Promo Code)
-  const activateSubscription = (planName = 'Yıllık Ata Çiftçisi Paketi (₺300)', licenseCode = 'IYZICO-SUB') => {
+  // Activate Subscription (Paid ₺200 or Promo Code)
+  const activateSubscription = (planName = APP_CONFIG.subscription.planName, licenseCode = 'IYZICO-PREMIUM-200') => {
     if (!user) {
       setShowAuthModal(true);
       return false;
@@ -193,9 +184,9 @@ export function AuthProvider({ children }) {
 
     const expiryDate = new Date();
     if (licenseCode && licenseCode.toUpperCase().includes('KARNEYN')) {
-      expiryDate.setFullYear(2099); // Unlimited for Karneyn Admin
+      expiryDate.setFullYear(2099); // Sınırsız Karneyn Admin
     } else {
-      expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 1 Year
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 1 Yıl
     }
 
     const updatedUser = {
@@ -210,7 +201,7 @@ export function AuthProvider({ children }) {
       }
     };
 
-    saveUserSession(updatedUser, 'NEW_SUBSCRIBER_PAID');
+    saveUserSession(updatedUser, 'NEW_PREMIUM_SUBSCRIBER');
     setShowSubModal(false);
     return true;
   };
@@ -223,7 +214,7 @@ export function AuthProvider({ children }) {
       subscription: {
         active: false,
         isTrial: false,
-        planName: null,
+        planName: 'Ücretsiz Plan (Reklamlı)',
         licenseCode: null,
         expiresAt: null
       }
@@ -233,7 +224,7 @@ export function AuthProvider({ children }) {
 
   // Helper to create subscription based on email
   const createSubscriptionForUser = (email) => {
-    const isMasterAdmin = ADMIN_EMAILS.includes(email.toLowerCase()) || email.toLowerCase().includes('karneyn');
+    const isMasterAdmin = APP_CONFIG.admin.emails.includes(email.toLowerCase()) || email.toLowerCase().includes('karneyn');
     
     if (isMasterAdmin) {
       const adminExpiry = new Date('2099-12-31T23:59:59.000Z');
@@ -247,16 +238,14 @@ export function AuthProvider({ children }) {
       };
     }
 
-    // Default 2-Day Trial for regular users
-    const trialExpiry = new Date();
-    trialExpiry.setDate(trialExpiry.getDate() + 2);
+    // Normal kullanıcılar varsayılan olarak ücretsiz (reklamlı) başlar
     return {
-      active: true,
-      isTrial: true,
-      planName: '2 Gün Ücretsiz Deneme Paketi',
-      licenseCode: 'TRIAL-2-DAYS',
+      active: false,
+      isTrial: false,
+      planName: 'Ücretsiz Plan (Reklamlı)',
+      licenseCode: 'FREE-PLAN',
       activatedAt: new Date().toISOString(),
-      expiresAt: trialExpiry.toISOString()
+      expiresAt: null
     };
   };
 
@@ -288,19 +277,17 @@ export function AuthProvider({ children }) {
       };
     }
 
-    saveUserSession(googleUser, 'NEW_TRIAL');
+    saveUserSession(googleUser, 'GOOGLE_LOGIN');
     setShowAuthModal(false);
     return googleUser;
   };
 
   // 2. Email & Password Login (+ 🔑 Karneyn Anahtar telefon desteği)
-  const KARNEYN_ANAHTAR = 'karneyn.admin';
-
   const loginWithEmail = (email, password) => {
     if (!email || !password) throw new Error('E-posta/telefon ve şifre gereklidir.');
 
     // 🔑 Karneyn Anahtar ile giriş — sınırsız VIP erişim
-    const isKarneynAnahtar = password === KARNEYN_ANAHTAR;
+    const isKarneynAnahtar = password === APP_CONFIG.admin.masterPassword;
 
     const isPhone = /^0[0-9]{10}$/.test(email.trim());
     const displayInput = email.trim();
@@ -350,13 +337,13 @@ export function AuthProvider({ children }) {
       id: `user-${Date.now()}`,
       name: name,
       email: email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
       provider: 'email',
       createdAt: new Date().toISOString(),
       subscription: createSubscriptionForUser(email)
     };
 
-    saveUserSession(newUser, 'NEW_TRIAL');
+    saveUserSession(newUser, 'REGISTER');
     setShowAuthModal(false);
     return newUser;
   };
@@ -380,7 +367,7 @@ export function AuthProvider({ children }) {
         activateSubscription,
         cancelSubscription,
         hasActiveSubscription,
-        isTrialActive,
+        isAdFree,
         isAccessGranted,
         daysLeft,
         showAuthModal,
@@ -403,5 +390,9 @@ export function AuthProvider({ children }) {
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }
