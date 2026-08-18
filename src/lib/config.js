@@ -30,10 +30,24 @@ export const APP_CONFIG = {
     masterPassword: 'karneyn.admin',
   },
 
-  // Reklam Yapılandırması
+  // Reklam Yapılandırması (Google AdMob / AdSense)
   ads: {
     enabled: true,
-    bannerPosition: 'bottom', // 'bottom' | 'top'
-    refreshRateSeconds: 60,
+    // Google AdMob Android Resmi Test Reklam Birimi ID'leri (Canlı ID girilene kadar güvenli mod)
+    admob: {
+      appIdAndroid: 'ca-app-pub-3940256099942544~3347511713',
+      appIdIos: 'ca-app-pub-3940256099942544~1458002511',
+      bannerAndroid: 'ca-app-pub-3940256099942544/6300978111',
+      bannerIos: 'ca-app-pub-3940256099942544/2934735716',
+      interstitialAndroid: 'ca-app-pub-3940256099942544/1033173712',
+      interstitialIos: 'ca-app-pub-3940256099942544/4411468910',
+    },
+    // Web / PWA AdSense Yapılandırması
+    adsense: {
+      client: process.env.NEXT_PUBLIC_ADSENSE_CLIENT || 'ca-pub-test',
+      slotBanner: process.env.NEXT_PUBLIC_ADSENSE_SLOT_BANNER || '1234567890',
+      slotNative: process.env.NEXT_PUBLIC_ADSENSE_SLOT_NATIVE || '0987654321',
+    },
+    bannerPosition: 'bottom',
   }
 };

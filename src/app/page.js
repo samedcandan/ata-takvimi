@@ -6,6 +6,7 @@ import { getLunarMilestoneEvents } from '../lib/moonCalc';
 import MoonIcon from '../components/MoonIcon';
 import GlassIcon from '../components/GlassIcon';
 import WeatherCard from '../components/WeatherCard';
+import NativeAdCard from '../components/NativeAdCard';
 import { Calendar, ChevronDown, Sparkles, MapPin, Tag } from 'lucide-react';
 
 const MONTHS = [
@@ -203,11 +204,17 @@ export default function HomePage() {
       {/* 3-Day Agricultural Weather Forecast */}
       <WeatherCard />
 
+      {/* Sponsor Native Ad Card 1 */}
+      <NativeAdCard index={0} />
+
       {/* Timeline */}
-      {order.map((monthName) => {
+      {order.map((monthName, mIdx) => {
         const monthEvents = groups[monthName];
         return (
           <div key={monthName} className="space-y-3">
+            {/* Native Ad between 2nd month */}
+            {mIdx === 2 && <NativeAdCard index={1} />}
+
             {/* Month Header */}
             <div className="sticky top-16 z-10 flex items-center gap-3 py-2">
               <div className="bg-forest-800 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-md">

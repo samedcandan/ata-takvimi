@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Sprout, Search, Calendar, Droplets, Moon, ShieldCheck } from 'lucide-react';
 import { CROPS_GUIDE } from '../../data/ekim-rehberi';
 import GlassIcon from '../../components/GlassIcon';
+import NativeAdCard from '../../components/NativeAdCard';
 
 export default function CropsGuidePage() {
   const [search, setSearch] = useState('');
@@ -125,6 +126,9 @@ export default function CropsGuidePage() {
           </div>
         ))}
       </div>
+
+      {/* Sponsorlu Reklam Kartı */}
+      <NativeAdCard index={2} />
     </div>
   );
 }

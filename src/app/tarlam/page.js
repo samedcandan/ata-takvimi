@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { BookOpen, Plus, Trash2, Calendar, MapPin, Sprout, Moon, ShieldCheck, Tag, Clock } from 'lucide-react';
 import { CROPS_GUIDE } from '../../data/ekim-rehberi';
 import GlassIcon from '../../components/GlassIcon';
+import NativeAdCard from '../../components/NativeAdCard';
 
 export default function MyFieldNotesPage() {
   const [notes, setNotes] = useState([]);
@@ -406,6 +407,8 @@ export default function MyFieldNotesPage() {
         </div>
       </div>
     )}
+      {/* Sponsorlu Reklam Alanı */}
+      <NativeAdCard index={0} />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { HALK_TAKVIMI_EVENTS } from '../../data/halk-takvimi';
 import { CROPS_GUIDE } from '../../data/ekim-rehberi';
 import MoonIcon from '../../components/MoonIcon';
 import GlassIcon from '../../components/GlassIcon';
+import NativeAdCard from '../../components/NativeAdCard';
 
 const MONTH_NAMES = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -286,6 +287,9 @@ export default function CalendarPage() {
           )}
         </div>
       </div>
+
+      {/* Sponsorlu Reklam Alanı */}
+      <NativeAdCard index={1} />
     </div>
   );
 }
