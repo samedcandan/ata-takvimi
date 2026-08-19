@@ -88,10 +88,24 @@ export function getMoonPhase(date = new Date()) {
     agricultureAdvice = "Ağaç budamaları, kereste kesimi ve zararlılarla mücadele için tavsiye edilir.";
   }
 
-  // Force 0% illumination display for Karanlık Ay (Dark Moon) phase
+  // Display illumination consistent with visual MoonIcon rendering
   const isDarkMoon = phaseName.includes("Karanlık Ay");
-  const displayIllumination = isDarkMoon ? 0 : astronomicalIllumination;
-  const displayLinearIllumination = isDarkMoon ? 0 : linearIllumination;
+  let displayIllumination = astronomicalIllumination;
+  let displayLinearIllumination = linearIllumination;
+
+  if (isDarkMoon) {
+    // Karanlık Ay: tamamen karanlık
+    displayIllumination = 0;
+    displayLinearIllumination = 0;
+  } else if (lunarAge < 1.0) {
+    // Yeni Ay 1. gün: minimum %2 aydınlık
+    displayIllumination = Math.max(displayIllumination, 2);
+    displayLinearIllumination = Math.max(displayLinearIllumination, 2);
+  } else if (lunarAge < 2.0) {
+    // Yeni Ay 2. gün: minimum %3 aydınlık
+    displayIllumination = Math.max(displayIllumination, 3);
+    displayLinearIllumination = Math.max(displayLinearIllumination, 3);
+  }
 
   return {
     lunarAge: Math.round(lunarAge * 10) / 10,
