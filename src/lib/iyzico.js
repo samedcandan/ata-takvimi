@@ -1,34 +1,31 @@
-import crypto from 'crypto';
+import Iyzipay from 'iyzipay';
 
 const API_KEY = process.env.IYZICO_API_KEY || 'ryzh5T3SFuM4EY6Ur4VtglEymNyaQT1K';
 const SECRET_KEY = process.env.IYZICO_SECRET_KEY || 'qol0r0cgeuNnNojYYpr4lTJr9qtrd9vg';
 const BASE_URL = process.env.IYZICO_BASE_URL || 'https://api.iyzipay.com';
 
-function generateAuthorizationHeader(uri, requestBody) {
-  const randomString = Math.random().toString(36).substring(2, 14);
-  const jsonBody = JSON.stringify(requestBody);
-  
-  const signature = crypto
-    .createHmac('sha256', SECRET_KEY)
-    .update(randomString + uri + jsonBody)
-    .digest('hex');
-    
-  const authStr = `apiKey:${API_KEY}&randomKey:${randomString}&signature:${signature}`;
-  return `IYZWSv2 ${Buffer.from(authStr).toString('base64')}`;
-}
+export const iyzipay = new Iyzipay({
+  apiKey: API_KEY,
+  secretKey: SECRET_KEY,
+  uri: BASE_URL
+});
 
-export async function iyzicoRequest(path, body) {
-  const authorization = generateAuthorizationHeader(path, body);
-
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': authorization,
-      'x-iyzi-rnd': Math.random().toString(36).substring(2, 14)
-    },
-    body: JSON.stringify(body)
+export function createCheckoutForm(requestData) {
+  return new Promise((resolve, reject) => {
+    iyzipay.checkoutFormInitialize.create(requestData, (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
   });
-
-  return res.json();
 }
+
+export function retrieveCheckoutForm(token) {
+  return new Promise((resolve, reject) => {
+    iyzipay.checkoutForm.retrieve({ locale: Iyzipay.LOCALE.TR, token: token }, (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
+}
+
+export { Iyzipay };

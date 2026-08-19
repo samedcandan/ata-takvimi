@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { iyzicoRequest } from '../../../../lib/iyzico';
+import { retrieveCheckoutForm } from '../../../../lib/iyzico';
 import { APP_CONFIG } from '../../../../lib/config';
 
 export async function POST(request) {
@@ -11,10 +11,7 @@ export async function POST(request) {
       return NextResponse.redirect(`${APP_CONFIG.domain}/?status=error&message=token_missing`);
     }
 
-    const result = await iyzicoRequest('/payment/iyzipay/checkoutform/auth/ecom/detail', {
-      locale: 'tr',
-      token: token
-    });
+    const result = await retrieveCheckoutForm(token);
 
     if (result.status === 'success' && result.paymentStatus === 'SUCCESS') {
       const html = `

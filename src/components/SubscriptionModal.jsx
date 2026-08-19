@@ -47,14 +47,21 @@ export default function SubscriptionModal() {
 
       const data = await res.json();
 
-      if (data.status === 'success' && data.checkoutFormContent) {
-        // İyzico iframe / form içeriğini render et
-        const container = document.getElementById('iyzico-checkout-container');
-        if (container) {
-          container.innerHTML = data.checkoutFormContent;
-          const scripts = container.getElementsByTagName('script');
-          for (let i = 0; i < scripts.length; i++) {
-            eval(scripts[i].innerText);
+      if (data.status === 'success') {
+        if (data.paymentPageUrl) {
+          setMessage('İyzico Güvenli 3D Ödeme Sayfasına Yönlendiriliyorsunuz...');
+          setTimeout(() => {
+            window.location.href = data.paymentPageUrl;
+          }, 300);
+          return;
+        } else if (data.checkoutFormContent) {
+          const container = document.getElementById('iyzico-checkout-container');
+          if (container) {
+            container.innerHTML = data.checkoutFormContent;
+            const scripts = container.getElementsByTagName('script');
+            for (let i = 0; i < scripts.length; i++) {
+              eval(scripts[i].innerText);
+            }
           }
         }
       } else {
