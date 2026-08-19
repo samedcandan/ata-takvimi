@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { retrieveCheckoutForm } from '../../../../lib/iyzico';
 import { APP_CONFIG } from '../../../../lib/config';
+import { query } from '../../../../lib/db';
 
 export async function POST(request) {
   try {
@@ -14,6 +15,16 @@ export async function POST(request) {
     const result = await retrieveCheckoutForm(token);
 
     if (result.status === 'success' && result.paymentStatus === 'SUCCESS') {
+      // Ortak Karneyn saas_transactions tablosuna tahsilat kaydı at
+      try {
+        await query(
+          `INSERT INTO saas_transactions (project, amount, currency, method, description, customer_email, payment_id, status, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+          ['atatakvimi', parseFloat(APP_CONFIG.subscription.price) || 300, 'TRY', 'iyzico', `${APP_CONFIG.appName} ${APP_CONFIG.subscription.planName}`, result.buyerEmail || null, result.paymentId || token, 'SUCCESS']
+        );
+      } catch (dbErr) {
+        console.warn('saas_transactions kaydı atılamadı:', dbErr.message);
+      }
       const html = `
         <!DOCTYPE html>
         <html>
