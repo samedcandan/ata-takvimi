@@ -157,6 +157,7 @@ export default function CalendarPage() {
                   </span>
                   <div className="shrink-0 flex items-center justify-center">
                     <MoonIcon 
+                      lunarAge={moon.lunarAge}
                       illumination={moon.illumination}
                       linearIllumination={moon.linearIllumination} 
                       isGrowing={moon.isGrowing} 
@@ -216,10 +217,11 @@ export default function CalendarPage() {
           </h3>
           <div className="flex items-center gap-3">
             <MoonIcon 
+              lunarAge={selectedMoon.lunarAge}
               illumination={selectedMoon.illumination} 
               isGrowing={selectedMoon.isGrowing} 
               phaseName={selectedMoon.phaseName} 
-              size={34} 
+              size={36} 
             />
             <span className="text-xs bg-harvest-400 text-forest-900 font-bold px-3 py-1.5 rounded-full">
               {selectedMoon.phaseName} (%{selectedMoon.illumination} Aydınlık)
