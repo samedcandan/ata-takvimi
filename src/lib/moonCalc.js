@@ -41,8 +41,8 @@ export function getMoonPhase(date = new Date()) {
   let agricultureAdvice = "";
 
   // Exact Astronomical Boundaries & Anadolu Traditional Farming Advice
-  if (lunarAge >= 28.0) {
-    // 1. Karanlık Ay (Nadas / Eskiay) - lunarAge 28.0 .. 29.53
+  if (lunarAge >= 27.53) {
+    // 1. Karanlık Ay (Nadas / Eskiay) - lunarAge 27.53 .. 29.53 (Yeni Ay'dan önceki son 2 gün)
     phaseName = "Karanlık Ay (Nadas / Eskiay)";
     symbol = "🌑";
     agricultureAdvice = "Yeni Ay aydınlığı başlamadan önceki karanlık nadas evresi. Toprak dinlendirilir, tohum ekilmez. Ağaç budaması, kereste kesimi ve zararlılarla mücadele zamanıdır.";
@@ -82,7 +82,7 @@ export function getMoonPhase(date = new Date()) {
     symbol = "🌗";
     agricultureAdvice = "Budama, çapa, yabani ot temizliği ve organik gübreleme için mükemmel bir dönemdir.";
   } else {
-    // 9. Küçülen Hilal - lunarAge 22.7 .. 28.0 (Aydınlık %44 .. %3)
+    // 9. Küçülen Hilal - lunarAge 22.7 .. 27.53 (Aydınlık %44 .. %3)
     phaseName = "Küçülen Hilal";
     symbol = "🌘";
     agricultureAdvice = "Ağaç budamaları, kereste kesimi ve zararlılarla mücadele için tavsiye edilir.";
@@ -145,7 +145,7 @@ export function getLunarMilestoneEvents(startDate = new Date(), daysCount = 365)
         });
       }
       // 3. Karanlık Ay Başlangıcı
-      else if (prevPhase.lunarAge < 28.0 && curr.lunarAge >= 28.0) {
+      else if (prevPhase.lunarAge < 27.53 && curr.lunarAge >= 27.53) {
         events.push({
           month: d.getMonth() + 1,
           day: d.getDate(),

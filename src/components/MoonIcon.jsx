@@ -21,13 +21,22 @@ export default function MoonIcon({
   let pct = 0.5;
   let growing = isGrowing;
 
+  // Detect "Dark Moon" — last 2 days before New Moon (lunarAge >= 27.53)
+  const synodicMonth = 29.53058867;
+  let isDarkMoon = false;
+
   if (typeof lunarAge === 'number') {
-    const synodicMonth = 29.53058867;
     const normAge = ((lunarAge % synodicMonth) + synodicMonth) % synodicMonth;
     const phaseRatio = normAge / synodicMonth;
     growing = normAge < (synodicMonth / 2);
     // Linear illumination ratio for geometrical arc masking (0.0 to 1.0)
     pct = growing ? (phaseRatio * 2) : ((1 - phaseRatio) * 2);
+
+    // Force completely dark icon for the last 2 days before New Moon
+    if (normAge >= (synodicMonth - 2)) {
+      isDarkMoon = true;
+      pct = 0;
+    }
   } else {
     const effectiveIllum = typeof linearIllumination === 'number' ? linearIllumination : illumination;
     pct = Math.max(0, Math.min(100, effectiveIllum)) / 100;
@@ -37,7 +46,7 @@ export default function MoonIcon({
   pct = Math.max(0, Math.min(1, pct));
 
   const isFull = pct >= 0.98;
-  const isNew = pct <= 0.02;
+  const isNew = pct <= 0.02 || isDarkMoon;
 
   const r = 20;
   const cx = 24;
