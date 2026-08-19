@@ -38,13 +38,14 @@ export default function MoonIcon({
       pct = 0;
     }
 
-    // New Moon days: ensure minimum visible crescent (not fully dark)
-    // Day 1 (lunarAge 0-1): minimum 2% illumination
-    // Day 2 (lunarAge 1-2): minimum 3% illumination
+    // New Moon days: ensure minimum VISIBLE crescent (not fully dark)
+    // %2-3 values produce sub-pixel crescents (~0.4px) invisible on screen
+    // Day 1 (lunarAge 0-1): minimum 5% visual illumination (~1px crescent)
+    // Day 2 (lunarAge 1-2): minimum 8% visual illumination (~1.8px crescent)
     if (!isDarkMoon && normAge < 1.0) {
-      pct = Math.max(pct, 0.02);
+      pct = Math.max(pct, 0.05);
     } else if (!isDarkMoon && normAge < 2.0) {
-      pct = Math.max(pct, 0.03);
+      pct = Math.max(pct, 0.08);
     }
   } else {
     const effectiveIllum = typeof linearIllumination === 'number' ? linearIllumination : illumination;
