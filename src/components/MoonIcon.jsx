@@ -125,15 +125,17 @@ export default function MoonIcon({
           </mask>
         </defs>
 
-        {/* Outer subtle glow ring */}
-        <circle 
-          cx={cx} 
-          cy={cy} 
-          r={r + 1.5} 
-          fill="none" 
-          stroke="rgba(254, 240, 138, 0.3)" 
-          strokeWidth="1" 
-        />
+        {/* Outer subtle glow ring — hidden for dark moon */}
+        {!isNew && (
+          <circle 
+            cx={cx} 
+            cy={cy} 
+            r={r + 1.5} 
+            fill="none" 
+            stroke="rgba(254, 240, 138, 0.3)" 
+            strokeWidth="1" 
+          />
+        )}
 
         {/* 1. Base Dark Moon Sphere (Night side) */}
         <circle cx={cx} cy={cy} r={r} fill={`url(#darkMoon-${idSuffix})`} />
@@ -165,25 +167,29 @@ export default function MoonIcon({
           </g>
         )}
 
-        {/* 3. Glassmorphic Specular Reflection */}
-        <ellipse 
-          cx={cx} 
-          cy={cy - 7} 
-          rx={r - 3} 
-          ry={r / 2.2} 
-          fill={`url(#glassGlare-${idSuffix})`} 
-          transform={`rotate(-20 ${cx} ${cy - 7})`}
-        />
+        {/* 3. Glassmorphic Specular Reflection — hidden for dark moon */}
+        {!isNew && (
+          <ellipse 
+            cx={cx} 
+            cy={cy - 7} 
+            rx={r - 3} 
+            ry={r / 2.2} 
+            fill={`url(#glassGlare-${idSuffix})`} 
+            transform={`rotate(-20 ${cx} ${cy - 7})`}
+          />
+        )}
 
-        {/* 4. Polished Glass Rim Highlight */}
-        <circle 
-          cx={cx} 
-          cy={cy} 
-          r={r - 0.5} 
-          fill="none" 
-          stroke="rgba(255, 255, 255, 0.45)" 
-          strokeWidth="1" 
-        />
+        {/* 4. Polished Glass Rim Highlight — hidden for dark moon */}
+        {!isNew && (
+          <circle 
+            cx={cx} 
+            cy={cy} 
+            r={r - 0.5} 
+            fill="none" 
+            stroke="rgba(255, 255, 255, 0.45)" 
+            strokeWidth="1" 
+          />
+        )}
       </svg>
     </div>
   );
