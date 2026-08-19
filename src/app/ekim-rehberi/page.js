@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from 'react';
-import { Sprout, Search, Calendar, Droplets, Moon, ShieldCheck } from 'lucide-react';
+import { Sprout, Search, Calendar, Droplets, Moon, ShieldCheck, Lock, Star, Sparkles } from 'lucide-react';
 import { CROPS_GUIDE } from '../../data/ekim-rehberi';
 import GlassIcon from '../../components/GlassIcon';
 import NativeAdCard from '../../components/NativeAdCard';
+import { useAuth } from '../../context/AuthContext';
+import { APP_CONFIG } from '../../lib/config';
 
 export default function CropsGuidePage() {
+  const { isAdFree, setShowSubModal } = useAuth();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Hepsi');
 
@@ -22,19 +25,24 @@ export default function CropsGuidePage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       {/* Header */}
       <div className="glass-card rounded-3xl p-6 md:p-8 border border-forest-800/10">
         <div className="max-w-2xl">
           <div className="flex items-center gap-2 text-harvest-500 font-bold text-sm mb-2">
             <Sprout className="w-5 h-5" />
             <span>Tarımsal Ürün & Bakım Kılavuzu</span>
+            {!isAdFree && (
+              <span className="text-[10px] bg-amber-400 text-amber-950 font-extrabold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                👑 VIP Özellik
+              </span>
+            )}
           </div>
           <h1 className="text-3xl font-serif font-bold text-forest-900 leading-tight">
             Ekim, Dikim ve Bakım Rehberi
           </h1>
           <p className="text-sm text-forest-800/80 mt-2">
-            Hangi ürün ne zaman ekilir? Ay evresine göre budama ve gübreleme zamanı nedir? İhtiyacınız olan tüm tarımsal bilgiler.
+            Hangi ürün ne zaman ekilir? Ay evresine göre budama ve gübreleme zamanı nedir? 45 Anadolu ürününün ekim takvimi.
           </p>
         </div>
 
@@ -71,8 +79,36 @@ export default function CropsGuidePage() {
         </div>
       </div>
 
-      {/* Crops Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Non-Premium Locked Paywall Banner */}
+      {!isAdFree && (
+        <div className="glass-card-dark rounded-3xl p-6 md:p-8 border-2 border-harvest-400/60 shadow-2xl relative overflow-hidden text-center space-y-4">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-harvest-500/20 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="w-16 h-16 rounded-3xl bg-harvest-500/20 border border-harvest-400/40 flex items-center justify-center mx-auto text-harvest-400 shadow-inner">
+            <Lock className="w-8 h-8" />
+          </div>
+
+          <div className="max-w-md mx-auto space-y-2">
+            <h2 className="text-2xl font-serif font-bold text-white">
+              Ekim Rehberi Premium Abonelere Özeldir
+            </h2>
+            <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
+              45 Anadolu tarım ürününün ekim tarihleri, ay evresi tercihleri, sulama ve bakım ipuçlarına sınırsız erişmek için Premium üye olun.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowSubModal(true)}
+            className="px-8 py-3.5 rounded-2xl badge-gold text-forest-950 font-extrabold text-sm shadow-xl hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2 cursor-pointer"
+          >
+            <Sparkles className="w-4 h-4 text-forest-900" />
+            <span>👑 Hemen Abone Ol ve Kilidi Aç ({APP_CONFIG.subscription.currencySymbol}{APP_CONFIG.subscription.priceNumber} / Yıl)</span>
+          </button>
+        </div>
+      )}
+
+      {/* Crops Cards Grid (Blurred if not premium) */}
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ${!isAdFree ? 'filter blur-sm select-none pointer-events-none opacity-60' : ''}`}>
         {filteredCrops.map(crop => (
           <div
             key={crop.id}

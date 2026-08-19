@@ -171,15 +171,19 @@ export default function SubscriptionModal() {
           <div className="border-t border-emerald-500/20 pt-3 space-y-2 text-xs text-emerald-100">
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-harvest-400 shrink-0" />
-              <span><strong>0 Reklam:</strong> Tüm banner ve geçiş reklamları tamamen kalkar.</span>
+              <span><strong>🌾 Ekim & Bakım Rehberi:</strong> 45 Anadolu tarım ürününün tüm ekim ve bakım detaylarına tam erişim.</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-harvest-400 shrink-0" />
-              <span><strong>Hızlı & Temiz:</strong> Tam ekran, ferah takvim ve ekim rehberi.</span>
+              <span><strong>📖 Tarla Defteri & Notlarım:</strong> Sınırsız tarla, bahçe ve ekim notu kaydetme ve takip.</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-harvest-400 shrink-0" />
-              <span><strong>Tüm Cihazlarda:</strong> Hem mobil uygulamada hem webde geçerli.</span>
+              <span><strong>🚫 %100 Sıfır Reklam:</strong> Tüm banner ve reklamlar tamamen kalkar, tam ekran ferah deneyim.</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-harvest-400 shrink-0" />
+              <span><strong>📱 Tüm Cihazlarda:</strong> Hem mobilde hem webde tek abonelikle 1 yıl geçerli.</span>
             </div>
           </div>
 

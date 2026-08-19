@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { LogIn, LogOut, User, Sparkles, Star } from 'lucide-react';
+import { LogIn, LogOut, User, Sparkles, Star, Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
 import SubscriptionModal from './SubscriptionModal';
@@ -26,11 +26,18 @@ export default function Navbar() {
   } = useAuth();
 
   const navItems = [
-    { href: '/', label: 'Akış', iconImg: '/icons/nav-calendar.png' },
-    { href: '/takvim', label: 'Ay Takvimi', iconImg: '/icons/event-winter-solstice.png' },
-    { href: '/ekim-rehberi', label: 'Ekim Rehberi', iconImg: '/icons/nav-sprout.png' },
-    { href: '/tarlam', label: 'Notlarım', iconImg: '/icons/nav-journal.png' },
+    { href: '/', label: 'Akış', iconImg: '/icons/nav-calendar.png', isPremium: false },
+    { href: '/takvim', label: 'Ay Takvimi', iconImg: '/icons/event-winter-solstice.png', isPremium: false },
+    { href: '/ekim-rehberi', label: 'Ekim Rehberi', iconImg: '/icons/nav-sprout.png', isPremium: true },
+    { href: '/tarlam', label: 'Notlarım', iconImg: '/icons/nav-journal.png', isPremium: true },
   ];
+
+  const handleNavClick = (e, item) => {
+    if (item.isPremium && !isAdFree) {
+      e.preventDefault();
+      setShowSubModal(true);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 glass-card border-b border-forest-800/10 px-3 sm:px-4 py-2.5">
@@ -50,18 +57,32 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-1.5 bg-forest-800/5 p-1 rounded-2xl border border-forest-800/10">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
+            const isLocked = item.isPremium && !isAdFree;
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all ${
+                onClick={(e) => handleNavClick(e, item)}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all relative ${
                   isActive
                     ? 'bg-forest-800 text-white shadow-md'
+                    : isLocked
+                    ? 'text-forest-900/50 hover:text-forest-900 hover:bg-forest-800/5'
                     : 'text-forest-900/80 hover:bg-forest-800/10'
                 }`}
               >
-                <img src={item.iconImg} alt={item.label} className="w-5 h-5 object-contain" />
-                {item.label}
+                <img 
+                  src={item.iconImg} 
+                  alt={item.label} 
+                  className={`w-5 h-5 object-contain transition-opacity ${isLocked ? 'opacity-60' : 'opacity-100'}`} 
+                />
+                <span>{item.label}</span>
+                {isLocked && (
+                  <span className="text-[9px] bg-amber-400 text-amber-950 font-bold px-1.5 py-0.2 rounded-full flex items-center gap-0.5 shadow-xs">
+                    👑 VIP
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -97,7 +118,7 @@ export default function Navbar() {
             ) : (
               <>
                 <Sparkles className="w-3.5 h-3.5 text-harvest-600" />
-                <span className="hidden sm:inline-block">₺200 Reklamsız</span>
+                <span className="hidden sm:inline-block">👑 Abone Ol</span>
               </>
             )}
           </button>
@@ -143,11 +164,14 @@ export default function Navbar() {
                   
                   <Link
                     href="/tarlam"
-                    onClick={() => setShowUserDropdown(false)}
+                    onClick={(e) => {
+                      setShowUserDropdown(false);
+                      handleNavClick(e, { isPremium: true });
+                    }}
                     className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-forest-900 rounded-xl hover:bg-forest-50 transition-colors"
                   >
                     <img src="/icons/nav-journal.png" alt="Notlarım" className="w-4 h-4 object-contain" />
-                    Tarla Notlarım
+                    Tarla Notlarım {!isAdFree && '👑'}
                   </Link>
 
                   <button
@@ -175,21 +199,37 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Bottom Bar — Includes Dedicated Profile Tab */}
+      {/* Mobile Bottom Bar */}
       <div className="md:hidden flex justify-between items-center mt-2 pt-2 border-t border-forest-800/10 px-1 text-xs">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
+          const isLocked = item.isPremium && !isAdFree;
+
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg transition-all ${
+              onClick={(e) => handleNavClick(e, item)}
+              className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg transition-all relative ${
                 isActive 
                   ? 'text-forest-900 font-extrabold scale-105' 
-                  : 'text-forest-900/60 hover:text-forest-900'
+                  : isLocked
+                  ? 'text-forest-900/40 hover:text-forest-900'
+                  : 'text-forest-900/70 hover:text-forest-900'
               }`}
             >
-              <img src={item.iconImg} alt={item.label} className="w-5 h-5 object-contain" />
+              <div className="relative">
+                <img 
+                  src={item.iconImg} 
+                  alt={item.label} 
+                  className={`w-5 h-5 object-contain ${isLocked ? 'opacity-50' : 'opacity-100'}`} 
+                />
+                {isLocked && (
+                  <span className="absolute -top-1 -right-2 text-[8px] bg-amber-400 text-amber-950 font-bold px-1 rounded-full">
+                    👑
+                  </span>
+                )}
+              </div>
               <span className="text-[10px]">{item.label}</span>
             </Link>
           );

@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { BookOpen, Plus, Trash2, Calendar, MapPin, Sprout, Moon, ShieldCheck, Tag, Clock } from 'lucide-react';
+import { BookOpen, Plus, Trash2, Calendar, MapPin, Sprout, Moon, ShieldCheck, Tag, Clock, Lock, Sparkles } from 'lucide-react';
 import { CROPS_GUIDE } from '../../data/ekim-rehberi';
 import GlassIcon from '../../components/GlassIcon';
 import NativeAdCard from '../../components/NativeAdCard';
+import { useAuth } from '../../context/AuthContext';
+import { APP_CONFIG } from '../../lib/config';
 
 export default function MyFieldNotesPage() {
+  const { isAdFree, setShowSubModal } = useAuth();
   const [notes, setNotes] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
@@ -66,6 +69,12 @@ export default function MyFieldNotesPage() {
 
   const handleAddPlantNote = (e) => {
     e.preventDefault();
+    if (!isAdFree) {
+      setShowModal(false);
+      setShowSubModal(true);
+      return;
+    }
+
     const cropInfo = CROPS_GUIDE.find(c => c.id === formData.cropId) || CROPS_GUIDE[0];
 
     const newNote = {
@@ -97,6 +106,10 @@ export default function MyFieldNotesPage() {
   };
 
   const handleDeleteNote = (id) => {
+    if (!isAdFree) {
+      setShowSubModal(true);
+      return;
+    }
     const updated = notes.filter(n => n.id !== id);
     saveNotes(updated);
   };
@@ -113,13 +126,18 @@ export default function MyFieldNotesPage() {
   const todayStr = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       {/* Header */}
       <div className="glass-card rounded-3xl p-6 md:p-8 flex flex-wrap items-center justify-between gap-4 border border-forest-800/10">
         <div>
           <div className="flex items-center gap-2 text-harvest-500 font-bold text-sm mb-1">
             <BookOpen className="w-5 h-5" />
             <span>Ata Ajandası</span>
+            {!isAdFree && (
+              <span className="text-[10px] bg-amber-400 text-amber-950 font-extrabold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                👑 VIP Özellik
+              </span>
+            )}
           </div>
           <h1 className="text-3xl font-serif font-bold text-forest-900 leading-tight">
             Bitkilerim & Notlar
@@ -130,16 +148,50 @@ export default function MyFieldNotesPage() {
         </div>
 
         <button
-          onClick={() => setShowModal(true)}
-          className="badge-forest px-5 py-3 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105"
+          onClick={() => {
+            if (!isAdFree) {
+              setShowSubModal(true);
+            } else {
+              setShowModal(true);
+            }
+          }}
+          className="badge-forest px-5 py-3 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105 cursor-pointer"
         >
           <Plus className="w-4 h-4 text-harvest-400" />
-          <span>+ Yeni Bitki / Not Ekle</span>
+          <span>+ Yeni Bitki / Not Ekle {!isAdFree && '👑'}</span>
         </button>
       </div>
 
+      {/* Non-Premium Locked Paywall Banner */}
+      {!isAdFree && (
+        <div className="glass-card-dark rounded-3xl p-6 md:p-8 border-2 border-harvest-400/60 shadow-2xl relative overflow-hidden text-center space-y-4">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-harvest-500/20 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="w-16 h-16 rounded-3xl bg-harvest-500/20 border border-harvest-400/40 flex items-center justify-center mx-auto text-harvest-400 shadow-inner">
+            <Lock className="w-8 h-8" />
+          </div>
+
+          <div className="max-w-md mx-auto space-y-2">
+            <h2 className="text-2xl font-serif font-bold text-white">
+              Tarla Defteri & Notlarım Premium Abonelere Özeldir
+            </h2>
+            <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
+              Tarlanızın ekim tarihlerini kaydetmek, gübreleme/budama hatırlatıcıları oluşturmak ve notlarınızı takvime işlemek için Premium üye olun.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowSubModal(true)}
+            className="px-8 py-3.5 rounded-2xl badge-gold text-forest-950 font-extrabold text-sm shadow-xl hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2 cursor-pointer"
+          >
+            <Sparkles className="w-4 h-4 text-forest-900" />
+            <span>👑 Hemen Abone Ol ve Kilidi Aç ({APP_CONFIG.subscription.currencySymbol}{APP_CONFIG.subscription.priceNumber} / Yıl)</span>
+          </button>
+        </div>
+      )}
+
       {/* Plant & Notes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ${!isAdFree ? 'filter blur-sm select-none pointer-events-none opacity-60' : ''}`}>
         {notes.length === 0 ? (
           <div className="col-span-full glass-card rounded-3xl p-12 text-center text-forest-800/60">
             <Sprout className="w-12 h-12 mx-auto mb-3 text-forest-500/40" />
@@ -201,51 +253,40 @@ export default function MyFieldNotesPage() {
                     </span>
                   </div>
 
-                  {/* Location & Date Details */}
-                  <div className="space-y-2 text-xs text-forest-800/80 my-3 bg-forest-50/50 p-3 rounded-2xl border border-forest-800/10">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-1.5 font-medium">
-                        <MapPin className="w-3.5 h-3.5 text-terracotta-500" />
-                        Konum/Tarla:
-                      </span>
-                      <span className="font-bold text-forest-900">{note.fieldName}</span>
+                  <div className="space-y-2 text-xs text-forest-800/90 my-3">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-terracotta-500 shrink-0" />
+                      <span><strong>Tarih:</strong> {note.sowingDate}</span>
                     </div>
 
-                    <div className="flex items-center justify-between pt-1 border-t border-forest-800/5">
-                      <span className="flex items-center gap-1.5 font-medium">
-                        <Calendar className="w-3.5 h-3.5 text-forest-500" />
-                        Tarih:
-                      </span>
-                      <span className="font-bold text-forest-900">{note.sowingDate}</span>
-                    </div>
+                    {note.fieldName && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-forest-500 shrink-0" />
+                        <span><strong>Konum:</strong> {note.fieldName}</span>
+                      </div>
+                    )}
 
                     {cropMeta.preferredMoon && (
-                      <div className="flex items-center justify-between pt-1 border-t border-forest-800/5 text-[11px]">
-                        <span className="flex items-center gap-1 text-harvest-600 font-medium">
-                          <Moon className="w-3 h-3 text-harvest-500" />
-                          Ay Tavsiyesi:
-                        </span>
-                        <span className="text-forest-900 truncate max-w-[150px]" title={cropMeta.preferredMoon}>
-                          {cropMeta.preferredMoon}
-                        </span>
+                      <div className="flex items-center gap-2">
+                        <Moon className="w-4 h-4 text-harvest-500 shrink-0" />
+                        <span><strong>Ay Evresi Tavsiyesi:</strong> {cropMeta.preferredMoon}</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Custom Note Content */}
                   {note.note && (
-                    <div className="bg-white/90 p-3 rounded-2xl border border-forest-800/10 text-xs text-forest-900 leading-relaxed">
-                      <p className="font-bold text-[11px] text-forest-800 mb-0.5 flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3 text-harvest-500" /> Detaylar & Not:
+                    <div className="bg-forest-50 p-3 rounded-2xl border border-forest-500/15 text-xs text-forest-900 mt-3">
+                      <p className="font-bold flex items-center gap-1 text-forest-800 mb-0.5">
+                        <ShieldCheck className="w-3.5 h-3.5" /> Notunuz:
                       </p>
-                      {note.note}
+                      <p className="text-forest-800/90 leading-relaxed italic">{note.note}</p>
                     </div>
                   )}
                 </div>
 
                 {cropMeta.harvestPeriod && (
-                  <div className="mt-4 pt-3 border-t border-forest-800/10 flex items-center justify-between text-[11px] text-forest-800/60">
-                    <span>Tahmini Hasat:</span>
+                  <div className="mt-4 pt-3 border-t border-forest-800/10 flex items-center justify-between text-[11px] text-forest-800/60 font-medium">
+                    <span>Beklenen Hasat:</span>
                     <span className="font-bold text-forest-900">{cropMeta.harvestPeriod}</span>
                   </div>
                 )}
@@ -255,34 +296,33 @@ export default function MyFieldNotesPage() {
         )}
       </div>
 
-      {/* Add Modal Form */}
+      {/* Add Plant Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
-          <div className="bg-white rounded-3xl p-5 md:p-7 max-w-lg w-full border border-forest-800/20 shadow-2xl relative max-h-[88vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between border-b border-forest-800/10 pb-3 shrink-0">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-forest-950/60 backdrop-blur-sm animate-in fade-in">
+          <div className="glass-card bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-forest-800/10 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-forest-800/10 pb-3">
               <h3 className="text-xl font-serif font-bold text-forest-900 flex items-center gap-2">
-                <Plus className="w-5 h-5 text-harvest-500" />
-                İleri veya Geri Tarihli Kayıt Ekle
+                <Sprout className="w-5 h-5 text-harvest-500" />
+                Yeni Bitki / Tarla Notu Ekle
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 text-forest-800/50 hover:text-forest-900 font-bold rounded-2xl hover:bg-forest-800/10 transition-colors"
+                className="p-1 rounded-xl hover:bg-forest-800/10 text-forest-900 transition-colors"
               >
                 ✕
               </button>
             </div>
 
-            <div className="overflow-y-auto py-4 flex-1 pr-1">
-              <form onSubmit={handleAddPlantNote} className="space-y-4 text-xs">
-              {/* Kayıt Türü */}
-              <div className="flex gap-2">
+            <form onSubmit={handleAddPlantNote} className="space-y-4">
+              {/* Type Switcher: Bitki mi yoksa Serbest Not mu */}
+              <div className="flex rounded-2xl bg-forest-800/5 p-1 border border-forest-800/10">
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, noteType: 'bitki' })}
-                  className={`w-1/2 py-2.5 rounded-xl font-bold border transition-all ${
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${
                     formData.noteType === 'bitki'
-                      ? 'bg-forest-800 text-white border-forest-800 shadow-sm'
-                      : 'bg-forest-50 text-forest-900 border-forest-800/15'
+                      ? 'bg-forest-800 text-white shadow-sm'
+                      : 'text-forest-900/70 hover:bg-forest-800/10'
                   }`}
                 >
                   🌱 Bitki / Ürün Ekimi
@@ -290,25 +330,25 @@ export default function MyFieldNotesPage() {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, noteType: 'not' })}
-                  className={`w-1/2 py-2.5 rounded-xl font-bold border transition-all ${
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${
                     formData.noteType === 'not'
-                      ? 'bg-forest-800 text-white border-forest-800 shadow-sm'
-                      : 'bg-forest-50 text-forest-900 border-forest-800/15'
+                      ? 'bg-forest-800 text-white shadow-sm'
+                      : 'text-forest-900/70 hover:bg-forest-800/10'
                   }`}
                 >
-                  📝 Bakım / Gübre / Not
+                  📝 Genel Bakım Notu
                 </button>
               </div>
 
-              {/* Bitki Seçimi */}
+              {/* Crop Selector */}
               <div>
-                <label className="block font-bold text-forest-900 mb-1">
-                  1. Bitki / Ürün Seçin <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold text-forest-900 mb-1">
+                  Bitki / Ürün Seçin:
                 </label>
                 <select
                   value={formData.cropId}
-                  onChange={e => setFormData({ ...formData, cropId: e.target.value })}
-                  className="w-full bg-forest-50 border border-forest-800/20 rounded-xl p-3 text-xs font-bold text-forest-900 outline-none focus:border-harvest-500 cursor-pointer shadow-sm"
+                  onChange={(e) => setFormData({ ...formData, cropId: e.target.value })}
+                  className="w-full bg-forest-50 border border-forest-800/15 rounded-xl px-3 py-2.5 text-xs text-forest-900 font-medium outline-none focus:border-harvest-500"
                 >
                   {CROPS_GUIDE.map(crop => (
                     <option key={crop.id} value={crop.id}>
@@ -318,97 +358,101 @@ export default function MyFieldNotesPage() {
                 </select>
               </div>
 
-              {/* Live Preview */}
+              {/* Crop Tips Card */}
               {selectedCropObj && (
-                <div className="bg-forest-50/80 p-3.5 rounded-2xl border border-harvest-500/30 flex items-center gap-3">
-                  <GlassIcon cropId={selectedCropObj.id} icon={selectedCropObj.icon} category={selectedCropObj.category} size={44} />
-                  <div className="text-xs">
-                    <h4 className="font-bold text-forest-900">{selectedCropObj.name}</h4>
-                    <p className="text-forest-800/70 text-[11px]">Ekim: {selectedCropObj.sowingPeriod}</p>
-                    <p className="text-harvest-600 text-[11px] font-medium">Ay Tavsiyesi: {selectedCropObj.preferredMoon}</p>
+                <div className="p-3 rounded-2xl bg-harvest-400/10 border border-harvest-500/20 text-xs text-forest-900 flex items-start gap-2.5">
+                  <GlassIcon
+                    cropId={selectedCropObj.id}
+                    icon={selectedCropObj.icon}
+                    category={selectedCropObj.category}
+                    size={36}
+                    className="shrink-0"
+                  />
+                  <div>
+                    <p className="font-bold text-harvest-600">{selectedCropObj.name} Hakkında:</p>
+                    <p className="text-[11px] text-forest-800/80 mt-0.5">
+                      <strong>Ekim:</strong> {selectedCropObj.sowingPeriod} | <strong>Ay:</strong> {selectedCropObj.preferredMoon}
+                    </p>
                   </div>
                 </div>
               )}
 
-              {/* Tarih Seçimi (İleri veya Geri) */}
+              {/* Custom Title */}
               <div>
-                <label className="block font-bold text-forest-900 mb-1">
-                  2. İşlem / Hatırlatma Tarihi (İleri veya Geçmiş) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={formData.sowingDate}
-                  onChange={e => setFormData({ ...formData, sowingDate: e.target.value })}
-                  className="w-full bg-forest-50 border border-forest-800/20 rounded-xl p-3 outline-none focus:border-harvest-500 cursor-pointer text-xs font-bold text-forest-900"
-                />
-              </div>
-
-              {/* Başlık */}
-              <div>
-                <label className="block font-bold text-forest-900 mb-1">
-                  3. Kayıt Başlığı (İsteğe Bağlı)
+                <label className="block text-xs font-bold text-forest-900 mb-1">
+                  Kayıt Başlığı (İsteğe Bağlı):
                 </label>
                 <input
                   type="text"
-                  placeholder={formData.noteType === 'bitki' ? "Örn: Kışlık Buğday Ekimi" : "Örn: Gübreleme ve Sulama Notu"}
+                  placeholder={`Örn: ${selectedCropObj?.name || 'Bitki'} Ekimi`}
                   value={formData.noteTitle}
-                  onChange={e => setFormData({ ...formData, noteTitle: e.target.value })}
-                  className="w-full bg-forest-50 border border-forest-800/15 rounded-xl p-3 outline-none focus:border-harvest-500 text-xs"
+                  onChange={(e) => setFormData({ ...formData, noteTitle: e.target.value })}
+                  className="w-full bg-forest-50 border border-forest-800/15 rounded-xl px-3 py-2 text-xs text-forest-900 outline-none focus:border-harvest-500"
                 />
               </div>
 
-              {/* Konum */}
-              <div>
-                <label className="block font-bold text-forest-900 mb-1">
-                  4. Tarla / Bahçe Konumu
-                </label>
-                <input
-                  type="text"
-                  placeholder="Örn: Köyün Üst Tarlası, Ön Bahçe, Saksı"
-                  value={formData.fieldName}
-                  onChange={e => setFormData({ ...formData, fieldName: e.target.value })}
-                  className="w-full bg-forest-50 border border-forest-800/15 rounded-xl p-3 outline-none focus:border-harvest-500 text-xs"
-                />
+              {/* Field Name & Date */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-forest-900 mb-1">
+                    Tarla / Bahçe Adı:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Örn: Köyönü Tarlası"
+                    value={formData.fieldName}
+                    onChange={(e) => setFormData({ ...formData, fieldName: e.target.value })}
+                    className="w-full bg-forest-50 border border-forest-800/15 rounded-xl px-3 py-2 text-xs text-forest-900 outline-none focus:border-harvest-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-forest-900 mb-1">
+                    İşlem / Ekim Tarihi:
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.sowingDate}
+                    onChange={(e) => setFormData({ ...formData, sowingDate: e.target.value })}
+                    className="w-full bg-forest-50 border border-forest-800/15 rounded-xl px-3 py-2 text-xs text-forest-900 outline-none focus:border-harvest-500 font-sans"
+                  />
+                </div>
               </div>
 
-              {/* Detaylar */}
+              {/* Note Details */}
               <div>
-                <label className="block font-bold text-forest-900 mb-1">
-                  5. Özel Notlar & Detaylar
+                <label className="block text-xs font-bold text-forest-900 mb-1">
+                  Özel Notlarınız:
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Kullanılan gübre, tohum miktarı, ilaçlama detayları..."
+                  placeholder="Kullanılan tohum çeşidi, gübre miktarı veya sulama detayları..."
                   value={formData.note}
-                  onChange={e => setFormData({ ...formData, note: e.target.value })}
-                  className="w-full bg-forest-50 border border-forest-800/15 rounded-xl p-3 outline-none focus:border-harvest-500 text-xs"
+                  onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                  className="w-full bg-forest-50 border border-forest-800/15 rounded-xl p-3 text-xs text-forest-900 outline-none focus:border-harvest-500"
                 />
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-3 pt-2">
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-forest-800/10">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="w-1/2 py-3 rounded-xl border border-forest-800/20 text-forest-900 font-bold hover:bg-forest-800/5 transition-colors"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-forest-800 hover:bg-forest-800/10 transition-colors"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
-                  className="w-1/2 py-3 rounded-xl badge-forest font-bold shadow-md hover:scale-[1.02] transition-transform"
+                  className="badge-forest px-6 py-2.5 rounded-xl text-xs font-bold shadow-md hover:scale-105 transition-transform"
                 >
-                  Kaydı Ekle
+                  Kaydet
                 </button>
               </div>
             </form>
           </div>
         </div>
-      </div>
-    )}
-      {/* Sponsorlu Reklam Alanı */}
-      <NativeAdCard index={0} />
+      )}
     </div>
   );
 }
