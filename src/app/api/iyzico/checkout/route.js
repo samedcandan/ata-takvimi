@@ -26,7 +26,7 @@ export async function POST(request) {
         name: userName ? userName.split(' ')[0] : "Ata",
         surname: userName && userName.split(' ').length > 1 ? userName.split(' ').slice(1).join(' ') : "Çiftçisi",
         gsmNumber: userPhone || "+905555555555",
-        email: userEmail || "ciftci@karneyn.com",
+        email: (userEmail && !userEmail.endsWith('.local')) ? userEmail : "musteri@atatakvimi.com",
         identityNumber: "11111111110",
         registrationAddress: "Anadolu Mah. Tarım Cad. No:1",
         ip: "85.105.10.10",
