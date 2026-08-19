@@ -37,6 +37,15 @@ export default function MoonIcon({
       isDarkMoon = true;
       pct = 0;
     }
+
+    // New Moon days: ensure minimum visible crescent (not fully dark)
+    // Day 1 (lunarAge 0-1): minimum 2% illumination
+    // Day 2 (lunarAge 1-2): minimum 3% illumination
+    if (!isDarkMoon && normAge < 1.0) {
+      pct = Math.max(pct, 0.02);
+    } else if (!isDarkMoon && normAge < 2.0) {
+      pct = Math.max(pct, 0.03);
+    }
   } else {
     const effectiveIllum = typeof linearIllumination === 'number' ? linearIllumination : illumination;
     pct = Math.max(0, Math.min(100, effectiveIllum)) / 100;
@@ -46,7 +55,7 @@ export default function MoonIcon({
   pct = Math.max(0, Math.min(1, pct));
 
   const isFull = pct >= 0.98;
-  const isNew = pct <= 0.02 || isDarkMoon;
+  const isNew = isDarkMoon; // Only pre-New-Moon dark days are fully dark
 
   const r = 20;
   const cx = 24;
