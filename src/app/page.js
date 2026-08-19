@@ -153,9 +153,9 @@ export default function HomePage() {
               <img src="/icons/nav-calendar.png" alt="Takvim" className="w-full h-full object-contain" />
             </div>
             <div>
-              <span className="text-xs uppercase tracking-wider text-harvest-400 font-semibold">Takvim Akışı</span>
+              <span className="text-xs uppercase tracking-wider text-harvest-400 font-semibold">Geleneksel Takvim</span>
               <h2 className="text-2xl md:text-3xl font-serif font-bold text-white leading-tight">
-                Ata Takvimi - (Kocakarı) Akışı
+                Ata Takvimi - (Kocakarı)
               </h2>
             </div>
           </div>
