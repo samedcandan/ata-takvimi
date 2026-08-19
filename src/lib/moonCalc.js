@@ -25,68 +25,64 @@ export function getMoonPhase(date = new Date()) {
   // Linear Phase Ratio (0.0 = New Moon, 0.5 = Full Moon, 1.0 = New Moon)
   const phaseRatio = lunarAge / synodicMonth;
 
-  // Linear Illumination Percentage for crisp visual daily progression (0% to 100%)
-  let linearIllumination = phaseRatio <= 0.5 
+  // Astronomical Exact Illumination Percentage (0% to 100%)
+  const astronomicalIllumination = Math.round((1 - Math.cos(phaseRatio * 2 * Math.PI)) * 50);
+
+  // Linear illumination for graphical SVG masking
+  const linearIllumination = phaseRatio <= 0.5 
     ? Math.round(phaseRatio * 200) 
     : Math.round((1 - phaseRatio) * 200);
 
-  // Astronomical Sine Illumination for text percentage
-  let astronomicalIllumination = Math.round((1 - Math.cos(phaseRatio * 2 * Math.PI)) * 50);
-
   // Growing phase (0 to 14.765 days is growing in Northern Hemisphere)
   const isGrowing = lunarAge < (synodicMonth / 2);
-
-  // Traditional Anadolu Lunar Definitions:
-  // - Karanlık Ay: Aydınlık başlamadan önceki 3 gün (lunarAge 26.53 .. 29.53)
-  // - Yeni Ay: Aydınlık sürecini başlatan evre (lunarAge 0 .. 2.0)
-  // - Dolunay: Tam aydınlık evresi (lunarAge 14.0 .. 15.6)
 
   let phaseName = "";
   let symbol = "";
   let agricultureAdvice = "";
 
-  if (lunarAge >= 26.53) {
-    // Karanlık Ay (Aydınlık başlamadan önceki 3 gün - Tam Karanlık Nadas)
+  // Exact Astronomical Boundaries & Anadolu Traditional Farming Advice
+  if (lunarAge >= 28.0) {
+    // 1. Karanlık Ay (Nadas / Eskiay) - lunarAge 28.0 .. 29.53
     phaseName = "Karanlık Ay (Nadas / Eskiay)";
     symbol = "🌑";
-    linearIllumination = 0;
-    astronomicalIllumination = 0;
-    agricultureAdvice = "Yeni Ay aydınlığı başlamadan önceki 3 günlük karanlık evre. Toprak nadasa bırakılır; ekim yapılmaz. Ağaç budaması, kereste kesimi ve zararlılarla mücadele zamanıdır.";
-  } else if (lunarAge < 2.0) {
-    // Yeni Ay (Aydınlık sürecini başlatır - Hilal Doğumu)
-    phaseName = "Yeni Ay (Aydınlık Başlangıcı)";
+    agricultureAdvice = "Yeni Ay aydınlığı başlamadan önceki karanlık nadas evresi. Toprak dinlendirilir, tohum ekilmez. Ağaç budaması, kereste kesimi ve zararlılarla mücadele zamanıdır.";
+  } else if (lunarAge < 1.5) {
+    // 2. Yeni Ay - lunarAge 0.0 .. 1.5
+    phaseName = "Yeni Ay (Hilal Doğumu)";
     symbol = "🌒";
-    linearIllumination = Math.max(18, linearIllumination); // Net görünür hilal ışığı başlangıcı
-    astronomicalIllumination = Math.max(10, astronomicalIllumination);
     agricultureAdvice = "Aydınlık sürecini başlatan Yeni Ay evresi. Büyüyen Ay safhası başlar. Toprak üstü ürünlerin (marul, domates, biber, tahıllar) ekimi ve fide dikimi zamanıdır.";
-  } else if (lunarAge < 5.53699) {
+  } else if (lunarAge < 6.8) {
+    // 3. Büyüyen Hilal - lunarAge 1.5 .. 6.8 (Aydınlık %3 .. %44)
     phaseName = "Büyüyen Hilal";
     symbol = "🌒";
-    agricultureAdvice = "Toprak üstü ürünlerin ekim ve dikimi hızla devam eder.";
-  } else if (lunarAge < 9.22831) {
+    agricultureAdvice = "Toprak üstü meyve ve yapraklı bitkilerin ekim ve dikimi hızla devam eder.";
+  } else if (lunarAge < 8.2) {
+    // 4. İlk Dördün - lunarAge 6.8 .. 8.2 (Aydınlık %45 .. %55)
     phaseName = "İlk Dördün";
     symbol = "🌓";
     agricultureAdvice = "Yapraklı bitkilerin ekimi ve meyve ağaçlarının aşılanması için ideal safhadır.";
   } else if (lunarAge < 13.8) {
+    // 5. Büyüyen Şişkinay - lunarAge 8.2 .. 13.8 (Aydınlık %56 .. %96)
     phaseName = "Büyüyen Şişkinay";
     symbol = "🌔";
     agricultureAdvice = "Meyveli sebzelerin (domates, biber, salatalık) ekim ve sulama işlemlerine devam edilir.";
-  } else if (lunarAge >= 14.0 && lunarAge < 15.6) {
-    // Dolunay (Tam Aydınlık - %100 Sapsarı Güneşli Ay)
+  } else if (lunarAge < 15.7) {
+    // 6. Dolunay - lunarAge 13.8 .. 15.7 (Aydınlık %97 .. %100)
     phaseName = "Dolunay (Tam Aydınlık)";
     symbol = "🌕";
-    linearIllumination = 100;
-    astronomicalIllumination = 100;
     agricultureAdvice = "Ayın %100 tam aydınlık evresidir. Bitki özsuyunun en tepe noktada olduğu zamandır. Tıbbi aromatik bitki, meyve ve sebze hasadı yapılır.";
-  } else if (lunarAge < 20.30228) {
+  } else if (lunarAge < 21.3) {
+    // 7. Küçülen Şişkinay - lunarAge 15.7 .. 21.3 (Aydınlık %96 .. %56)
     phaseName = "Küçülen Şişkinay";
     symbol = "🌖";
     agricultureAdvice = "Toprak altı kök ürünlerinin (patates, havuç, soğan, sarımsak, turp) ekimi ve dökümü yapılır.";
-  } else if (lunarAge < 23.99361) {
+  } else if (lunarAge < 22.7) {
+    // 8. Son Dördün - lunarAge 21.3 .. 22.7 (Aydınlık %55 .. %45)
     phaseName = "Son Dördün";
     symbol = "🌗";
     agricultureAdvice = "Budama, çapa, yabani ot temizliği ve organik gübreleme için mükemmel bir dönemdir.";
   } else {
+    // 9. Küçülen Hilal - lunarAge 22.7 .. 28.0 (Aydınlık %44 .. %3)
     phaseName = "Küçülen Hilal";
     symbol = "🌘";
     agricultureAdvice = "Ağaç budamaları, kereste kesimi ve zararlılarla mücadele için tavsiye edilir.";
@@ -116,8 +112,8 @@ export function getLunarMilestoneEvents(startDate = new Date(), daysCount = 365)
     const curr = getMoonPhase(d);
 
     if (prevPhase) {
-      // 1. Yeni Ay Başlangıcı (Aydınlık sürecini başlatır)
-      if (prevPhase.lunarAge > 26 && curr.lunarAge < 2) {
+      // 1. Yeni Ay Başlangıcı
+      if (prevPhase.lunarAge > 27 && curr.lunarAge < 1.5) {
         events.push({
           month: d.getMonth() + 1,
           day: d.getDate(),
@@ -127,13 +123,13 @@ export function getLunarMilestoneEvents(startDate = new Date(), daysCount = 365)
           desc: "Aydınlık sürecini başlatan Yeni Ay evresi. Büyüyen Ay safhası başlar. Toprak üstü meyve ve yapraklı bitkilerin (domates, biber, marul, tahıl) ekim, dikim ve aşı dönemi.",
           icon: "🌒",
           isLunar: true,
-          illumination: 18,
-          linearIllumination: 18,
+          illumination: curr.illumination,
+          linearIllumination: curr.linearIllumination,
           isGrowing: true
         });
       }
-      // 2. Dolunay (Tam Aydınlık)
-      else if (prevPhase.lunarAge < 14.5 && curr.lunarAge >= 14.5 && curr.lunarAge < 15.6) {
+      // 2. Dolunay
+      else if (prevPhase.lunarAge < 14.5 && curr.lunarAge >= 14.5 && curr.lunarAge < 15.7) {
         events.push({
           month: d.getMonth() + 1,
           day: d.getDate(),
@@ -148,15 +144,15 @@ export function getLunarMilestoneEvents(startDate = new Date(), daysCount = 365)
           isGrowing: false
         });
       }
-      // 3. Karanlık Ay Başlangıcı (Aydınlık başlamadan önceki 3 gün)
-      else if (prevPhase.lunarAge < 26.53 && curr.lunarAge >= 26.53) {
+      // 3. Karanlık Ay Başlangıcı
+      else if (prevPhase.lunarAge < 28.0 && curr.lunarAge >= 28.0) {
         events.push({
           month: d.getMonth() + 1,
           day: d.getDate(),
           year: d.getFullYear(),
-          title: "Karanlık Ay Başlangıcı (Nadas Dönemi - 3 Gün)",
+          title: "Karanlık Ay Başlangıcı (Nadas Dönemi)",
           category: "ay",
-          desc: "Yeni Ay aydınlığı başlamadan önceki 3 günlük karanlık evre. Toprak nadasa bırakılır; tohum ekilmez. Ağaç budaması, kereste kesimi ve zararlılarla mücadele edilir.",
+          desc: "Yeni Ay aydınlığı başlamadan önceki karanlık evre. Toprak nadasa bırakılır; tohum ekilmez. Ağaç budaması, kereste kesimi ve zararlılarla mücadele edilir.",
           icon: "🌑",
           isLunar: true,
           illumination: 0,

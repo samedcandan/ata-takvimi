@@ -178,17 +178,27 @@ export default function CalendarPage() {
 
                   {/* Lunar Milestone Badge */}
                   {moon.phaseName.includes("Dolunay") && (
-                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-amber-400 text-amber-950 truncate text-center sm:text-left">
+                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-amber-400 text-amber-950 truncate text-center sm:text-left shadow-sm">
                       🌕 <span className="hidden sm:inline">Dolunay</span>
                     </div>
                   )}
+                  {moon.phaseName === "İlk Dördün" && (
+                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-amber-500/90 text-white truncate text-center sm:text-left shadow-sm">
+                      🌓 <span className="hidden sm:inline">İlk Dördün</span>
+                    </div>
+                  )}
+                  {moon.phaseName === "Son Dördün" && (
+                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-indigo-600 text-white truncate text-center sm:text-left shadow-sm">
+                      🌗 <span className="hidden sm:inline">Son Dördün</span>
+                    </div>
+                  )}
                   {moon.phaseName.includes("Yeni Ay") && (
-                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-emerald-600 text-white truncate text-center sm:text-left">
+                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-emerald-600 text-white truncate text-center sm:text-left shadow-sm">
                       🌒 <span className="hidden sm:inline">Yeni Ay</span>
                     </div>
                   )}
                   {moon.phaseName.includes("Karanlık Ay") && (
-                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-slate-800 text-slate-200 truncate text-center sm:text-left">
+                    <div className="text-[8px] sm:text-[9px] px-0.5 sm:px-1 py-0.5 rounded font-bold bg-slate-800 text-slate-200 truncate text-center sm:text-left shadow-sm">
                       🌑 <span className="hidden sm:inline">Karanlık Ay</span>
                     </div>
                   )}
