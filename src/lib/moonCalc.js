@@ -107,14 +107,22 @@ export function getMoonPhase(date = new Date()) {
     displayLinearIllumination = Math.max(displayLinearIllumination, 3);
   }
 
+  // Notification-ready boolean flags
+  const isFullMoon = phaseName.includes("Dolunay");
+  const isNewMoon = phaseName.includes("Yeni Ay");
+
   return {
     lunarAge: Math.round(lunarAge * 10) / 10,
     illumination: displayIllumination,
     linearIllumination: displayLinearIllumination,
+    percentage: displayIllumination, // alias for notification engine compatibility
     phaseRatio,
     phaseName,
     symbol,
     isGrowing,
+    isDarkMoon,
+    isFullMoon,
+    isNewMoon,
     agricultureAdvice,
   };
 }

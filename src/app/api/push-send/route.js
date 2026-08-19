@@ -91,16 +91,24 @@ export async function POST(request) {
       const moonPhase = getMoonPhase(now);
       
       if (moonPhase.isDarkMoon) {
-        pushTitle = '🌙 Karanlık Ay — Nadas Dönemi';
-        pushBody = 'Yeni Ay öncesi 3 günlük nadas! Toprağa tohum ekilmez, budama ve nadas yapılır.';
+        pushTitle = '🌑 Karanlık Ay — Nadas Dönemi';
+        pushBody = `Yeni Ay öncesi nadas! Toprağa tohum ekilmez, budama ve nadas yapılır. Aydınlık: %${moonPhase.illumination}`;
         pushData = { url: '/takvim', type: 'moon' };
-      } else if (moonPhase.percentage < 5) {
-        pushTitle = '🌙 Yeni Ay — Tohum Ekim Zamanı';
-        pushBody = 'Toprağın bereketi artıyor! Yapraklı ürünleri ekmek için ideal gün.';
+      } else if (moonPhase.isNewMoon) {
+        pushTitle = '🌒 Yeni Ay — Tohum Ekim Zamanı';
+        pushBody = `Toprağın bereketi artıyor! Yapraklı ürünleri ekmek için ideal gün. Aydınlık: %${moonPhase.illumination}`;
         pushData = { url: '/takvim', type: 'moon' };
       } else if (moonPhase.isFullMoon) {
         pushTitle = '🌕 Dolunay — Hasat Zamanı';
-        pushBody = 'Bitkilerde özsuyu zirvede! Hasat ve meyve toplamak için en verimli gün.';
+        pushBody = `Bitkilerde özsuyu zirvede! Hasat ve meyve toplamak için en verimli gün. Aydınlık: %${moonPhase.illumination}`;
+        pushData = { url: '/takvim', type: 'moon' };
+      } else if (moonPhase.phaseName === 'İlk Dördün') {
+        pushTitle = '🌓 İlk Dördün — Yaprak & Aşı Dönemi';
+        pushBody = `Yapraklı bitki ekimi ve meyve ağacı aşılaması için ideal safha. Aydınlık: %${moonPhase.illumination}`;
+        pushData = { url: '/takvim', type: 'moon' };
+      } else if (moonPhase.phaseName === 'Son Dördün') {
+        pushTitle = '🌗 Son Dördün — Budama & Gübreleme';
+        pushBody = `Budama, çapa, yabani ot temizliği ve organik gübreleme için mükemmel dönem. Aydınlık: %${moonPhase.illumination}`;
         pushData = { url: '/takvim', type: 'moon' };
       }
 
@@ -116,9 +124,9 @@ export async function POST(request) {
 
       // 3. Default: Günlük takvim hatırlatması
       if (!pushTitle) {
-        const moonEmoji = moonPhase.percentage > 80 ? '🌕' : moonPhase.percentage > 50 ? '🌔' : moonPhase.percentage > 20 ? '🌓' : '🌒';
+        const moonEmoji = moonPhase.illumination > 80 ? '🌕' : moonPhase.illumination > 50 ? '🌔' : moonPhase.illumination > 20 ? '🌓' : '🌒';
         pushTitle = `${moonEmoji} Ata Takvimi — Günlük Rehber`;
-        pushBody = `Ay aydınlığı: %${Math.round(moonPhase.percentage)}. Takviminizdeki bugünkü tavsiyeleri görüntüleyin.`;
+        pushBody = `${moonPhase.phaseName} — Ay aydınlığı: %${moonPhase.illumination}. ${moonPhase.agricultureAdvice}`;
         pushData = { url: '/', type: 'daily' };
       }
     }
