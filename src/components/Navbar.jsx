@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Calendar, Sprout, BookOpen, MapPin, Moon, LogIn, LogOut, User, Sparkles, Star, Bell } from 'lucide-react';
+import { LogIn, LogOut, User, Sparkles, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
 import SubscriptionModal from './SubscriptionModal';
@@ -26,10 +26,10 @@ export default function Navbar() {
   } = useAuth();
 
   const navItems = [
-    { href: '/', label: 'Akış', icon: Calendar },
-    { href: '/takvim', label: 'Ay Takvimi', icon: Moon },
-    { href: '/ekim-rehberi', label: 'Ekim Rehberi', icon: Sprout },
-    { href: '/tarlam', label: 'Notlarım', icon: BookOpen },
+    { href: '/', label: 'Akış', iconImg: '/icons/nav-calendar.png' },
+    { href: '/takvim', label: 'Ay Takvimi', iconImg: '/icons/event-winter-solstice.png' },
+    { href: '/ekim-rehberi', label: 'Ekim Rehberi', iconImg: '/icons/nav-sprout.png' },
+    { href: '/tarlam', label: 'Notlarım', iconImg: '/icons/nav-journal.png' },
   ];
 
   return (
@@ -47,21 +47,20 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation Items */}
-        <nav className="hidden md:flex items-center gap-1 bg-forest-800/5 p-1 rounded-2xl border border-forest-800/10">
+        <nav className="hidden md:flex items-center gap-1.5 bg-forest-800/5 p-1 rounded-2xl border border-forest-800/10">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all ${
                   isActive
                     ? 'bg-forest-800 text-white shadow-md'
                     : 'text-forest-900/80 hover:bg-forest-800/10'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <img src={item.iconImg} alt={item.label} className="w-5 h-5 object-contain" />
                 {item.label}
               </Link>
             );
@@ -75,9 +74,9 @@ export default function Navbar() {
           <button
             onClick={() => setShowNotificationModal(true)}
             title="Bildirim Tercihleri"
-            className="p-1.5 sm:p-2 rounded-xl bg-white border border-forest-800/15 text-forest-900 hover:bg-forest-50 transition-colors shadow-sm relative group shrink-0"
+            className="p-1 sm:p-1.5 rounded-xl bg-white border border-forest-800/15 text-forest-900 hover:bg-forest-50 transition-colors shadow-sm relative group shrink-0"
           >
-            <Bell className="w-4 h-4 text-harvest-600 group-hover:scale-110 transition-transform" />
+            <img src="/icons/nav-bell.png" alt="Bildirim" className="w-5 h-5 object-contain group-hover:scale-110 transition-transform" />
             <span className="w-2 h-2 rounded-full bg-harvest-400 absolute top-1 right-1 animate-pulse" />
           </button>
 
@@ -98,83 +97,57 @@ export default function Navbar() {
             ) : (
               <>
                 <Sparkles className="w-3.5 h-3.5 text-harvest-600" />
-                <span className="hidden sm:inline-block">Reklamı Kaldır ({APP_CONFIG.subscription.currencySymbol}{APP_CONFIG.subscription.priceNumber})</span>
+                <span className="hidden sm:inline-block">₺200 Reklamsız</span>
               </>
             )}
           </button>
 
-          {/* City Selector Button */}
+          {/* City Selection Modal Trigger Button */}
           <button
             onClick={() => setShowCityModal(true)}
-            title="Şehir Değiştir (81 İl)"
-            className="flex items-center gap-1 bg-white/90 hover:bg-forest-50 px-2.5 py-1.5 rounded-xl border border-forest-800/15 text-xs text-forest-900 shadow-sm transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1 bg-white px-2.5 sm:px-3 py-1.5 rounded-xl border border-forest-800/15 text-forest-900 text-xs font-semibold hover:bg-forest-50 transition-colors shadow-sm shrink-0"
+            title="Şehir ve Konum Seçimi"
           >
-            <MapPin className="w-3.5 h-3.5 text-terracotta-500 shrink-0" />
-            <span className="font-bold text-xs">{selectedCity}</span>
+            <img src="/icons/nav-location.png" alt="Konum" className="w-4 h-4 object-contain" />
+            <span className="max-w-[70px] sm:max-w-[90px] truncate">{selectedCity || 'Konum Seç'}</span>
           </button>
 
-          {/* User Auth Profile Dropdown / Login Button */}
+          {/* User Profile / Auth Toggle (Desktop) */}
           {user ? (
             <div className="relative">
               <button
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
-                className="flex items-center gap-1.5 p-1 pr-2 rounded-2xl bg-white border border-forest-800/20 shadow-sm hover:shadow transition-all group"
+                className="flex items-center gap-1.5 bg-white p-1 pr-2 rounded-xl border border-forest-800/15 hover:bg-forest-50 transition-colors shadow-sm"
               >
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl object-cover bg-forest-100 border border-forest-500/20"
+                <img 
+                  src={user.avatar} 
+                  alt={user.name} 
+                  className="w-6 h-6 rounded-lg object-cover border border-forest-800/20" 
                 />
                 <span className="text-xs font-bold text-forest-900 max-w-[80px] truncate hidden sm:inline-block">
                   {user.name.split(' ')[0]}
                 </span>
               </button>
 
-              {/* User Dropdown Menu */}
               {showUserDropdown && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl border border-forest-800/15 shadow-2xl p-3 z-50 text-xs space-y-2">
-                  <div className="border-b border-forest-800/10 pb-2 flex items-center gap-2.5">
-                    <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-xl bg-forest-50" />
-                    <div className="overflow-hidden">
-                      <p className="font-bold text-forest-900 truncate">{user.name}</p>
-                      <p className="text-[10px] text-forest-800/60 truncate">{user.email}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${isAdFree ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-50 text-emerald-700'}`}>
-                          {isAdFree ? '👑 Reklamsız Premium' : '🌾 Ücretsiz Plan (Reklamlı)'}
-                        </span>
-                      </div>
-                    </div>
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-forest-800/15 p-2 z-50 animate-in fade-in slide-in-from-top-2">
+                  <div className="px-3 py-2 border-b border-forest-800/10">
+                    <p className="text-xs font-bold text-forest-900 truncate">{user.name}</p>
+                    <p className="text-[10px] text-forest-800/70 truncate">{user.email}</p>
+                    {isAdFree && (
+                      <span className="inline-block mt-1 text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">
+                        👑 Reklamsız Premium
+                      </span>
+                    )}
                   </div>
-
-                  <button
-                    onClick={() => {
-                      setShowNotificationModal(true);
-                      setShowUserDropdown(false);
-                    }}
-                    className="w-full flex items-center gap-2 p-2 rounded-xl text-forest-900 font-bold hover:bg-forest-50 transition-colors text-left"
-                  >
-                    <Bell className="w-4 h-4 text-harvest-600" />
-                    Bildirim Tercihleri
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setShowSubModal(true);
-                      setShowUserDropdown(false);
-                    }}
-                    className="w-full flex items-center gap-2 p-2 rounded-xl text-forest-900 font-bold hover:bg-forest-50 transition-colors text-left"
-                  >
-                    <Sparkles className="w-4 h-4 text-harvest-500" />
-                    {isAdFree ? 'Abonelik Detayları' : `Reklamları Kaldır (${APP_CONFIG.subscription.currencySymbol}${APP_CONFIG.subscription.priceNumber}/Yıl)`}
-                  </button>
-
+                  
                   <Link
                     href="/tarlam"
                     onClick={() => setShowUserDropdown(false)}
-                    className="flex items-center gap-2 p-2 rounded-xl text-forest-900 font-medium hover:bg-forest-50 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-forest-900 rounded-xl hover:bg-forest-50 transition-colors"
                   >
-                    <BookOpen className="w-4 h-4 text-harvest-500" />
-                    Bitkilerim & Notlarım
+                    <img src="/icons/nav-journal.png" alt="Notlarım" className="w-4 h-4 object-contain" />
+                    Tarla Notlarım
                   </Link>
 
                   <button
@@ -182,9 +155,9 @@ export default function Navbar() {
                       logout();
                       setShowUserDropdown(false);
                     }}
-                    className="w-full flex items-center gap-2 p-2 rounded-xl text-red-600 font-bold hover:bg-red-50 transition-colors text-left border-t border-forest-800/10 pt-2"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 rounded-xl hover:bg-red-50 transition-colors"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-3.5 h-3.5" />
                     Çıkış Yap
                   </button>
                 </div>
@@ -193,10 +166,10 @@ export default function Navbar() {
           ) : (
             <button
               onClick={() => setShowAuthModal(true)}
-              className="badge-forest px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 shadow-md hover:scale-[1.02] transition-transform shrink-0"
+              className="bg-forest-800 hover:bg-forest-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-transform hover:scale-105 shadow-sm flex items-center gap-1.5 shrink-0"
             >
-              <LogIn className="w-3.5 h-3.5 text-harvest-400" />
-              <span>Giriş Yap</span>
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Giriş</span>
             </button>
           )}
         </div>
@@ -205,7 +178,6 @@ export default function Navbar() {
       {/* Mobile Bottom Bar — Includes Dedicated Profile Tab */}
       <div className="md:hidden flex justify-between items-center mt-2 pt-2 border-t border-forest-800/10 px-1 text-xs">
         {navItems.map((item) => {
-          const Icon = item.icon;
           const isActive = pathname === item.href;
           return (
             <Link
@@ -217,7 +189,7 @@ export default function Navbar() {
                   : 'text-forest-900/60 hover:text-forest-900'
               }`}
             >
-              <Icon className="w-4 h-4" />
+              <img src={item.iconImg} alt={item.label} className="w-5 h-5 object-contain" />
               <span className="text-[10px]">{item.label}</span>
             </Link>
           );
@@ -236,7 +208,7 @@ export default function Navbar() {
             <img 
               src={user.avatar} 
               alt={user.name} 
-              className="w-4 h-4 rounded-full object-cover border border-forest-800/30" 
+              className="w-5 h-5 rounded-full object-cover border border-forest-800/30" 
             />
             <span className="text-[10px] font-bold">Profil</span>
           </button>
