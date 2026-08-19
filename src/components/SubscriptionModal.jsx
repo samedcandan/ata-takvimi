@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { Sparkles, Check, CreditCard, ShieldCheck, KeyRound, X, Star, AlertTriangle, Loader2 } from 'lucide-react';
 import { APP_CONFIG } from '../lib/config';
@@ -108,8 +109,8 @@ export default function SubscriptionModal() {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div className="relative w-full max-w-lg bg-[#0e2d1d] border border-harvest-400/40 rounded-3xl p-5 sm:p-6 text-white shadow-2xl space-y-4 my-auto max-h-[92vh] overflow-y-auto">
         
         {/* Close Button */}
@@ -138,22 +139,34 @@ export default function SubscriptionModal() {
           </p>
         </div>
 
-        {/* Status Messages */}
-        {error && (
-          <div className="p-3 bg-red-950/80 border border-red-500/50 rounded-xl text-red-200 text-xs font-bold text-center flex items-center justify-center gap-2">
-            <AlertTriangle className="w-4 h-4 shrink-0 text-red-400" />
-            <span>{error}</span>
+        {/* Plan Feature Grid */}
+        <div className="grid grid-cols-2 gap-2 bg-[#07190f] p-3 rounded-2xl border border-emerald-500/30 text-xs">
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-harvest-400 shrink-0" />
+            <span className="text-emerald-100 font-medium">Sıfır Reklam</span>
           </div>
-        )}
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-harvest-400 shrink-0" />
+            <span className="text-emerald-100 font-medium">Öncelikli Bildirimler</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-harvest-400 shrink-0" />
+            <span className="text-emerald-100 font-medium">Ekim & Don Alarmları</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-harvest-400 shrink-0" />
+            <span className="text-emerald-100 font-medium">365 Gün Kesintisiz</span>
+          </div>
+        </div>
 
+        {/* Dynamic Status / Feedback Messages */}
         {message && (
-          <div className="p-3 bg-emerald-950/80 border border-emerald-500/50 rounded-xl text-emerald-200 text-xs font-bold text-center flex items-center justify-center gap-2">
-            <Check className="w-4 h-4 shrink-0 text-emerald-400" />
+          <div className="bg-emerald-900/60 border border-emerald-400 text-emerald-200 text-xs p-3 rounded-xl font-medium text-center flex items-center justify-center gap-2">
+            <Check className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>{message}</span>
           </div>
         )}
 
-        {/* Pricing Card */}
         <div className="relative p-4 rounded-2xl bg-gradient-to-br from-harvest-500/20 to-emerald-900/40 border-2 border-harvest-400/60 shadow-xl space-y-3">
           <div className="flex items-center justify-between">
             <div>
@@ -245,6 +258,7 @@ export default function SubscriptionModal() {
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
