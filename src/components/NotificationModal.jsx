@@ -213,16 +213,8 @@ export default function NotificationModal() {
 
           </div>
 
-          {/* Test Notification Action */}
-          <div className="pt-2">
-            <button
-              onClick={handleSendTest}
-              className="w-full py-3 rounded-2xl border border-forest-800/20 bg-forest-800/5 hover:bg-forest-800/10 text-forest-900 font-bold text-xs transition-all flex items-center justify-center gap-2"
-            >
-              <Send className="w-4 h-4 text-harvest-600" />
-              <span>🧪 Test Bildirimi Gönder (Tarayıcıda Dene)</span>
-            </button>
-          </div>
+
+
         </div>
 
         {/* Footer */}
