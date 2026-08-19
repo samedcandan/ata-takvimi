@@ -231,19 +231,20 @@ export default function SubscriptionModal() {
           ) : (
             <button
               onClick={handleIyzicoCheckout}
-              disabled={loading || isAdFree}
-              className="w-full py-3 rounded-xl badge-gold text-forest-950 font-extrabold text-xs shadow-lg hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              disabled={loading}
+              className="w-full py-3.5 rounded-xl badge-gold text-forest-950 font-extrabold text-xs shadow-lg hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
             >
               {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin text-forest-950" />
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-forest-950" />
+                  <span>İyzico Ödeme Sayfasına Bağlanılıyor...</span>
+                </>
               ) : (
-                <CreditCard className="w-4 h-4" />
+                <>
+                  <CreditCard className="w-4 h-4 text-forest-950" />
+                  <span>İyzico Güvenli Ödeme ile Başlat ({APP_CONFIG.subscription.currencySymbol}{APP_CONFIG.subscription.priceNumber} / Yıl)</span>
+                </>
               )}
-              <span>
-                {isAdFree
-                  ? '👑 Zaten Reklamsız Premium Üyesisiniz'
-                  : `İyzico Güvenli Ödeme ile Başlat (${APP_CONFIG.subscription.currencySymbol}${APP_CONFIG.subscription.priceNumber} / Yıl)`}
-              </span>
             </button>
           )}
         </div>
