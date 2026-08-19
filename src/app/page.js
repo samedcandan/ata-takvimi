@@ -149,13 +149,13 @@ export default function HomePage() {
         <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-harvest-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-harvest-400 border border-white/15">
-              <Calendar className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center p-1.5 border border-white/15 backdrop-blur-md">
+              <img src="/icons/nav-calendar.png" alt="Takvim" className="w-full h-full object-contain" />
             </div>
             <div>
               <span className="text-xs uppercase tracking-wider text-harvest-400 font-semibold">Takvim Akışı</span>
               <h2 className="text-2xl md:text-3xl font-serif font-bold text-white leading-tight">
-                Anadolu Halk & Ay Takvimi Akışı
+                Ata Takvimi - (Kocakarı) Akışı
               </h2>
             </div>
           </div>
