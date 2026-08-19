@@ -27,7 +27,9 @@ const AuthContext = createContext({
   selectedCity: 'Konya',
   changeCity: () => {},
   showCityModal: false,
-  setShowCityModal: () => {}
+  setShowCityModal: () => {},
+  authIntent: null,
+  setAuthIntent: () => {}
 });
 
 export function AuthProvider({ children }) {
@@ -38,6 +40,7 @@ export function AuthProvider({ children }) {
   const [showCityModal, setShowCityModal] = useState(false);
   const [selectedCity, setSelectedCity] = useState('Konya');
   const [notificationPrefs, setNotificationPrefs] = useState(DEFAULT_NOTIFICATION_PREFS);
+  const [authIntent, setAuthIntent] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Initialize FCM Push Notifications on native platforms (Android/iOS)
@@ -279,6 +282,10 @@ export function AuthProvider({ children }) {
 
     saveUserSession(googleUser, 'GOOGLE_LOGIN');
     setShowAuthModal(false);
+    if (authIntent === 'subscription') {
+      setAuthIntent(null);
+      setTimeout(() => setShowSubModal(true), 150);
+    }
     return googleUser;
   };
 
@@ -327,6 +334,10 @@ export function AuthProvider({ children }) {
 
     saveUserSession(emailUser, isKarneynAnahtar ? 'KARNEYN_ADMIN_LOGIN' : 'LOGIN');
     setShowAuthModal(false);
+    if (authIntent === 'subscription') {
+      setAuthIntent(null);
+      setTimeout(() => setShowSubModal(true), 150);
+    }
     return emailUser;
   };
 
@@ -345,6 +356,10 @@ export function AuthProvider({ children }) {
 
     saveUserSession(newUser, 'REGISTER');
     setShowAuthModal(false);
+    if (authIntent === 'subscription') {
+      setAuthIntent(null);
+      setTimeout(() => setShowSubModal(true), 150);
+    }
     return newUser;
   };
 
@@ -381,7 +396,9 @@ export function AuthProvider({ children }) {
         selectedCity,
         changeCity,
         showCityModal,
-        setShowCityModal
+        setShowCityModal,
+        authIntent,
+        setAuthIntent
       }}
     >
       {children}

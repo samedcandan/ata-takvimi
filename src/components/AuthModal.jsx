@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { LogIn, UserPlus, Mail, Lock, User, ShieldCheck, X } from 'lucide-react';
 
 export default function AuthModal() {
-  const { showAuthModal, setShowAuthModal, loginWithGoogle, loginWithEmail, registerWithEmail } = useAuth();
+  const { showAuthModal, setShowAuthModal, loginWithGoogle, loginWithEmail, registerWithEmail, authIntent } = useAuth();
   const [activeTab, setActiveTab] = useState('login');
   const [googleEmailInput, setGoogleEmailInput] = useState('');
   const [showGooglePrompt, setShowGooglePrompt] = useState(false);
@@ -59,7 +59,7 @@ export default function AuthModal() {
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] bg-black/65 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
+    <div className="fixed inset-0 z-[99999] bg-black/65 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
       <div className="bg-white rounded-3xl p-5 md:p-7 max-w-md w-full border border-forest-800/20 shadow-2xl relative max-h-[88vh] flex flex-col overflow-hidden">
         {/* Decorative ambient blur */}
         <div className="absolute -top-12 -right-12 w-32 h-32 bg-harvest-400/20 rounded-full blur-2xl pointer-events-none" />
@@ -82,6 +82,19 @@ export default function AuthModal() {
 
         {/* Scrollable Body */}
         <div className="overflow-y-auto py-4 space-y-4 flex-1 pr-1">
+          {/* Subscription Intent Banner */}
+          {authIntent === 'subscription' && (
+            <div className="bg-amber-50 border border-amber-300 rounded-2xl p-3.5 flex items-start gap-2.5 text-xs text-amber-950 shadow-sm">
+              <span className="text-lg leading-none">👑</span>
+              <div>
+                <p className="font-bold text-amber-900">1 Yıllık Premium Abonelik</p>
+                <p className="text-[11px] text-amber-800 mt-0.5 leading-snug">
+                  Aboneliğinizi hesabınıza bağlamak ve güvenli İyzico ödeme adımına geçebilmek için lütfen önce giriş yapın veya ücretsiz üye olun.
+                </p>
+              </div>
+            </div>
+          )}
+
           {error && (
             <div className="bg-red-50 text-red-700 p-3 rounded-2xl border border-red-200 text-xs font-semibold">
               {error}

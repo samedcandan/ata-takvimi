@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Check, CreditCard, ShieldCheck, KeyRound, X, Star, AlertTriangle, Loader2 } from 'lucide-react';
+import { Sparkles, Check, CreditCard, ShieldCheck, KeyRound, X, Star, AlertTriangle, Loader2, LogIn } from 'lucide-react';
 import { APP_CONFIG } from '../lib/config';
 
 export default function SubscriptionModal() {
-  const { showSubModal, setShowSubModal, user, activateSubscription, setShowAuthModal, isAdFree, daysLeft } = useAuth();
+  const { showSubModal, setShowSubModal, user, activateSubscription, setShowAuthModal, isAdFree, daysLeft, setAuthIntent } = useAuth();
   const [promoCode, setPromoCode] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -200,23 +200,45 @@ export default function SubscriptionModal() {
             </div>
           </div>
 
-          {/* Checkout Button */}
-          <button
-            onClick={handleIyzicoCheckout}
-            disabled={loading || isAdFree}
-            className="w-full py-3 rounded-xl badge-gold text-forest-950 font-extrabold text-xs shadow-lg hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin text-forest-950" />
-            ) : (
-              <CreditCard className="w-4 h-4" />
-            )}
-            <span>
-              {isAdFree
-                ? '👑 Zaten Reklamsız Premium Üyesisiniz'
-                : `İyzico Güvenli Ödeme ile Başlat (${APP_CONFIG.subscription.currencySymbol}${APP_CONFIG.subscription.priceNumber} / Yıl)`}
-            </span>
-          </button>
+          {/* Checkout or Login CTA */}
+          {!user ? (
+            <div className="space-y-2.5 pt-1">
+              <div className="bg-[#07190f] border border-harvest-400/40 rounded-xl p-3 text-xs text-emerald-100 flex items-start gap-2.5 leading-relaxed">
+                <AlertTriangle className="w-4 h-4 text-harvest-400 shrink-0 mt-0.5" />
+                <span>
+                  Abonelik lisansınızı hesabınıza tanımlayabilmek ve güvenli İyzico ödemesine geçebilmek için <strong>önce giriş yapmanız veya üye olmanız</strong> gerekmektedir.
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setAuthIntent('subscription');
+                  setShowSubModal(false);
+                  setShowAuthModal(true);
+                }}
+                className="w-full py-3.5 rounded-xl badge-gold text-forest-950 font-extrabold text-xs shadow-lg hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <LogIn className="w-4 h-4 text-forest-950" />
+                <span>Giriş Yap ve Abone Ol ({APP_CONFIG.subscription.currencySymbol}{APP_CONFIG.subscription.priceNumber} / Yıl)</span>
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={handleIyzicoCheckout}
+              disabled={loading || isAdFree}
+              className="w-full py-3 rounded-xl badge-gold text-forest-950 font-extrabold text-xs shadow-lg hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin text-forest-950" />
+              ) : (
+                <CreditCard className="w-4 h-4" />
+              )}
+              <span>
+                {isAdFree
+                  ? '👑 Zaten Reklamsız Premium Üyesisiniz'
+                  : `İyzico Güvenli Ödeme ile Başlat (${APP_CONFIG.subscription.currencySymbol}${APP_CONFIG.subscription.priceNumber} / Yıl)`}
+              </span>
+            </button>
+          )}
         </div>
 
         {/* İyzico Embedded Checkout Form Target */}
