@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createCheckoutForm, Iyzipay } from '../../../../lib/iyzico';
+import { createCheckoutForm } from '../../../../lib/iyzico';
 import { APP_CONFIG } from '../../../../lib/config';
 
 export async function POST(request) {
@@ -12,13 +12,13 @@ export async function POST(request) {
     const defaultCallback = callbackUrl || `${APP_CONFIG.domain}/api/iyzico/callback`;
 
     const requestData = {
-      locale: Iyzipay.LOCALE.TR,
+      locale: "tr",
       conversationId: conversationId,
       price: price,
       paidPrice: price,
-      currency: Iyzipay.CURRENCY.TRY,
+      currency: "TRY",
       basketId: `BASKET-${userId || Date.now()}`,
-      paymentGroup: Iyzipay.PAYMENT_GROUP.SUBSCRIPTION,
+      paymentGroup: "SUBSCRIPTION",
       callbackUrl: defaultCallback,
       enabledInstallments: [1],
       buyer: {
@@ -51,7 +51,7 @@ export async function POST(request) {
           name: APP_CONFIG.subscription.basketItemName,
           category1: "Yazılım",
           category2: "Abonelik",
-          itemType: Iyzipay.BASKET_ITEM_TYPE.VIRTUAL,
+          itemType: "VIRTUAL",
           price: price
         }
       ]
